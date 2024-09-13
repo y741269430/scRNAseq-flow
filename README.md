@@ -391,10 +391,9 @@
 
 ---
 ## 7.细胞注释 ####
-# 接下来，你可以选择是：1.先做双细胞去除再做细胞注释；2.先做细胞注释，然后根据细胞注释去做双细胞去除。（这里我做第二种。）
-# 我一般用细胞marker去做注释，你也可以用singleR包注释 
-# 举个例子，输入细胞群的marker基因，判断其表达丰度
-# https://cellxgene.cziscience.com/cellguide 这个网站可以查人类或小鼠的细胞marker
+#### 接下来，你可以选择是：1.先做双细胞去除再做细胞注释；2.先做细胞注释，然后根据细胞注释去做双细胞去除。（这里我做第二种。）
+#### 我一般用细胞marker去做注释，你也可以用singleR包注释 
+#### https://cellxgene.cziscience.com/cellguide 这个网站可以查人类或小鼠的细胞marker
 
     marker_ls <- list(Excitatory_neuron = c('Slc17a7','Slc17a6','Rorb', 'Sulf2', 'Cux2') ,
                       
@@ -425,15 +424,14 @@
                                'Lhfpl3','Epn2','Serpine2','Luzp2','Bcan'))
     
     
-    #### VlnPlot ####
+#### 输入细胞群的marker基因，判断其表达丰度
     vln_ls <- list()
     for (i in 1:length(marker_ls)) {
       vln_ls[[i]] <- VlnPlot(seurat_integrated, features = marker_ls[[i]], stack=T, pt.size = 0) + 
         ggtitle(names(marker_ls)[i]) 
     }
     
-    a1 <- plot_grid(plotlist = vln_ls,
-                    ncol = 1)
+    a1 <- plot_grid(plotlist = vln_ls, ncol = 1)
     
     ggplot2::ggsave(paste0(path, "VlnPlot_marker_1.pdf"), plot = a1,
                     height = 30, width = 12, dpi = 300, limitsize = FALSE)
@@ -478,9 +476,7 @@
     table(seurat_integrated$sample)
     seurat_integrated$sample <- factor(seurat_integrated$sample,
                                        levels=c("A_con", "B_tre"))
-    
-    
-    
+
     #### 第二次画图UMAP ####
     p1 <- DimPlot(seurat_integrated,
                   reduction = "umap", 
@@ -499,11 +495,383 @@
     ggplot2::ggsave(paste0(path, "UMAP_split2.pdf"), plot = p2, 
                     height = 5, width = 9, dpi = 300, limitsize = FALSE)
     
-    
     # 保存
-    
     saveRDS(seurat_integrated, paste0(path, "seurat_integrated.rds"))
     
     # 保存之后清空，释放内存
     rm(list = ls())
     gc()
+
+
+
+## 8.拆分样本，进行双细胞去除 ####
+
+#### 设置工作路径 ####
+    readpath = 'F:/R work/mmbrain/'
+    path = 'F:/R work/mmbrain/results/'
+    
+#### 去除双细胞 ####
+    seurat_integrated <- readRDS(paste0(path, "seurat_integrated.rds"))
+    
+    # 根据样本进行拆分
+    seurat_split <- SplitObject(seurat_integrated, split.by = "sample")
+    
+    # 这时候你可以把seurat_integrated清理掉，释放内存
+    rm(seurat_integrated); gc()
+    
+#### 这里我对第一个样本进行双细胞去除（一共两个样本）。耗时大概20分钟一个样本吧，内存消耗不大（剩下另外一个样本，也要重复这个工作，记得把名称改了不然会覆盖掉）
+    input_seurat <- seurat_split[[1]]
+
+#### 继续往下跑，跑完第一个跑第二个 #### 
+    seurat_1 <- paramSweep_v3(input_seurat, PCs = 1:10, sct = FALSE)
+    seurat_2 <- summarizeSweep(seurat_1, GT = F)
+    seurat_3 <- find.pK(seurat_2)
+    
+    # 这里面mpK的值，我一般会保存在注释里面
+    mpK <- as.numeric(as.vector(seurat_3$pK[which.max(seurat_3$BCmetric)])); mpK # mpK = 0.005
+  
+    annotations <- input_seurat$celltype
+    homotypic.prop <- modelHomotypic(annotations); homotypic.prop
+
+    # 这里面DoubleRate 计算出了0.169784的双细胞，也就是说，它要删去你16%的细胞OMG
+    DoubletRate = ncol(input_seurat)*8*1e-6; DoubletRate # 按每增加1000个细胞，双细胞比率增加千分之8来计算
+    DoubletRate = DoubletRate/5 # 但是因为去除双细胞去得太多了，我就人为地把这个值，再除了10，即去除2.9%的细胞
+ 
+    # 估计双细胞比例，根据细胞亚群数量与DoubletRate进行计算。
+    nExp_poi <- round(DoubletRate*length(input_seurat$celltype)); nExp_poi  # 721 #最好提供celltype，而不是seurat_clusters。
+    
+    # 估计同源双细胞比例，根据modelHomotypic()中的参数人为混合双细胞。
+    nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop)); nExp_poi.adj # 474
+    
+    gc() # 清缓存
+    seurat_singlet <- doubletFinder_v3(input_seurat, PCs = 1:10, pN = 0.25, 
+                                       pK = mpK, nExp = nExp_poi.adj, reuse.pANN = F, sct = F)
+    gc() # 再清缓存
+    
+    # 查看以下列名
+    colnames(seurat_singlet@meta.data)
+    
+    # 选择最后一列
+    seurat_singlet$DF_hi.lo <- seurat_singlet$DF.classifications_0.25_0.005_474
+    
+    table(seurat_singlet$DF_hi.lo)
+    
+    b1 <- DimPlot(seurat_singlet, reduction = 'umap', group.by ="DF_hi.lo") + coord_equal(ratio = 1) 
+    
+#### 保存文件的时候切记不要覆盖旧文件 #### 
+    ggplot2::ggsave(paste0(path, "UMAP_seurat_sample_1.pdf"), plot = b1,
+                    height = 5, width = 7, dpi = 300, limitsize = FALSE)
+    
+    saveRDS(seurat_singlet, paste0(path, "seurat_sample_1.rds"))
+
+---
+## 9.合并样本 ####
+
+#### 设置工作路径 ####
+    readpath = 'F:/R work/mmbrain/'
+    path = 'F:/R work/mmbrain/results/'
+
+#### 读取两个样本 #### 
+    seurat_sample_1 <- readRDS(paste0(path, "seurat_sample_1.rds"))
+    seurat_sample_2 <- readRDS(paste0(path, "seurat_sample_2.rds"))
+    
+    table(seurat_sample_1$DF_hi.lo)
+    Idents(seurat_sample_1) <- seurat_sample_1$DF_hi.lo
+    seurat_sample_1 <- subset(seurat_sample_1, idents = 'Singlet')
+    
+    table(seurat_sample_2$DF_hi.lo)
+    Idents(seurat_sample_2) <- seurat_sample_2$DF_hi.lo
+    seurat_sample_2 <- subset(seurat_sample_2, idents = 'Singlet')
+
+
+#### 合并两个样本 #### 
+    seurat_integrated <- merge(seurat_sample_1, y = c(seurat_sample_2))
+
+#### 合并完，又做一遍整合分析的流程 #### 
+    seurat_integrated <- Seurat::NormalizeData(seurat_integrated, verbose = FALSE, normalization.method = 'LogNormalize')
+    seurat_integrated <- FindVariableFeatures(seurat_integrated, selection.method = "vst", nfeatures = 2000)
+    seurat_integrated <- ScaleData(seurat_integrated) 
+    seurat_integrated <- RunPCA(seurat_integrated, features = VariableFeatures(seurat_integrated))
+    seurat_integrated <- RunHarmony(seurat_integrated, 'orig.ident')
+    seurat_integrated <- RunUMAP(seurat_integrated, dims = 1:20, reduction = 'harmony')
+    seurat_integrated <- FindNeighbors(seurat_integrated, dims = 1:20, reduction = 'harmony')
+    seurat_integrated <- FindClusters(seurat_integrated, resolution = seq(from = 0.4,by = 0.2, length = 3))
+
+#### 直接把celltype信息赋值给Idents #### 
+    Idents(seurat_integrated) <- seurat_integrated$celltype
+
+#### 画图UMAP ####
+    p1 <- DimPlot(seurat_integrated,
+                  reduction = "umap", 
+                  label = T, 
+                  label.size = 3) + coord_equal(ratio = 1) 
+    
+    ggplot2::ggsave(paste0(path, "UMAP_3_Singlet.pdf"), plot = p1, 
+                    height = 5, width = 7, dpi = 300, limitsize = FALSE)
+
+#### 画图UMAP 分开样本 ####
+    p2 <- DimPlot(seurat_integrated,
+                  reduction = "umap", 
+                  label = TRUE, split.by = 'sample',
+                  label.size = 3) + coord_equal(ratio = 1) 
+    
+    ggplot2::ggsave(paste0(path, "UMAP_split3_Singlet.pdf"), plot = p2, 
+                    height = 5, width = 9, dpi = 300, limitsize = FALSE)
+
+#### 保存，以后读入这个文件进行下游分析即可 ####
+    saveRDS(seurat_integrated, paste0(path, "seurat_integrated_2.rds"))
+
+---
+## 10.画图 ####
+
+#### 统计细胞在样本之间的比例 ####
+    Cellratio <- prop.table(table(Idents(seurat_integrated), seurat_integrated$sample), margin = 2)*100 #计算各组样本不同细胞群比例
+    
+    savedata <- as.data.frame.array(table(Idents(seurat_integrated), seurat_integrated$sample))
+    # write.csv(savedata, paste0(path, 'Cellratio_celltype_count.csv'), row.names = T)
+    
+    Cellratio <- as.data.frame(Cellratio)
+    colourCount = length(unique(Cellratio$Var1))
+    
+    ggplot(Cellratio,
+           aes(x = Var2, y = Freq, fill = as.factor(Var1), label = sprintf("%.1f%%", Freq))) +
+      geom_bar(stat = "identity", colour = '#222222') +
+      geom_text(position = position_stack(vjust = 0.8), color="white") +
+      labs(x = "Sample", y = "Ratio", fill = "celltype") +
+      scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+      theme_classic() + 
+      theme(panel.border = element_rect(fill=NA, color="white", size=0.5, linetype="solid"),
+            axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) + scale_fill_manual(values = c(hue_pal()(colourCount)))
+    
+    ggplot2::ggsave(paste0(path, "Cellratio_celltype_bar.pdf"),
+                    height = 8, width = 10, dpi = 300, limitsize = FALSE)
+
+
+#### 通过FindAllMarkers去查找每个细胞群高表达的基因 ####
+    markers_label <- FindAllMarkers(seurat_integrated,
+                                    only.pos = TRUE,
+                                    min.pct = 0.25,
+                                    logfc.threshold = 0.70)
+    
+    write.csv(markers_label, paste0(path, "markers_label.csv"), row.names = F)
+    
+    # 画前10个markers genes 的DoHeatmap
+    
+    all.genes <- rownames(seurat_integrated)
+    seurat_integrated <- ScaleData(seurat_integrated, features = all.genes)
+    
+    top_10 <- as.data.frame(markers_label %>% group_by(cluster) %>%
+                              top_n(n = 10, wt = avg_log2FC))
+    
+    p <- DoHeatmap(seurat_integrated, features = top_10$gene, label = T, assay = "RNA", identity.legend = F) +
+      scale_fill_gradientn(colors = c('white', 'grey', 'firebrick3'))
+    
+    ggplot2::ggsave(paste0(path, "DoHeatmap_top10_label.pdf"), plot = p,
+                    height = 12, width = 20, dpi = 300, limitsize = FALSE)
+
+#### 统计 细胞群比例，umi比例 ####
+
+    metadata <- seurat_integrated@meta.data
+    
+    table(metadata$celltype)
+    
+    t1 <- data.frame(table(metadata$celltype))
+    colnames(t1) <- c('celltype', 'No.nuclei')
+    metadata <- merge(metadata, t1, 'celltype')
+    metadata$a1 <- metadata$nCount_RNA/1000
+    metadata$b1 <- metadata$nFeature_RNA/1000
+    
+    num = length(table(metadata$celltype))
+    
+    a1 <- ggplot(t1, aes(x = celltype, y = No.nuclei, fill = celltype)) +
+      geom_bar(stat = "identity") +
+      geom_text(aes(label = No.nuclei), vjust = -1, hjust = 0.5, color = "black") +
+      xlab("Cell Type") +
+      ylab("No.Nuclei") +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+      coord_flip() + theme_classic() + 
+      theme(axis.title.y = element_blank(),
+            axis.text.y = element_blank(),
+            legend.position = 'none'); a1
+    
+    a2 <- ggplot(metadata, aes(y = celltype, x = a1, fill = celltype)) +
+      geom_boxplot(outlier.shape = NA, color = 'black') +
+      ylab("Cell Type") +
+      xlab("No.UMIs per nuclei (x1000)") +
+      scale_fill_discrete() +
+      guides(fill = guide_legend(reverse = T)) + theme_classic() + 
+      theme(axis.title.y = element_blank(),
+            axis.text.y = element_blank(),
+            legend.position = 'none'); a2
+    
+    a3 <- ggplot(metadata, aes(y = celltype, x = b1, fill = celltype)) +
+      geom_boxplot(outlier.shape = NA, color = 'black') +
+      ylab("Cell Type") +
+      xlab("No.genes per nuclei (x1000)") +
+      scale_fill_discrete() +
+      scale_x_continuous(breaks = c(0:6))+
+      guides(fill = guide_legend(reverse = T)) + theme_classic() + 
+      theme(axis.title.y = element_blank(),
+            axis.text.y = element_blank(),
+            legend.position = 'none'); a3
+    
+    markers_cluster <- c("Nrxn3", "Gja1","Flt1","Dnah11","Ctss", "Mog", "Pdgfra")
+    
+    a4 <- Seurat::VlnPlot(seurat_integrated, split.by = 'celltype', 
+                          markers_cluster, stack=T, pt.size = 0, flip = F)+
+      ylab(NULL) +
+      guides(fill = guide_legend(reverse = T)) + 
+      scale_fill_manual(values = hue_pal()(num)); a4
+    
+    ggarrange(ggarrange(a1, a2, a3, ncol = 3),
+              a4, nrow = 2) 
+    
+    ggplot2::ggsave(paste0(path, "long_merge.pdf"),
+                    height = 8, width = 8, dpi = 300, limitsize = FALSE)
+
+#### 画基因表达丰度图 ####
+    input_gene <- c("Nrxn3", "Gja1","Flt1","Dnah11","Ctss", "Mog", "Pdgfra")
+    
+    FeaturePlot(seurat_integrated, input_gene, split.by = 'sample') & theme(legend.position = "right")
+
+#### 基因在不同细胞亚群中，样本之间的表达差异 ####
+    Seurat::VlnPlot(seurat_integrated, split.by = 'sample', group.by = 'celltype',
+                    input_gene, stack=T, pt.size = 0, flip = T)+
+      xlab(NULL) +
+      guides(fill = guide_legend(reverse = T))
+
+#### 基因在指定的细胞亚群中，样本之间的表达差异 添加p值 ####
+    subsets_cell <- subset(seurat_integrated, ident = 'Endothelial_cell')
+    
+    my_comparisons <- list(c("A_con", "B_tre"))
+    
+    ps <- ggscplot(object = subsets_cell,
+                   features = input_gene,
+                   mapping = aes(x = sample, y = value)) +
+      geom_boxplot(aes(fill = sample), outlier.colour = "grey90") +
+      facet_feature(strip.col = NULL)+
+      theme(axis.title = element_blank(),
+            axis.ticks.x = element_blank()) + 
+      ylim(0, 8) +
+      stat_summary(fun = mean, geom = "line", linetype = 2,
+                   aes(group = 0), color = "#E63863", size = 0.7) +
+      stat_compare_means(method = "t.test", # t.test
+                         comparisons = my_comparisons, 
+                         line.size = 1, 
+                         #step.increase = 0.5, 
+                         label.y = c(5,7,6))
+
+---
+## 11.找差异基因 ####
+    seurat_integrated$celltype.exp <- paste(Idents(seurat_integrated), seurat_integrated$sample, sep = "_")
+    
+    Idents(seurat_integrated) <- seurat_integrated$celltype.exp
+    
+    table(seurat_integrated@meta.data$celltype.exp)
+
+#### 制作一个contrast的list，用来做循环
+    # 定义需要进行差异表达分析的细胞类型组合
+    degmeta <- data.frame(table(seurat_integrated@meta.data$celltype.exp))
+    
+    degmeta$cluster <- str_split_fixed(degmeta$Var1, '_', n = 2)[,1]
+    
+    # 分割每个样本进行DEG
+    degmeta_ls <- lapply(split(degmeta, degmeta$cluster), function(x){ x <- x; return(x)})
+    
+    # 定义需要进行差异表达分析的细胞类型组合
+    combinations <- list()
+    
+    for(i in 1:length(degmeta_ls)){
+      combinations[[i]] <- list(c(degmeta_ls[[i]][2,1], degmeta_ls[[i]][1,1]))
+    }
+    
+    names(combinations) <- names(degmeta_ls)
+    
+    head(combinations[[1]])
+
+#### 运行以下循环
+    # 创建一个空的列表来保存结果
+    ALL <- list()
+
+    # 循环遍历每个细胞类型组合进行差异表达分析
+    for(j in 1:length(unique(seurat_integrated$celltype)) ){
+      for (i in 1:length(unique(combinations[[1]])) ) {
+        
+        # j 是 length(unique(seurat_integrated$celltype)) 个细胞亚群
+        # i 是 length(unique(combinations[[1]])) 个对比
+        
+        ident_1 <- combinations[[j]][[i]][1]
+        ident_2 <- combinations[[j]][[i]][2]
+        
+        # avg_logFC: log fold-chage of the average expression between the two groups. 
+        #            Positive values indicate that the gene is more highly expressed in the first group (前比后，高)
+        # pct.1: The percentage of cells where the gene is detected in the first group
+        # pct.2: The percentage of cells where the gene is detected in the second group
+        # p_val_adj: Adjusted p-value, based on bonferroni correction using all genes in the dataset
+        
+        # p_val：假设检验后得到的原始P值
+        # avg_logFC：两组之间平均表达差异倍数的对数值。正值表示该基因在第一组中的表达更高。
+        # pct.1：第一组中检测到表达该基因的细胞所占的百分比
+        # pct.2：第二组中检测到表达该基因的细胞所占的百分比
+        # p_val_adj：bonferroni多重检验校正后得到的校正后的P值。
+        
+        markers <- FindMarkers(
+          object = seurat_integrated, # 记得改
+          ident.1 = ident_1,
+          ident.2 = ident_2,
+          logfc.threshold = 0.25
+        )
+        
+        # 根据组合名称添加到DEG列表中
+        ALL[[paste(ident_1, ident_2, sep = "-vs-")]] <- markers
+      }
+    }
+    
+    # 这时候你可以改一下list的名字，不然名称太长，xlsx保存不了
+    names(ALL)
+    names(ALL) <- c("Astro","Endo","Epen","Micro","Neuron","Oligo","OPCs")
+    
+    ALL <- lapply(ALL, function(x){
+      x$SYMBOL <- rownames(x)
+      x <- x[order(x$avg_log2FC, decreasing = T), ]
+      return(x)
+    })
+    
+#### 提取差异基因
+    DEG <- lapply(ALL, function(x){ 
+      x <- subset(x, p_val < 0.05 & abs(avg_log2FC) >= 0.5) 
+      x <- x[order(x$avg_log2FC, decreasing = T), ]
+      return(x)
+    })
+    
+    save(ALL, DEG, file = paste0(path, "DEG_list.RData"))
+    
+    write.xlsx(DEG, file = paste0(path, "DEG_list_log_05.xlsx"))
+
+#### 差异基因火山图 ####
+    path = 'F:/R work/mmbrain/results/'
+    load(paste0(path, "DEG_list.RData"))
+    
+    ALL <- lapply(ALL, function(x){
+      x$cluster <- NA
+      x$gene <- x$SYMBOL
+      return(x)
+    })
+    
+    for (i in 1:length(ALL)) { ALL[[i]]$cluster <- names(ALL)[i] }
+    
+    data1 <- Reduce(rbind, ALL[c(seq(1, length(ALL), gap))])
+    
+    a1 <- jjVolcano(diffData = data1, pSize = 1.5, log2FC.cutoff = 0.5,
+                    tile.col = corrplot::COL2('RdBu', 15)[c(4:12)], 
+                    topGeneN = 10,aesCol = c("#bbe0f2", "#f894af"),
+                    polar = F) +
+      geom_hline(yintercept = 0.5, linetype = 'dotted') +
+      geom_hline(yintercept = -0.5, linetype = 'dotted') + NoLegend() +
+      theme(axis.text.x = element_blank(),
+            axis.title = element_blank(),
+            axis.ticks.x = element_blank())
+    
+    ggplot2::ggsave(paste0(path, "Volcano.pdf"), plot = a1,
+                    height = 12, width = 13, dpi = 300, limitsize = FALSE)
+
