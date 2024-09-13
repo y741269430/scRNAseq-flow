@@ -733,18 +733,18 @@
                     height = 8, width = 8, dpi = 300, limitsize = FALSE)
                     
 #### 画marker基因dotplot ####
-    jjDotPlot(object = seurat_integrated, 
-              id = 'celltype',
-              xtree = F,ytree = F,
-              gene = markers_cluster,
-              rescale = T,
-              aesGroName = 'sample',
-              #point.geom = F,
-              #tile.geom = T,
-              dot.col = c('white','firebrick'),
-              rescale.min = -2,
-              rescale.max = 2,
-              midpoint = 0) + coord_flip()
+    scRNAtoolVis::jjDotPlot(object = seurat_integrated, 
+                            id = 'celltype',
+                            xtree = F,ytree = F,
+                            gene = markers_cluster,
+                            rescale = T,
+                            aesGroName = 'sample',
+                            #point.geom = F,
+                            #tile.geom = T,
+                            dot.col = c('white','firebrick'),
+                            rescale.min = -2,
+                            rescale.max = 2,
+                            midpoint = 0) + coord_flip()
     
     ggplot2::ggsave(paste0(path, "jjDotPlot.pdf"), 
                     height = 6, width = 6, dpi = 300, limitsize = FALSE)
@@ -753,6 +753,18 @@
     input_gene <- c("Nrxn3", "Gja1","Flt1","Dnah11","Ctss", "Mog", "Pdgfra")
     
     FeaturePlot(seurat_integrated, input_gene, split.by = 'sample') & theme(legend.position = "right")
+
+    # 或者用这个函数美化
+    scRNAtoolVis::FeatureCornerAxes(object = seurat_integrated, 
+                                    reduction = 'umap', pSize = 0.01,
+                                    features = input_gene, groupFacet = 'sample', axes  = 'one', ) + 
+      coord_equal() +
+      theme_minimal() + 
+      scale_colour_gradientn(colours = c('grey', 'blue'))
+    
+    ggplot2::ggsave(paste0(path, "FeaturePlot.pdf"), 
+                    height = 25, width = 10, dpi = 300, limitsize = FALSE)
+                
 
 #### 基因在不同细胞亚群中，样本之间的表达差异 ####
     Seurat::VlnPlot(seurat_integrated, split.by = 'sample', group.by = 'celltype',
