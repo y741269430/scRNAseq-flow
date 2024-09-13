@@ -18,6 +18,7 @@
     library(MySeuratWrappers)
     library(ggsci)
     library(data.table)
+    library(scRNAtoolVis)
 
 ---
 ## 1.前期准备工作 ####
