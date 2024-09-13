@@ -889,10 +889,11 @@
     names_down <- character()
     
     for (i in 1:length(DEG)) {names_up <- c(names_up, paste0('UP ', names(DEG)[i]))}
-    
     for (i in 1:length(DEG)) {names_down <- c(names_down, paste0('DOWN ', names(DEG)[i]))}
     
     names(rna) <- c(names_up, names_down)
+
+    rna <- lapply(rna, function(x){x <- x$SYMBOL})
 
 ### 差异表达基因不分开上下调 #### 
     rna <- lapply(DEG, function(x){x <- x$SYMBOL})
