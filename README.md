@@ -879,3 +879,32 @@
     ggplot2::ggsave(paste0(path, "Volcano.pdf"), plot = a1,
                     height = 12, width = 13, dpi = 300, limitsize = FALSE)
 
+---
+## 12.GO 富集分析 ####
+### 差异表达基因分开上下调 #### 
+    rna <- c(lapply(DEG, function(x){x <- x[x$avg_log2FC > 0,]}),
+              lapply(DEG, function(x){x <- x[x$avg_log2FC < 0,]}))
+    
+    names_up <- character()
+    names_down <- character()
+    
+    for (i in 1:length(DEG)) {names_up <- c(names_up, paste0('UP ', names(DEG)[i]))}
+    
+    for (i in 1:length(DEG)) {names_down <- c(names_down, paste0('DOWN ', names(DEG)[i]))}
+    
+    names(rna) <- c(names_up, names_down)
+
+### 差异表达基因不分开上下调 #### 
+    rna <- lapply(DEG, function(x){x <- x$SYMBOL})
+
+### GO #### 
+    BP <- clusterProfiler::compareCluster(rna, fun = "enrichGO", ont = "BP", 
+                                          OrgDb = org.Mm.eg.db, keyType = 'SYMBOL', readable = T)
+    
+    CC <- clusterProfiler::compareCluster(rna, fun = "enrichGO", ont = "CC", 
+                                          OrgDb = org.Mm.eg.db, keyType = 'SYMBOL', readable = T)
+    
+    MF <- clusterProfiler::compareCluster(rna, fun = "enrichGO", ont = "MF", 
+                                          OrgDb = org.Mm.eg.db, keyType = 'SYMBOL', readable = T)
+    
+    save(BP, CC, MF, file = paste0(path, "DEG_GO.RData"))
