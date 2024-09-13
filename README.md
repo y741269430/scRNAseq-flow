@@ -766,7 +766,7 @@
                          label.y = c(5,7,6))
 
 ---
-## 11.找差异基因 ####
+## 11.差异表达分析 ####
     seurat_integrated$celltype.exp <- paste(Idents(seurat_integrated), seurat_integrated$sample, sep = "_")
     
     Idents(seurat_integrated) <- seurat_integrated$celltype.exp
