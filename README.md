@@ -71,6 +71,7 @@
 ---
 ## 2.进行质控（这里绘制的是线粒体基因，红细胞基因，核糖体基因的小提琴图） ####
 
+#### 检索规则 ####
     # 查看线粒体基因
     rownames(seurat_objects[[1]]@assays$RNA)[grep('^mt-', rownames(seurat_objects[[1]]@assays$RNA))]
     # 查看红细胞基因
@@ -81,6 +82,8 @@
     # 以下是红细胞的基因list，可以人为补充进去，作为筛选
     Hb.genes_total <- c("Hbb-bt","Hbb-bs","Hba-a3","Hba-a2","Hba-a1",
                         "Hba-a2.1","Alas2","Tent5c","Fech","Bpgm")
+                        
+#### 作图 ####                    
     Hb.genes <- list()
     plot <- list()
     for (i in 1:length(seurat_objects)){
@@ -120,7 +123,7 @@
     ggplot2::ggsave(paste0(path, "QC_VlnPlot_five.pdf"), plot = p, 
                     height = 8, width = 13, dpi = 300, limitsize = FALSE)
 
-    # 复制并添加3列到metadata，用来画图的
+#### 复制并添加3列到metadata，用来画图的 #### 
     # UMI（或 nCount_RNA）表示每个基因的转录本数量
     # nFeature表示检测到的基因数量（即细胞中有多少基因表达）
 
@@ -371,7 +374,7 @@
     
     Idents(seurat_integrated) <- seurat_integrated$RNA_snn_res.0.4
     
-    #### 画图UMAP ####
+#### 画图UMAP ####
     p1 <- DimPlot(seurat_integrated,
                   reduction = "umap", 
                   label = T, 
@@ -380,7 +383,7 @@
     ggplot2::ggsave(paste0(path, "UMAP_1.pdf"), plot = p1, 
                     height = 5, width = 7, dpi = 300, limitsize = FALSE)
     
-    #### 画图UMAP 分开样本 ####
+#### 画图UMAP 分开样本 ####
     p2 <- DimPlot(seurat_integrated,
                   reduction = "umap", 
                   label = TRUE, split.by = 'sample',
@@ -438,7 +441,7 @@
     
     Idents(seurat_integrated)
     
-    # 把细胞填入以下的Idents中（这里面是我瞎填的，仅供教学使用）
+#### 把细胞填入以下的Idents中（这里面是我瞎填的，仅供教学使用）
     seurat_integrated <- RenameIdents(seurat_integrated,
                                       "0" = "Neuron",
                                       "1" = "Astrocyte",
@@ -461,7 +464,8 @@
                                       "18" = "Neuron",
                                       "19" = "Oligodendrocyte",
                                       "20" = "Ependymal_cell")
-    
+                                      
+#### 修改metadata ####                                   
     # 将这个Idents赋值给celltype
     seurat_integrated$celltype <- Idents(seurat_integrated)
     
@@ -477,7 +481,7 @@
     seurat_integrated$sample <- factor(seurat_integrated$sample,
                                        levels=c("A_con", "B_tre"))
 
-    #### 第二次画图UMAP ####
+#### 第二次画图UMAP ####
     p1 <- DimPlot(seurat_integrated,
                   reduction = "umap", 
                   label = T, 
@@ -486,7 +490,7 @@
     ggplot2::ggsave(paste0(path, "UMAP_2.pdf"), plot = p1, 
                     height = 5, width = 7, dpi = 300, limitsize = FALSE)
     
-    #### 画图UMAP 分开样本 ####
+#### 画图UMAP 分开样本 ####
     p2 <- DimPlot(seurat_integrated,
                   reduction = "umap", 
                   label = TRUE, split.by = 'sample',
@@ -535,7 +539,7 @@
 
     # 这里面DoubleRate 计算出了0.169784的双细胞，也就是说，它要删去你16%的细胞OMG
     DoubletRate = ncol(input_seurat)*8*1e-6; DoubletRate # 按每增加1000个细胞，双细胞比率增加千分之8来计算
-    DoubletRate = DoubletRate/5 # 但是因为去除双细胞去得太多了，我就人为地把这个值，再除了10，即去除2.9%的细胞
+    DoubletRate = DoubletRate/5 # 但是因为去除双细胞去得太多了，我就人为地把这个值，再除了5，即去除8%的细胞
  
     # 估计双细胞比例，根据细胞亚群数量与DoubletRate进行计算。
     nExp_poi <- round(DoubletRate*length(input_seurat$celltype)); nExp_poi  # 721 #最好提供celltype，而不是seurat_clusters。
