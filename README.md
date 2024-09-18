@@ -98,193 +98,198 @@ head(rownames(seurat_objects[[1]]@assays$RNA))
 ## 2.进行质控（这里绘制的是线粒体基因，红细胞基因，核糖体基因的小提琴图） ####
 
 #### 检索规则 ####
-    # 查看线粒体基因
-    rownames(seurat_objects[[1]]@assays$RNA)[grep('^mt-', rownames(seurat_objects[[1]]@assays$RNA))]
-    # 查看红细胞基因
-    rownames(seurat_objects[[1]]@assays$RNA)[grep('^Hba-', rownames(seurat_objects[[1]]@assays$RNA))]
-    # 查看核糖体基因
-    rownames(seurat_objects[[1]]@assays$RNA)[grep('^Rp[sl]', rownames(seurat_objects[[1]]@assays$RNA))]
-    
-    # 以下是红细胞的基因list，可以人为补充进去，作为筛选
-    Hb.genes_total <- c("Hbb-bt","Hbb-bs","Hba-a3","Hba-a2","Hba-a1",
-                        "Hba-a2.1","Alas2","Tent5c","Fech","Bpgm")
-                        
-#### 作图 ####                    
-    Hb.genes <- list()
-    plot <- list()
-    for (i in 1:length(seurat_objects)){
-      # 将每个细胞每个UMI的基因数目添加到metadata中
-      seurat_objects[[i]]$log10GenesPerUMI <- log10(seurat_objects[[i]]$nFeature_RNA) / log10(seurat_objects[[i]]$nCount_RNA)
-      
-      # 计算线粒体基因比率
-      seurat_objects[[i]]$mitoRatio <- PercentageFeatureSet(object = seurat_objects[[i]], pattern = "^mt-")
-      seurat_objects[[i]]$mitoRatio <- seurat_objects[[i]]@meta.data$mitoRatio / 100
-      
-      # 计算红细胞基因比率
-      Hb.genes[[i]] <- rownames(seurat_objects[[i]]@assays$RNA)[match(Hb.genes_total, 
-                                                                      rownames(seurat_objects[[i]]@assays$RNA))]
-      Hb.genes[[i]] <- Hb.genes[[i]][!is.na(Hb.genes[[i]])]
-      
-      seurat_objects[[i]]$percent.Hb <- PercentageFeatureSet(seurat_objects[[i]], features = Hb.genes[[i]])
-      
-      # 计算核糖体基因比率
-      seurat_objects[[i]]$percent.ribo <- PercentageFeatureSet(object = seurat_objects[[i]], pattern = "^Rp[sl]")
-      seurat_objects[[i]]$percent.ribo <- seurat_objects[[i]]@meta.data$percent.ribo
-      
-      # 为metadata添加细胞ID
-      seurat_objects[[i]]@meta.data$cells <- rownames(seurat_objects[[i]]@meta.data)
-      
-      # 画图，设置cutoff
-      a1 <- VlnPlot(seurat_objects[[i]], features = c("nFeature_RNA"), pt.size = 0) + NoLegend()
-      a2 <- VlnPlot(seurat_objects[[i]], features = c("nCount_RNA"), pt.size = 0) + NoLegend()
-      a3 <- VlnPlot(seurat_objects[[i]], features = c("mitoRatio"), pt.size = 0) + NoLegend()
-      a4 <- VlnPlot(seurat_objects[[i]], features = c("percent.Hb"), pt.size = 0) + NoLegend()
-      a5 <- VlnPlot(seurat_objects[[i]], features = c("percent.ribo"), pt.size = 0) + NoLegend()
-      
-      plot[[i]] <- plot_grid(a1, a2, a3, a4, a5, align = "v", nrow = 1)
-    }
-    
-    p <- plot_grid(plotlist = plot, align = "v", ncol = 1)
-    
-    ggplot2::ggsave(paste0(path, "QC_VlnPlot_five.pdf"), plot = p, 
-                    height = 8, width = 13, dpi = 300, limitsize = FALSE)
+```r
+# 查看线粒体基因
+rownames(seurat_objects[[1]]@assays$RNA)[grep('^mt-', rownames(seurat_objects[[1]]@assays$RNA))]
+# 查看红细胞基因
+rownames(seurat_objects[[1]]@assays$RNA)[grep('^Hba-', rownames(seurat_objects[[1]]@assays$RNA))]
+# 查看核糖体基因
+rownames(seurat_objects[[1]]@assays$RNA)[grep('^Rp[sl]', rownames(seurat_objects[[1]]@assays$RNA))]
 
+# 以下是红细胞的基因list，可以人为补充进去，作为筛选
+Hb.genes_total <- c("Hbb-bt","Hbb-bs","Hba-a3","Hba-a2","Hba-a1",
+                    "Hba-a2.1","Alas2","Tent5c","Fech","Bpgm")
+```                
+#### 作图 ####    
+```r
+Hb.genes <- list()
+plot <- list()
+for (i in 1:length(seurat_objects)){
+  # 将每个细胞每个UMI的基因数目添加到metadata中
+  seurat_objects[[i]]$log10GenesPerUMI <- log10(seurat_objects[[i]]$nFeature_RNA) / log10(seurat_objects[[i]]$nCount_RNA)
+  
+  # 计算线粒体基因比率
+  seurat_objects[[i]]$mitoRatio <- PercentageFeatureSet(object = seurat_objects[[i]], pattern = "^mt-")
+  seurat_objects[[i]]$mitoRatio <- seurat_objects[[i]]@meta.data$mitoRatio / 100
+  
+  # 计算红细胞基因比率
+  Hb.genes[[i]] <- rownames(seurat_objects[[i]]@assays$RNA)[match(Hb.genes_total, 
+                                                                  rownames(seurat_objects[[i]]@assays$RNA))]
+  Hb.genes[[i]] <- Hb.genes[[i]][!is.na(Hb.genes[[i]])]
+  
+  seurat_objects[[i]]$percent.Hb <- PercentageFeatureSet(seurat_objects[[i]], features = Hb.genes[[i]])
+  
+  # 计算核糖体基因比率
+  seurat_objects[[i]]$percent.ribo <- PercentageFeatureSet(object = seurat_objects[[i]], pattern = "^Rp[sl]")
+  seurat_objects[[i]]$percent.ribo <- seurat_objects[[i]]@meta.data$percent.ribo
+  
+  # 为metadata添加细胞ID
+  seurat_objects[[i]]@meta.data$cells <- rownames(seurat_objects[[i]]@meta.data)
+  
+  # 画图，设置cutoff
+  a1 <- VlnPlot(seurat_objects[[i]], features = c("nFeature_RNA"), pt.size = 0) + NoLegend()
+  a2 <- VlnPlot(seurat_objects[[i]], features = c("nCount_RNA"), pt.size = 0) + NoLegend()
+  a3 <- VlnPlot(seurat_objects[[i]], features = c("mitoRatio"), pt.size = 0) + NoLegend()
+  a4 <- VlnPlot(seurat_objects[[i]], features = c("percent.Hb"), pt.size = 0) + NoLegend()
+  a5 <- VlnPlot(seurat_objects[[i]], features = c("percent.ribo"), pt.size = 0) + NoLegend()
+  
+  plot[[i]] <- plot_grid(a1, a2, a3, a4, a5, align = "v", nrow = 1)
+}
+
+p <- plot_grid(plotlist = plot, align = "v", ncol = 1)
+
+ggplot2::ggsave(paste0(path, "QC_VlnPlot_five.pdf"), plot = p, 
+                height = 8, width = 13, dpi = 300, limitsize = FALSE)
+```
 #### 复制并添加3列到metadata，用来画图的 #### 
-    # UMI（或 nCount_RNA）表示每个基因的转录本数量
-    # nFeature表示检测到的基因数量（即细胞中有多少基因表达）
+```r
+# UMI（或 nCount_RNA）表示每个基因的转录本数量
+# nFeature表示检测到的基因数量（即细胞中有多少基因表达）
 
-    seurat_objects <- lapply(seurat_objects, function(x){
-      x@meta.data$sample <- x@meta.data$orig.ident
-      x@meta.data$nUMI <- x@meta.data$nCount_RNA
-      x@meta.data$nGene <- x@meta.data$nFeature_RNA
-      return(x)
-    })
-    
-    # 取出未过滤之前的metadata，用来画图的
-    metadata0 <- lapply(seurat_objects, function(x){
-      x <- x@meta.data
-      return(x)
-    })
-    metadata <- Reduce(rbind, metadata0)
-    
-    table(metadata$sample)
+seurat_objects <- lapply(seurat_objects, function(x){
+  x@meta.data$sample <- x@meta.data$orig.ident
+  x@meta.data$nUMI <- x@meta.data$nCount_RNA
+  x@meta.data$nGene <- x@meta.data$nFeature_RNA
+  return(x)
+})
 
-    # 可以把未过滤之前的数据保存一下，反正我是不存的。（可选）
-    # saveRDS(seurat_objects, paste0(path, "seurat_objects.rds"))
+# 取出未过滤之前的metadata，用来画图的
+metadata0 <- lapply(seurat_objects, function(x){
+  x <- x@meta.data
+  return(x)
+})
+metadata <- Reduce(rbind, metadata0)
 
+table(metadata$sample)
+
+# # 可以把未过滤之前的数据保存一下，反正我是不存的。（可选）
+# saveRDS(seurat_objects, paste0(path, "seurat_objects.rds"))
+```
 ---
 ## 3.评估质量指标 ####
 ### 图1 
-    # 细胞计数 (Cell counts per sample)
-    # 可视化每个样本的细胞计数
-    before <- metadata %>%
-      ggplot(aes(x = sample, fill = sample)) +
-      geom_bar(position = "dodge", show.legend = TRUE) +
-      geom_text(stat = 'count', aes(label = after_stat(count)), position = position_dodge(0.9), vjust = -0.1) +
-      theme_classic() +
-      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
-      theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
-      ggtitle("Cell counts per sample")
-    
-    # 每个细胞的UMI计数 (UMI counts per cell)
-    # 可视化每个细胞的UMI计数
-    a1 <- metadata %>% 
-      ggplot(aes(color = sample, x = nUMI, fill = sample)) + 
-      geom_density(alpha = 0.2) + 
-      scale_x_log10(breaks = c(500, 1000, 5000, 10000, 20000)) + 
-      theme_classic() +
-      xlab("nUMI") +
-      ylab("Cell density") +
-      geom_vline(xintercept = c(500, 1000, 5000, 10000, 20000), linetype = 'dotted') +
-      ggtitle("UMI counts per cell")
-    
-    # 复杂度 (Complexity)
-    # 通过可视化基因数与UMI的比率（log10基因数/UMI）来表示基因表达的整体复杂性
-    a2 <- metadata %>%
-      ggplot(aes(x=log10GenesPerUMI, color = sample, fill = sample)) +
-      geom_density(alpha = 0.2) +
-      theme_classic() +
-      geom_vline(xintercept = c(0.8, 0.85, 0.9, 0.95), linetype = 'dotted') +
-      ggtitle("Complexity")
-    
-    # 每个细胞检测到的基因数分布
-    a3 <- metadata %>% 
-      ggplot(aes(color=sample, x=nFeature_RNA, fill = sample)) + 
-      geom_density(alpha = 0.2) + 
-      theme_classic() +
-      scale_x_log10(breaks = c(500, 1000, 2500, 5000, 10000)) + 
-      geom_vline(xintercept = c(500, 1000, 2500, 5000, 10000), linetype = 'dotted') +
-      ggtitle("Genes per cell")
-    
-    # 每个细胞检测到的基因数量的分布（箱线图）
-    a4 <- metadata %>% 
-      ggplot(aes(x=sample, y=log10(nFeature_RNA), fill=sample)) + 
-      geom_boxplot() + 
-      theme_classic() +
-      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-      theme(plot.title = element_text(hjust=0.5, face="bold")) +
-      ggtitle("Genes detected per cell across samples")
-    
-    p <- plot_grid(a1, a2, a3, a4, align = "v", nrow = 2)
-    
-    ggplot2::ggsave(paste0(path, "QC_four.pdf"), plot = p, 
-                    height = 8, width = 12, dpi = 300, limitsize = FALSE)
-    
-### 图2    
-    # 线粒体基因计数占比 (Mitochondrial counts ratio)
-    # 可视化每个细胞检测到的线粒体基因表达分布
-    a1 <- metadata %>% 
-      ggplot(aes(color=sample, x=mitoRatio, fill=sample)) + 
-      geom_density(alpha = 0.25) + 
-      theme_classic() +
-      scale_x_log10(breaks = c(0.001, 0.01, 0.1, 0.3)) + 
-      geom_vline(xintercept = c(0.001, 0.01, 0.1, 0.3), linetype = 'dotted') +
-      ggtitle("Mitochondrial counts ratio")
-    
-    # 红细胞基因计数占比 (HB counts ratio)
-    # 可视化每个细胞检测到的红细胞基因表达分布
-    a2 <- metadata %>% 
-      ggplot(aes(color=sample, x=percent.Hb, fill=sample)) + 
-      geom_density(alpha = 0.25) + 
-      theme_classic() +
-      scale_x_log10(breaks = c(0.001, 0.01, 0.1, 0.5)) + 
-      geom_vline(xintercept = c(0.001, 0.01, 0.1, 0.5), linetype = 'dotted') +
-      ggtitle("Hb counts ratio")
-    
-    # 核糖体基因计数占比 (RB counts ratio)
-    # 可视化每个细胞检测到的核糖体基因表达分布
-    a3 <- metadata %>% 
-      ggplot(aes(color=sample, x=percent.ribo, fill=sample)) + 
-      geom_density(alpha = 0.25) + 
-      theme_classic() +
-      scale_x_log10(breaks = c(0.1, 1, 10)) + 
-      geom_vline(xintercept = c(0.1, 1, 10), linetype = 'dotted') +
-      ggtitle("Ribosome counts ratio")
-    
-    p <- plot_grid(a1, a2, a3, align = "v", nrow = 1)
-    
-    ggplot2::ggsave(paste0(path, "QC_Geom_density_three.pdf"), plot = p, 
-                    height = 3, width = 15, dpi = 300, limitsize = FALSE)
-    
-    # 检测到的UMI数对比基因数 (UMIs vs. genes detected)
-    # 可视化每个细胞中检测到的基因数（nFeature_RNA）与UMI数（nCount_RNA）之间的关系，
-    # 颜色代表线粒体基因计数占比（mitoRatio），并观察是否存在大量低基因数或低UMI数的细胞。
-    
-    p <- metadata %>% 
-      ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=mitoRatio)) + 
-      geom_point() + 
-      scale_colour_gradient(low = "gray90", high = "black") +
-      stat_smooth(method=lm) +
-      scale_x_log10() + 
-      scale_y_log10() + 
-      theme_classic() +
-      geom_vline(xintercept = 500) +
-      geom_hline(yintercept = 250) +
-      facet_wrap(~sample)
-    
-    ggplot2::ggsave(paste0(path, "QC_UMIs_vs_genes_detected.pdf"), plot = p, 
-                    height = 8, width = 8, dpi = 300, limitsize = FALSE)
+```r
+# 细胞计数 (Cell counts per sample)
+# 可视化每个样本的细胞计数
+before <- metadata %>%
+  ggplot(aes(x = sample, fill = sample)) +
+  geom_bar(position = "dodge", show.legend = TRUE) +
+  geom_text(stat = 'count', aes(label = after_stat(count)), position = position_dodge(0.9), vjust = -0.1) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
+  ggtitle("Cell counts per sample")
 
+# 每个细胞的UMI计数 (UMI counts per cell)
+# 可视化每个细胞的UMI计数
+a1 <- metadata %>% 
+  ggplot(aes(color = sample, x = nUMI, fill = sample)) + 
+  geom_density(alpha = 0.2) + 
+  scale_x_log10(breaks = c(500, 1000, 5000, 10000, 20000)) + 
+  theme_classic() +
+  xlab("nUMI") +
+  ylab("Cell density") +
+  geom_vline(xintercept = c(500, 1000, 5000, 10000, 20000), linetype = 'dotted') +
+  ggtitle("UMI counts per cell")
+
+# 复杂度 (Complexity)
+# 通过可视化基因数与UMI的比率（log10基因数/UMI）来表示基因表达的整体复杂性
+a2 <- metadata %>%
+  ggplot(aes(x=log10GenesPerUMI, color = sample, fill = sample)) +
+  geom_density(alpha = 0.2) +
+  theme_classic() +
+  geom_vline(xintercept = c(0.8, 0.85, 0.9, 0.95), linetype = 'dotted') +
+  ggtitle("Complexity")
+
+# 每个细胞检测到的基因数分布
+a3 <- metadata %>% 
+  ggplot(aes(color=sample, x=nFeature_RNA, fill = sample)) + 
+  geom_density(alpha = 0.2) + 
+  theme_classic() +
+  scale_x_log10(breaks = c(500, 1000, 2500, 5000, 10000)) + 
+  geom_vline(xintercept = c(500, 1000, 2500, 5000, 10000), linetype = 'dotted') +
+  ggtitle("Genes per cell")
+
+# 每个细胞检测到的基因数量的分布（箱线图）
+a4 <- metadata %>% 
+  ggplot(aes(x=sample, y=log10(nFeature_RNA), fill=sample)) + 
+  geom_boxplot() + 
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  theme(plot.title = element_text(hjust=0.5, face="bold")) +
+  ggtitle("Genes detected per cell across samples")
+
+p <- plot_grid(a1, a2, a3, a4, align = "v", nrow = 2)
+
+ggplot2::ggsave(paste0(path, "QC_four.pdf"), plot = p, 
+                height = 8, width = 12, dpi = 300, limitsize = FALSE)
+``` 
+### 图2    
+```r
+# 线粒体基因计数占比 (Mitochondrial counts ratio)
+# 可视化每个细胞检测到的线粒体基因表达分布
+a1 <- metadata %>% 
+  ggplot(aes(color=sample, x=mitoRatio, fill=sample)) + 
+  geom_density(alpha = 0.25) + 
+  theme_classic() +
+  scale_x_log10(breaks = c(0.001, 0.01, 0.1, 0.3)) + 
+  geom_vline(xintercept = c(0.001, 0.01, 0.1, 0.3), linetype = 'dotted') +
+  ggtitle("Mitochondrial counts ratio")
+
+# 红细胞基因计数占比 (HB counts ratio)
+# 可视化每个细胞检测到的红细胞基因表达分布
+a2 <- metadata %>% 
+  ggplot(aes(color=sample, x=percent.Hb, fill=sample)) + 
+  geom_density(alpha = 0.25) + 
+  theme_classic() +
+  scale_x_log10(breaks = c(0.001, 0.01, 0.1, 0.5)) + 
+  geom_vline(xintercept = c(0.001, 0.01, 0.1, 0.5), linetype = 'dotted') +
+  ggtitle("Hb counts ratio")
+
+# 核糖体基因计数占比 (RB counts ratio)
+# 可视化每个细胞检测到的核糖体基因表达分布
+a3 <- metadata %>% 
+  ggplot(aes(color=sample, x=percent.ribo, fill=sample)) + 
+  geom_density(alpha = 0.25) + 
+  theme_classic() +
+  scale_x_log10(breaks = c(0.1, 1, 10)) + 
+  geom_vline(xintercept = c(0.1, 1, 10), linetype = 'dotted') +
+  ggtitle("Ribosome counts ratio")
+
+p <- plot_grid(a1, a2, a3, align = "v", nrow = 1)
+
+ggplot2::ggsave(paste0(path, "QC_Geom_density_three.pdf"), plot = p, 
+                height = 3, width = 15, dpi = 300, limitsize = FALSE)
+
+# 检测到的UMI数对比基因数 (UMIs vs. genes detected)
+# 可视化每个细胞中检测到的基因数（nFeature_RNA）与UMI数（nCount_RNA）之间的关系，
+# 颜色代表线粒体基因计数占比（mitoRatio），并观察是否存在大量低基因数或低UMI数的细胞。
+
+p <- metadata %>% 
+  ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=mitoRatio)) + 
+  geom_point() + 
+  scale_colour_gradient(low = "gray90", high = "black") +
+  stat_smooth(method=lm) +
+  scale_x_log10() + 
+  scale_y_log10() + 
+  theme_classic() +
+  geom_vline(xintercept = 500) +
+  geom_hline(yintercept = 250) +
+  facet_wrap(~sample)
+
+ggplot2::ggsave(paste0(path, "QC_UMIs_vs_genes_detected.pdf"), plot = p, 
+                height = 8, width = 8, dpi = 300, limitsize = FALSE)
+``` 
 ---
 ## 4.筛选 ####
 
