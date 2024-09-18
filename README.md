@@ -547,145 +547,158 @@ gc()
 ## 8.拆分样本，进行双细胞去除 ####
 
 #### 设置工作路径 ####
-    readpath = 'F:/R work/mmbrain/'
-    path = 'F:/R work/mmbrain/results/'
-    
+```r
+readpath = 'F:/R work/mmbrain/'
+path = 'F:/R work/mmbrain/results/'
+```
 #### 去除双细胞 ####
-    seurat_integrated <- readRDS(paste0(path, "seurat_integrated.rds"))
-    
-    # 根据样本进行拆分
-    seurat_split <- SplitObject(seurat_integrated, split.by = "sample")
-    
-    # 这时候你可以把seurat_integrated清理掉，释放内存
-    rm(seurat_integrated); gc()
-    
+```r
+seurat_integrated <- readRDS(paste0(path, "seurat_integrated.rds"))
+
+# 根据样本进行拆分
+seurat_split <- SplitObject(seurat_integrated, split.by = "sample")
+
+# 这时候你可以把seurat_integrated清理掉，释放内存
+rm(seurat_integrated); gc()
+```    
 #### 这里我对第一个样本进行双细胞去除（一共两个样本）。耗时大概20分钟一个样本吧，内存消耗不大（剩下另外一个样本，也要重复这个工作，记得把名称改了不然会覆盖掉）
-    input_seurat <- seurat_split[[1]]
-
+```r
+input_seurat <- seurat_split[[1]]
+```
 #### 继续往下跑，跑完第一个跑第二个 #### 
-    seurat_1 <- paramSweep_v3(input_seurat, PCs = 1:10, sct = FALSE)
-    seurat_2 <- summarizeSweep(seurat_1, GT = F)
-    seurat_3 <- find.pK(seurat_2)
-    
-    # 这里面mpK的值，我一般会保存在注释里面
-    mpK <- as.numeric(as.vector(seurat_3$pK[which.max(seurat_3$BCmetric)])); mpK # mpK = 0.005
-  
-    annotations <- input_seurat$celltype
-    homotypic.prop <- modelHomotypic(annotations); homotypic.prop
+```r
+seurat_1 <- paramSweep_v3(input_seurat, PCs = 1:10, sct = FALSE)
+seurat_2 <- summarizeSweep(seurat_1, GT = F)
+seurat_3 <- find.pK(seurat_2)
 
-    # 这里面DoubleRate 计算出了0.169784的双细胞，也就是说，它要删去你16%的细胞OMG
-    DoubletRate = ncol(input_seurat)*8*1e-6; DoubletRate # 按每增加1000个细胞，双细胞比率增加千分之8来计算
-    DoubletRate = DoubletRate/5 # 但是因为去除双细胞去得太多了，我就人为地把这个值，再除了5，即去除8%的细胞
- 
-    # 估计双细胞比例，根据细胞亚群数量与DoubletRate进行计算。
-    nExp_poi <- round(DoubletRate*length(input_seurat$celltype)); nExp_poi  # 721 #最好提供celltype，而不是seurat_clusters。
-    
-    # 估计同源双细胞比例，根据modelHomotypic()中的参数人为混合双细胞。
-    nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop)); nExp_poi.adj # 474
-    
-    gc() # 清缓存
-    seurat_singlet <- doubletFinder_v3(input_seurat, PCs = 1:10, pN = 0.25, 
-                                       pK = mpK, nExp = nExp_poi.adj, reuse.pANN = F, sct = F)
-    gc() # 再清缓存
-    
-    # 查看以下列名
-    colnames(seurat_singlet@meta.data)
-    
-    # 选择最后一列
-    seurat_singlet$DF_hi.lo <- seurat_singlet$DF.classifications_0.25_0.005_474
-    
-    table(seurat_singlet$DF_hi.lo)
-    
-    b1 <- DimPlot(seurat_singlet, reduction = 'umap', group.by ="DF_hi.lo") + coord_equal(ratio = 1) 
-    
+# 这里面mpK的值，我一般会保存在注释里面
+mpK <- as.numeric(as.vector(seurat_3$pK[which.max(seurat_3$BCmetric)])); mpK # mpK = 0.005
+
+annotations <- input_seurat$celltype
+homotypic.prop <- modelHomotypic(annotations); homotypic.prop
+
+# 这里面DoubleRate 计算出了0.169784的双细胞，也就是说，它要删去你16%的细胞OMG
+DoubletRate = ncol(input_seurat)*8*1e-6; DoubletRate # 按每增加1000个细胞，双细胞比率增加千分之8来计算
+DoubletRate = DoubletRate/5 # 但是因为去除双细胞去得太多了，我就人为地把这个值，再除了5，即去除8%的细胞
+
+# 估计双细胞比例，根据细胞亚群数量与DoubletRate进行计算。
+nExp_poi <- round(DoubletRate*length(input_seurat$celltype)); nExp_poi  # 721 #最好提供celltype，而不是seurat_clusters。
+
+# 估计同源双细胞比例，根据modelHomotypic()中的参数人为混合双细胞。
+nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop)); nExp_poi.adj # 474
+
+gc() # 清缓存
+seurat_singlet <- doubletFinder_v3(input_seurat, PCs = 1:10, pN = 0.25, 
+                                   pK = mpK, nExp = nExp_poi.adj, reuse.pANN = F, sct = F)
+gc() # 再清缓存
+
+# 查看以下列名
+colnames(seurat_singlet@meta.data)
+
+# 选择最后一列
+seurat_singlet$DF_hi.lo <- seurat_singlet$DF.classifications_0.25_0.005_474
+
+table(seurat_singlet$DF_hi.lo)
+
+b1 <- DimPlot(seurat_singlet, reduction = 'umap', group.by ="DF_hi.lo") + coord_equal(ratio = 1) 
+```
 #### 保存文件的时候切记不要覆盖旧文件 #### 
-    ggplot2::ggsave(paste0(path, "UMAP_seurat_sample_1.pdf"), plot = b1,
-                    height = 5, width = 7, dpi = 300, limitsize = FALSE)
-    
-    saveRDS(seurat_singlet, paste0(path, "seurat_sample_1.rds"))
+```r
+ggplot2::ggsave(paste0(path, "UMAP_seurat_sample_1.pdf"), plot = b1,
+                height = 5, width = 7, dpi = 300, limitsize = FALSE)
 
+saveRDS(seurat_singlet, paste0(path, "seurat_sample_1.rds"))
+```
 ---
 ## 9.合并样本 ####
 
 #### 设置工作路径 ####
-    readpath = 'F:/R work/mmbrain/'
-    path = 'F:/R work/mmbrain/results/'
-
+```r
+readpath = 'F:/R work/mmbrain/'
+path = 'F:/R work/mmbrain/results/'
+```
 #### 读取两个样本 #### 
-    seurat_sample_1 <- readRDS(paste0(path, "seurat_sample_1.rds"))
-    seurat_sample_2 <- readRDS(paste0(path, "seurat_sample_2.rds"))
-    
-    table(seurat_sample_1$DF_hi.lo)
-    Idents(seurat_sample_1) <- seurat_sample_1$DF_hi.lo
-    seurat_sample_1 <- subset(seurat_sample_1, idents = 'Singlet')
-    
-    table(seurat_sample_2$DF_hi.lo)
-    Idents(seurat_sample_2) <- seurat_sample_2$DF_hi.lo
-    seurat_sample_2 <- subset(seurat_sample_2, idents = 'Singlet')
+```r
+seurat_sample_1 <- readRDS(paste0(path, "seurat_sample_1.rds"))
+seurat_sample_2 <- readRDS(paste0(path, "seurat_sample_2.rds"))
 
+table(seurat_sample_1$DF_hi.lo)
+Idents(seurat_sample_1) <- seurat_sample_1$DF_hi.lo
+seurat_sample_1 <- subset(seurat_sample_1, idents = 'Singlet')
 
+table(seurat_sample_2$DF_hi.lo)
+Idents(seurat_sample_2) <- seurat_sample_2$DF_hi.lo
+seurat_sample_2 <- subset(seurat_sample_2, idents = 'Singlet')
+```
 #### 合并两个样本 #### 
-    seurat_integrated <- merge(seurat_sample_1, y = c(seurat_sample_2))
-
+```r
+seurat_integrated <- merge(seurat_sample_1, y = c(seurat_sample_2))
+```
 #### 合并完，又做一遍整合分析的流程 #### 
-    seurat_integrated <- Seurat::NormalizeData(seurat_integrated, verbose = FALSE, normalization.method = 'LogNormalize')
-    seurat_integrated <- FindVariableFeatures(seurat_integrated, selection.method = "vst", nfeatures = 2000)
-    seurat_integrated <- ScaleData(seurat_integrated) 
-    seurat_integrated <- RunPCA(seurat_integrated, features = VariableFeatures(seurat_integrated))
-    seurat_integrated <- RunHarmony(seurat_integrated, 'orig.ident')
-    seurat_integrated <- RunUMAP(seurat_integrated, dims = 1:20, reduction = 'harmony')
-    seurat_integrated <- FindNeighbors(seurat_integrated, dims = 1:20, reduction = 'harmony')
-    seurat_integrated <- FindClusters(seurat_integrated, resolution = seq(from = 0.4,by = 0.2, length = 3))
-
+```r
+seurat_integrated <- Seurat::NormalizeData(seurat_integrated, verbose = FALSE, normalization.method = 'LogNormalize')
+seurat_integrated <- FindVariableFeatures(seurat_integrated, selection.method = "vst", nfeatures = 2000)
+seurat_integrated <- ScaleData(seurat_integrated) 
+seurat_integrated <- RunPCA(seurat_integrated, features = VariableFeatures(seurat_integrated))
+seurat_integrated <- RunHarmony(seurat_integrated, 'orig.ident')
+seurat_integrated <- RunUMAP(seurat_integrated, dims = 1:20, reduction = 'harmony')
+seurat_integrated <- FindNeighbors(seurat_integrated, dims = 1:20, reduction = 'harmony')
+seurat_integrated <- FindClusters(seurat_integrated, resolution = seq(from = 0.4,by = 0.2, length = 3))
+```
 #### 直接把celltype信息赋值给Idents #### 
-    Idents(seurat_integrated) <- seurat_integrated$celltype
-
+```r
+Idents(seurat_integrated) <- seurat_integrated$celltype
+```
 #### 画图UMAP ####
-    p1 <- DimPlot(seurat_integrated,
-                  reduction = "umap", 
-                  label = T, 
-                  label.size = 3) + coord_equal(ratio = 1) 
-    
-    ggplot2::ggsave(paste0(path, "UMAP_3_Singlet.pdf"), plot = p1, 
-                    height = 5, width = 7, dpi = 300, limitsize = FALSE)
+```r
+p1 <- DimPlot(seurat_integrated,
+              reduction = "umap", 
+              label = T, 
+              label.size = 3) + coord_equal(ratio = 1) 
 
+ggplot2::ggsave(paste0(path, "UMAP_3_Singlet.pdf"), plot = p1, 
+                height = 5, width = 7, dpi = 300, limitsize = FALSE)
+```
 #### 画图UMAP 分开样本 ####
-    p2 <- DimPlot(seurat_integrated,
-                  reduction = "umap", 
-                  label = TRUE, split.by = 'sample',
-                  label.size = 3) + coord_equal(ratio = 1) 
-    
-    ggplot2::ggsave(paste0(path, "UMAP_split3_Singlet.pdf"), plot = p2, 
-                    height = 5, width = 9, dpi = 300, limitsize = FALSE)
+```r
+p2 <- DimPlot(seurat_integrated,
+              reduction = "umap", 
+              label = TRUE, split.by = 'sample',
+              label.size = 3) + coord_equal(ratio = 1) 
 
+ggplot2::ggsave(paste0(path, "UMAP_split3_Singlet.pdf"), plot = p2, 
+                height = 5, width = 9, dpi = 300, limitsize = FALSE)
+```
 #### 保存，以后读入这个文件进行下游分析即可 ####
-    saveRDS(seurat_integrated, paste0(path, "seurat_integrated_2.rds"))
-
+```r
+saveRDS(seurat_integrated, paste0(path, "seurat_integrated_2.rds"))
+```
 ---
 ## 10.画图 ####
 
 #### 统计细胞在样本之间的比例 ####
-    Cellratio <- prop.table(table(Idents(seurat_integrated), seurat_integrated$sample), margin = 2)*100 #计算各组样本不同细胞群比例
-    
-    savedata <- as.data.frame.array(table(Idents(seurat_integrated), seurat_integrated$sample))
-    # write.csv(savedata, paste0(path, 'Cellratio_celltype_count.csv'), row.names = T)
-    
-    Cellratio <- as.data.frame(Cellratio)
-    colourCount = length(unique(Cellratio$Var1))
-    
-    ggplot(Cellratio,
-           aes(x = Var2, y = Freq, fill = as.factor(Var1), label = sprintf("%.1f%%", Freq))) +
-      geom_bar(stat = "identity", colour = '#222222') +
-      geom_text(position = position_stack(vjust = 0.8), color="white") +
-      labs(x = "Sample", y = "Ratio", fill = "celltype") +
-      scale_y_continuous(labels = scales::percent_format(scale = 1)) +
-      theme_classic() + 
-      theme(panel.border = element_rect(fill=NA, color="white", size=0.5, linetype="solid"),
-            axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) + scale_fill_manual(values = c(hue_pal()(colourCount)))
-    
-    ggplot2::ggsave(paste0(path, "Cellratio_celltype_bar.pdf"),
-                    height = 8, width = 10, dpi = 300, limitsize = FALSE)
+```r
+Cellratio <- prop.table(table(Idents(seurat_integrated), seurat_integrated$sample), margin = 2)*100 #计算各组样本不同细胞群比例
 
+savedata <- as.data.frame.array(table(Idents(seurat_integrated), seurat_integrated$sample))
+# write.csv(savedata, paste0(path, 'Cellratio_celltype_count.csv'), row.names = T)
+
+Cellratio <- as.data.frame(Cellratio)
+colourCount = length(unique(Cellratio$Var1))
+
+ggplot(Cellratio,
+       aes(x = Var2, y = Freq, fill = as.factor(Var1), label = sprintf("%.1f%%", Freq))) +
+  geom_bar(stat = "identity", colour = '#222222') +
+  geom_text(position = position_stack(vjust = 0.8), color="white") +
+  labs(x = "Sample", y = "Ratio", fill = "celltype") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_classic() + 
+  theme(panel.border = element_rect(fill=NA, color="white", size=0.5, linetype="solid"),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) + scale_fill_manual(values = c(hue_pal()(colourCount)))
+
+ggplot2::ggsave(paste0(path, "Cellratio_celltype_bar.pdf"),
+                height = 8, width = 10, dpi = 300, limitsize = FALSE)
+```
 
 #### 通过FindAllMarkers去查找每个细胞群高表达的基因 ####
     markers_label <- FindAllMarkers(seurat_integrated,
