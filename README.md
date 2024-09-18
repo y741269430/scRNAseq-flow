@@ -17,40 +17,44 @@
 
 ---
 ## 0.加载以下包 ####
-    library(SingleCellExperiment) # 1.22.0
-    library(Seurat) # 4.4.0
-    library(SeuratObject) # 4.1.4
-    library(tidyverse) # 2.0.0
-    library(Matrix) # 1.6-1
-    library(scales) # 1.2.1
-    library(cowplot) # 1.1.1
-    library(RCurl) # 1.98-1.12
-    library(clustree) # 0.5.0
-    library(SingleR) # 2.2.0
-    library(clusterProfiler) # 4.8.1
-    library(org.Mm.eg.db) # 3.17.0
-    library(Scillus) # 0.5.0
-    library(ggpubr) # 0.6.0
-    library(ggplot2) # 3.4.2
-    library(DoubletFinder) # 2.0.3
-    library(openxlsx) # 4.2.5.2
-    library(MySeuratWrappers) # 0.1.0
-    library(ggsci) # 3.0.0
-    library(data.table) # 1.14.8
-    library(scRNAtoolVis) # 0.0.7
-
+```r
+library(SingleCellExperiment) # 1.22.0
+library(Seurat) # 4.4.0
+library(SeuratObject) # 4.1.4
+library(tidyverse) # 2.0.0
+library(Matrix) # 1.6-1
+library(scales) # 1.2.1
+library(cowplot) # 1.1.1
+library(RCurl) # 1.98-1.12
+library(clustree) # 0.5.0
+library(SingleR) # 2.2.0
+library(clusterProfiler) # 4.8.1
+library(org.Mm.eg.db) # 3.17.0
+library(Scillus) # 0.5.0
+library(ggpubr) # 0.6.0
+library(ggplot2) # 3.4.2
+library(DoubletFinder) # 2.0.3
+library(openxlsx) # 4.2.5.2
+library(MySeuratWrappers) # 0.1.0
+library(ggsci) # 3.0.0
+library(data.table) # 1.14.8
+library(scRNAtoolVis) # 0.0.7
+```
 ---
 ## 1.前期准备工作 ####
 
 #### 调整R内允许对象大小的限制（默认值是500*1024 ^ 2 = 500 Mb）
-    options(future.globals.maxSize = 500 * 1024 ^ 2)
-
+```r
+options(future.globals.maxSize = 500 * 1024 ^ 2)
+```
 #### 设置工作路径 ####
-    readpath = 'F:/R work/mmbrain/'
-    path = 'F:/R work/mmbrain/results/'
-
+```r
+readpath = 'F:/R work/mmbrain/'
+path = 'F:/R work/mmbrain/results/'
+```
 #### 创建一个函数来处理数据并创建 Seurat 对象 ####
-    process_and_create_seurat <- function(data_dir, project) {
+```r
+process_and_create_seurat <- function(data_dir, project) {
       # 读取数据
       count_matrix <- Read10X(data.dir = data_dir, gene.column = 2)
       
@@ -66,10 +70,11 @@
                                        project = project)       # 设置项目名称（用于结果的标识）
       return(seurat_obj)
     }
-
+```
 #### 设置项目名称（工作路径+项目名称=数据存放的路径） ####
-    projects <- c("A_con", "B_tre")
-
+```r
+projects <- c("A_con", "B_tre")
+```
 #### 创建一个空的 Seurat 对象列表 ####
     seurat_objects <- list()
     
