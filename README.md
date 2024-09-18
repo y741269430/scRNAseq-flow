@@ -76,23 +76,24 @@ process_and_create_seurat <- function(data_dir, project) {
 projects <- c("A_con", "B_tre")
 ```
 #### 创建一个空的 Seurat 对象列表 ####
-    seurat_objects <- list()
-    
-    # 循环处理每个项目
-    for (project in projects) {
-      # 构建数据目录路径
-      data_dir <- file.path(path0, project, 'filtered_feature_bc_matrix/')
-      
-      # 处理数据并创建 Seurat 对象
-      seurat_obj <- process_and_create_seurat(data_dir, project)
-      
-      # 将 Seurat 对象添加到列表中
-      seurat_objects[[project]] <- seurat_obj
-    }
-    
-    # 检查矩阵行名是否为SYMBOL
-    head(rownames(seurat_objects[[1]]@assays$RNA))
+```r
+seurat_objects <- list()
 
+# 循环处理每个项目
+for (project in projects) {
+  # 构建数据目录路径
+  data_dir <- file.path(path0, project, 'filtered_feature_bc_matrix/')
+  
+  # 处理数据并创建 Seurat 对象
+  seurat_obj <- process_and_create_seurat(data_dir, project)
+  
+  # 将 Seurat 对象添加到列表中
+  seurat_objects[[project]] <- seurat_obj
+}
+
+# 检查矩阵行名是否为SYMBOL
+head(rownames(seurat_objects[[1]]@assays$RNA))
+```
 ---
 ## 2.进行质控（这里绘制的是线粒体基因，红细胞基因，核糖体基因的小提琴图） ####
 
