@@ -16,6 +16,12 @@
 - 12.GO 富集分析 
 
 ---
+## 0.版本 ####
+```r
+R.Version()$version.string  # "R version 4.3.0 (2023-04-21 ucrt)"  
+R.Version()$platform  # "x86_64-w64-mingw32"
+```
+rtools 版本 4.3.5863
 ## 0.加载以下包 ####
 ```r
 library(SingleCellExperiment) # 1.22.0
