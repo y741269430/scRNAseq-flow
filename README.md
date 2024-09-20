@@ -368,19 +368,22 @@ seurat_merged2 <- CreateSeuratObject(filtered_counts,
 ```r
 adult.genes <- rownames(seurat_merged2@assays$RNA)
 
-# 获取各类不需要的基因
-Gm.gene <- grep('^Gm',adult.genes, value = T)
-mit.gene <- grep('^mt-',adult.genes, value = T)
-rib.gene <- grep('^Rp[sl]',adult.genes,value =T)
-Rik.gene <- grep('Rik',adult.genes, value = T)
-p.gene <- grep('\\.',adult.genes, value = T)
-num.gene <- grep("[0-9]{4,}", adult.genes, value = T)
-A.gene <- grep('^A[A-Z][0-9]',adult.genes, value = T)
-B.gene <- grep('^B[A-Z][0-9]',adult.genes, value = T)
+# 通过检索相关字段获取基因，并展示出前100个
+Gm.gene <- grep('^Gm',adult.genes, value = T); head(Gm.gene, 100)
+mit.gene <- grep('^mt-',adult.genes, value = T); head(mit.gene, 100)
+rib.gene <- grep('^Rp[sl]',adult.genes,value =T); head(rib.gene, 100)
+Rik.gene <- grep('Rik',adult.genes, value = T); head(Rik.gene, 100)
+p.gene <- grep('\\.',adult.genes, value = T); head(p.gene, 100)
+num.gene <- grep("[0-9]{4,}", adult.genes, value = T); head(num.gene, 100)
+A.gene <- grep('^A[A-Z][0-9]',adult.genes, value = T); head(A.gene, 100)
+B.gene <- grep('^B[A-Z][0-9]',adult.genes, value = T); head(B.gene, 100)
 
-# 删除所有不需要的基因
+Hb.genes_total <- c("Hbb-bt","Hbb-bs","Hba-a3","Hba-a2","Hba-a1",
+                    "Hba-a2.1","Alas2","Tent5c","Fech","Bpgm")
+
+# 删除所有不需要的基因，如果你有想去除的基因list，则在后面补充
 clean.gene <- adult.genes[which(!(adult.genes %in% c(Gm.gene, mit.gene, rib.gene, Rik.gene, 
-                                                     p.gene, num.gene, A.gene, B.gene)))]
+                                                     p.gene, num.gene, A.gene, B.gene, Hb.genes_total)))]
 # 更新Seurat对象，仅保留筛选后的基因
 seurat_merged2 <- seurat_merged2[clean.gene, ]
 
