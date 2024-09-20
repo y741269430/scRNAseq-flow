@@ -595,13 +595,21 @@ nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop)); nExp_poi.adj # 474
 
 gc() # 清缓存
 seurat_singlet <- doubletFinder_v3(input_seurat, PCs = 1:10, pN = 0.25, 
+                                   pK = mpK, nExp = nExp_poi, reuse.pANN = F, sct = F)
+gc()
+seurat_singlet <- doubletFinder_v3(seurat_singlet, PCs = 1:10, pN = 0.25, 
                                    pK = mpK, nExp = nExp_poi.adj, reuse.pANN = F, sct = F)
 gc() # 再清缓存
 
 # 查看以下列名
 colnames(seurat_singlet@meta.data)
 
-# 选择最后一列
+# 根据列名进行选择
+
+seurat_singlet$DF_hi.lo <- seurat_singlet$DF.classifications_0.25_0.005_721
+seurat_singlet$DF_hi.lo[which(seurat_singlet$DF_hi.lo == "Doublet" & seurat_singlet$DF.classifications_0.25_0.005_474 == "Singlet")] <- "Doublet-Low Confidience"
+seurat_singlet$DF_hi.lo[which(seurat_singlet$DF_hi.lo == "Doublet")] <- "Doublet-High Confidience"
+
 seurat_singlet$DF_hi.lo <- seurat_singlet$DF.classifications_0.25_0.005_474
 
 table(seurat_singlet$DF_hi.lo)
