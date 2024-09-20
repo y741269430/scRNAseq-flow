@@ -55,7 +55,9 @@ options(future.globals.maxSize = 500 * 1024 ^ 2)
 ```
 #### 设置工作路径 ####
 ```r
+# 读取文件的路径
 readpath = 'F:/R work/mmbrain/'
+# 保存文件的路径
 path = 'F:/R work/mmbrain/results/'
 ```
 #### 创建一个函数来处理数据并创建 Seurat 对象 ####
@@ -88,7 +90,7 @@ seurat_objects <- list()
 # 循环处理每个项目
 for (project in projects) {
   # 构建数据目录路径
-  data_dir <- file.path(path0, project, 'filtered_feature_bc_matrix/')
+  data_dir <- file.path(readpath, project, 'filtered_feature_bc_matrix/')
   
   # 处理数据并创建 Seurat 对象
   seurat_obj <- process_and_create_seurat(data_dir, project)
