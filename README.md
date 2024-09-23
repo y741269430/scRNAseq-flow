@@ -20,8 +20,16 @@
 ```r
 R.Version()$version.string  # "R version 4.3.0 (2023-04-21 ucrt)"  
 R.Version()$platform  # "x86_64-w64-mingw32"
+BiocManager::version() # ‘3.17’
 ```
 rtools 版本 4.3.5863
+
+## 这是一个很无赖的安装R包方法，就是直接去官网找对应版本的页面
+https://bioconductor.org/packages/3.17/BiocViews.html#___Software
+#### 假如要安装一个CRAN的R包，找一个特定版本，就直接在这个页面找  https://cran.r-project.org/src/contrib/Archive/  （/后面加包的名字就会进入旧版本的页面，例如）
+#### https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_3.4.2.tar.gz
+#### install.packages('https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_3.4.2.tar.gz', repos = NULL, type = 'source')
+
 ## 0.加载以下包 ####
 ```r
 library(SingleCellExperiment) # 1.22.0
