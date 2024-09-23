@@ -31,8 +31,8 @@ https://bioconductor.org/packages/3.17/BiocViews.html#___Software
 #### 这个是让它自动安装并且把依赖的packages也一并安装  
       install.packages('https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_3.4.2.tar.gz', repos = NULL, type = 'source')
 
-#### 一些装包过程中报错的解决方案 
-https://github.com/satijalab/seurat-object/issues/166
+#### 一些装包过程中报错的解决方案   
+https://github.com/satijalab/seurat-object/issues/166  
 https://github.com/bwlewis/irlba/issues/70
 
 ## 0.加载以下包 ####
