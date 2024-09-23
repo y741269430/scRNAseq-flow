@@ -37,7 +37,7 @@ library(SingleCellExperiment) # 1.22.0
 library(Seurat) # 4.4.0
 library(SeuratObject) # 4.1.4
 library(tidyverse) # 2.0.0
-library(Matrix) # 1.6-1
+library(Matrix) # 1.6-1 # 1.6-1.1 # 1.6-2 这三个版本都可以
 library(scales) # 1.2.1
 library(cowplot) # 1.1.1
 library(RCurl) # 1.98-1.12
