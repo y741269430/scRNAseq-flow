@@ -26,7 +26,7 @@ rtools 版本 4.3.5863
 
 ## 这是一个很无赖的安装R包方法，就是直接去官网找对应版本的页面  
 - https://bioconductor.org/packages/3.17/BiocViews.html#___Software
-- 假如要安装一个CRAN的R包，找一个特定版本（旧版本！！！），就直接在这个页面找  https://cran.r-project.org/src/contrib/Archive/  （/后面加包的名字就会进入旧版本的页面，例如）
+- 假如要安装一个CRAN的R包，找一个特定版本（旧版本！！！），就直接在这个页面找  https://cran.r-project.org/src/contrib/Archive/ （/后面加包的名字就会进入旧版本的页面，例如）
 https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_3.4.2.tar.gz 这个是直接下载该packages手动安装
 - 这个是让它自动安装并且把依赖的packages也一并安装  
 install.packages('https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_3.4.2.tar.gz', repos = NULL, type = 'source')  
@@ -62,8 +62,8 @@ library(scRNAtoolVis) # 0.0.7
 ---
 ## 1.前期准备工作 ####
 
-#### 调整R内允许对象大小的限制（默认值是500*1024 ^ 2 = 500 Mb）
 ```r
+# 调整R内允许对象大小的限制（默认值是500*1024 ^ 2 = 500 Mb）
 options(future.globals.maxSize = 500 * 1024 ^ 2)
 ```
 #### 设置工作路径 ####
