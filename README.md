@@ -579,7 +579,10 @@ gc()
 ```
 ## 8.拆分样本，进行双细胞去除 ####
 
+具体参考 https://github.com/chris-mcginnis-ucsf/DoubletFinder  
+
 #### 设置工作路径 ####
+
 ```r
 readpath = 'F:/R work/mmbrain/'
 path = 'F:/R work/mmbrain/results/'
