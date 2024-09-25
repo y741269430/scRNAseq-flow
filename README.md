@@ -579,7 +579,10 @@ gc()
 ```
 ## 8.拆分样本，进行双细胞去除 ####
 
-具体参考 https://github.com/chris-mcginnis-ucsf/DoubletFinder  
+具体参考  
+- https://github.com/chris-mcginnis-ucsf/DoubletFinder  
+- https://kb.10xgenomics.com/hc/en-us/articles/360001378811-What-is-the-maximum-number-of-cells-that-can-be-profiled
+![image](https://github.com/y741269430/scRNAseq-flow/blob/main/img/doublet_rate.png)   
 
 #### 设置工作路径 ####
 
