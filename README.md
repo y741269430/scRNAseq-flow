@@ -397,7 +397,7 @@ B.gene <- grep('^B[A-Z][0-9]',adult.genes, value = T); head(B.gene, 100)
 Hb.genes_total <- c("Hbb-bt","Hbb-bs","Hba-a3","Hba-a2","Hba-a1",
                     "Hba-a2.1","Alas2","Tent5c","Fech","Bpgm")
 ```
-![image](https://github.com/y741269430/scRNAseq-flow/blob/main/img/a1.png)
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/a1.png" />
 ```r
 # 删除所有不需要的基因，如果你有想去除的基因list，则在后面补充
 clean.gene <- adult.genes[which(!(adult.genes %in% c(Gm.gene, mit.gene, rib.gene, Rik.gene, 
@@ -582,7 +582,7 @@ gc()
 具体参考  
 - https://github.com/chris-mcginnis-ucsf/DoubletFinder  
 - https://kb.10xgenomics.com/hc/en-us/articles/360001378811-What-is-the-maximum-number-of-cells-that-can-be-profiled
-![image](https://github.com/y741269430/scRNAseq-flow/blob/main/img/doublet_rate.png)   
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/doublet_rate.png" width="600" />
 
 #### 设置工作路径 ####
 
