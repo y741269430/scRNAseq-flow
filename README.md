@@ -53,6 +53,7 @@ library(Scillus) # 0.5.0
 library(ggpubr) # 0.6.0
 library(ggplot2) # 3.4.2
 library(DoubletFinder) # 2.0.3
+library(harmony) # 1.2.0
 library(openxlsx) # 4.2.5.2
 library(MySeuratWrappers) # 0.1.0
 library(ggsci) # 3.0.0
