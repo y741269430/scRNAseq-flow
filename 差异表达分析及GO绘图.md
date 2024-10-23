@@ -10,7 +10,7 @@
 path = 'F:/R work/mmbrain/results/'
 seurat_integrated <- readRDS(paste0(path, "seurat_integrated_2.rds"))
 
-# 将细胞类型与样本名称进行拼接
+# 将细胞类型与样本名称进行拼接，即：celltype_sample
 seurat_integrated$celltype.exp <- paste(Idents(seurat_integrated), seurat_integrated$sample, sep = "_")
 
 Idents(seurat_integrated) <- seurat_integrated$celltype.exp
@@ -22,7 +22,7 @@ table(seurat_integrated@meta.data$celltype.exp)
 # 定义需要进行差异表达分析的细胞类型组合
 degmeta <- data.frame(table(seurat_integrated@meta.data$celltype.exp))
 
-# 为什么这里有这句命令，假设我们有2个样本，
+# 为什么这里有这句命令，假设我们有2个样本，那么这里的`each`就填2，意思就是每个一celltype，用一个数字来表示它。  
 degmeta$cluster <- rep(1:length(unique(seurat_integrated$celltype)), each = 2)
 
 ```
