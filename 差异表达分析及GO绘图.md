@@ -26,7 +26,7 @@ degmeta <- data.frame(table(seurat_integrated@meta.data$celltype.exp))
 degmeta$cluster <- rep(1:length(unique(seurat_integrated$celltype)), each = 2)
 
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/degmeta.png" width="600" />
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/degmeta.png" width="500" />
 
 ```r
 # 分割每个样本进行DEG
