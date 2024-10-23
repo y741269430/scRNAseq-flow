@@ -10,6 +10,7 @@
 path = 'F:/R work/mmbrain/results/'
 seurat_integrated <- readRDS(paste0(path, "seurat_integrated_2.rds"))
 
+# 将细胞类型与样本名称进行拼接
 seurat_integrated$celltype.exp <- paste(Idents(seurat_integrated), seurat_integrated$sample, sep = "_")
 
 Idents(seurat_integrated) <- seurat_integrated$celltype.exp
@@ -21,7 +22,8 @@ table(seurat_integrated@meta.data$celltype.exp)
 # 定义需要进行差异表达分析的细胞类型组合
 degmeta <- data.frame(table(seurat_integrated@meta.data$celltype.exp))
 
-degmeta$cluster <- str_split_fixed(degmeta$Var1, '_', n = 2)[,1]
+# 为什么这里有这句命令，假设我们有2个样本，
+degmeta$cluster <- rep(1:length(unique(seurat_integrated$celltype)), each = 2)
 
 # 分割每个样本进行DEG
 degmeta_ls <- lapply(split(degmeta, degmeta$cluster), function(x){ x <- x; return(x)})
