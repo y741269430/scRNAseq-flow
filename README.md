@@ -779,6 +779,46 @@ p <- plot_grid(c1, c2, nrow = 1)
 ggplot2::ggsave(paste0(path, "细胞比例柱形图.pdf"), plot = p, 
                 height = 9, width = 9, dpi = 300, limitsize = FALSE)
 
+
+# 圆环图
+data <- lapply(split(Cellnum2, Cellnum2$Var2), function(x){x <- x; return(x)})
+
+data <- lapply(data, function(x){
+  x$percent <- paste0(round(x$Freq, 4) / 100, '%')
+  x$name <- paste0(x$Var1, ' (', x$percent, ')')
+  return(x)
+})
+
+plot <- list()
+
+for (i in 1:length(data)) {
+  
+  plot[[i]] <- ggdonutchart(data[[i]], 'Freq',
+                            label = 'percent',
+                            fill = 'Var1', 
+                            color = "white", 
+                            lab.font = c(3, "bold", "black"), 
+                            font.family = "serif",
+                            lab.pos = "in") +
+    labs(x = NULL, y = NULL, fill = paste0(names(data)[i])) +
+    theme_classic() + 
+    theme(axis.ticks.y = element_blank(),
+          axis.text.x = element_blank(),
+          axis.text.y = element_blank(),
+          axis.line = element_blank(),
+          text = element_text(size = 12,face = 'bold', family = "serif"),
+          legend.position = 'left',
+          plot.caption = element_text(hjust = 0.5, vjust = 7, size = 13), 
+          plot.background = element_rect(fill = "transparent", 
+                                         colour = NA)) +
+    guides(fill = guide_legend(reverse = F))
+}
+
+cowplot::plot_grid(plotlist = plot, nrow = 1)
+
+ggplot2::ggsave(paste0(path, '细胞比例饼图.pdf'),
+                height = 7, width = 9, dpi = 300, limitsize = FALSE)
+
 ```
 
 #### 通过FindAllMarkers去查找每个细胞群高表达的基因 ####
