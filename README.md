@@ -789,9 +789,10 @@ markers_label <- FindAllMarkers(seurat_integrated,
                                 logfc.threshold = 0.70)
 
 write.csv(markers_label, paste0(path, "markers_label.csv"), row.names = F)
+```
 
-# 画前10个markers genes 的DoHeatmap
-
+####  画前10个markers genes 的DoHeatmap ####
+```r
 all.genes <- rownames(seurat_integrated)
 seurat_integrated <- ScaleData(seurat_integrated, features = all.genes)
 
@@ -807,6 +808,9 @@ ggplot2::ggsave(paste0(path, "DoHeatmap_top10_label.pdf"), plot = p,
 
 #### 画marker基因dotplot ####
 ```r
+DotPlot(object = seurat_integrated, features = marker, cols = c('white','firebrick')) + coord_flip()
+
+# 或者用这个函数美化
 scRNAtoolVis::jjDotPlot(object = seurat_integrated, 
                         id = 'celltype',
                         xtree = F,ytree = F,
