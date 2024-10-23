@@ -892,11 +892,11 @@ input_gene <- c("Nrxn3", "Gja1","Flt1","Dnah11","Ctss", "Mog", "Pdgfra")
 FeaturePlot(seurat_integrated, input_gene, split.by = 'sample') & theme(legend.position = "right")
 
 # 或者用这个函数美化
-scRNAtoolVis::FeatureCornerAxes(object = seurat_integrated, 
+scRNAtoolVis::featureCornerAxes(object = seurat_integrated, 
                                 reduction = 'umap', pSize = 0.01,
                                 features = input_gene, groupFacet = 'sample', axes  = 'one', ) + 
   coord_equal() +
-  theme_minimal() + 
+  theme_bw() + 
   scale_colour_gradientn(colours = c('grey', 'blue'))
 
 ggplot2::ggsave(paste0(path, "FeaturePlot.pdf"), 
