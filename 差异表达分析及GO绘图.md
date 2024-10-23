@@ -109,15 +109,15 @@ write.xlsx(DEG, file = paste0(path, "DEG_list_log_05.xlsx"))
 path = 'F:/R work/mmbrain/results/'
 load(paste0(path, "DEG_list.RData"))
 
-ALL <- lapply(ALL, function(x){
+ALL2 <- lapply(ALL, function(x){
   x$cluster <- NA
   x$gene <- x$SYMBOL
   return(x)
 })
 
-for (i in 1:length(ALL)) { ALL[[i]]$cluster <- names(ALL)[i] }
+for (i in 1:length(ALL2)) { ALL2[[i]]$cluster <- names(ALL2)[i] }
 
-data1 <- Reduce(rbind, ALL[c(seq(1, length(ALL), gap))])
+data1 <- Reduce(rbind, ALL2[c(seq(1, length(ALL2), gap))])
 
 a1 <- jjVolcano(diffData = data1, pSize = 1.5, log2FC.cutoff = 0.5,
                 tile.col = corrplot::COL2('RdBu', 15)[c(4:12)], 
@@ -129,9 +129,50 @@ a1 <- jjVolcano(diffData = data1, pSize = 1.5, log2FC.cutoff = 0.5,
         axis.title = element_blank(),
         axis.ticks.x = element_blank())
 
-ggplot2::ggsave(paste0(path, "Volcano.pdf"), plot = a1,
+ggplot2::ggsave(paste0(path, "火山图.pdf"), plot = a1,
                 height = 12, width = 13, dpi = 300, limitsize = FALSE)
 ```
+
+#### 计算差异基因数量柱形图 ####
+```r
+
+# 统计差异基因列表的每个dataframe行数
+deg_num <- list()
+for (i in 1:length(DEG)) { deg_num[[i]] <- length(DEG[[i]]$SYMBOL) }
+
+names(deg_num) <- names(ALL)
+
+cluster_names <- factor(c('B cells', 'CD4+ Treg+', 'CD4+ Treg-', 'CD8 T', 
+                          'Ly6c hi Mono', 'Ly6c low Mono', 'Neutrophils', 'NK cells', 'Basophils'), 
+                        levels = c('B cells', 'CD4+ Treg+', 'CD4+ Treg-', 'CD8 T', 
+                                   'Ly6c hi Mono', 'Ly6c low Mono', 'Neutrophils', 'NK cells', 'Basophils'))
+
+cpname <- c('10d RES vs CTRL', '10d SUS vs CTRL', '10d SUS vs RES', '28d SUS vs CTRL')
+
+deg_num2 <- as.data.frame(unlist(deg_num))
+deg_num2$name <- rep(cpname, 9)
+deg_num2$celltype <- rep(cluster_names, each = 4)
+colnames(deg_num2)[1] <- 'Value'
+rownames(deg_num2) <- 1:nrow(deg_num2)
+
+head(deg_num2)
+
+
+ggplot(deg_num2, aes(x=celltype, y=Value, fill=celltype, label = Value)) +
+  geom_bar(stat="identity") + # 使用实际值作为高度
+  geom_text(position = position_stack(vjust = 0.8), color="black") + 
+  facet_wrap(~name) + # 每个name值一个分面
+  labs(title="DEG Numbers by Cell Type and Condition Comparison",
+       x=NULL,
+       y=NULL) + 
+  theme_bw() + 
+  ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+    scale_fill_manual(values = c(hue_pal()(9)))
+
+ggplot2::ggsave(paste0(path, "差异表达基因数量统计图.pdf"),
+                height = 6, width = 8, dpi = 300, limitsize = FALSE)
+```
+
 ---
 ## 12.GO 富集分析 ####
 ### 差异表达基因分开上下调 #### 
