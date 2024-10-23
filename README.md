@@ -804,6 +804,26 @@ p <- DoHeatmap(seurat_integrated, features = top_10$gene, label = T, assay = "RN
 ggplot2::ggsave(paste0(path, "DoHeatmap_top10_label.pdf"), plot = p,
                 height = 12, width = 20, dpi = 300, limitsize = FALSE)
 ```
+
+#### 画marker基因dotplot ####
+```r
+scRNAtoolVis::jjDotPlot(object = seurat_integrated, 
+                        id = 'celltype',
+                        xtree = F,ytree = F,
+                        gene = markers_cluster,
+                        rescale = T,
+                        aesGroName = 'sample',
+                        #point.geom = F,
+                        #tile.geom = T,
+                        dot.col = c('white','firebrick'),
+                        rescale.min = -2,
+                        rescale.max = 2,
+                        midpoint = 0) + coord_flip()
+
+ggplot2::ggsave(paste0(path, "jjDotPlot.pdf"), 
+                height = 6, width = 6, dpi = 300, limitsize = FALSE)
+```
+
 #### 统计 细胞群比例，umi比例 ####
 ```r
 metadata <- seurat_integrated@meta.data
@@ -864,24 +884,7 @@ ggarrange(ggarrange(a1, a2, a3, ncol = 3),
 ggplot2::ggsave(paste0(path, "long_merge.pdf"),
                 height = 8, width = 8, dpi = 300, limitsize = FALSE)
 ```                    
-#### 画marker基因dotplot ####
-```r
-scRNAtoolVis::jjDotPlot(object = seurat_integrated, 
-                        id = 'celltype',
-                        xtree = F,ytree = F,
-                        gene = markers_cluster,
-                        rescale = T,
-                        aesGroName = 'sample',
-                        #point.geom = F,
-                        #tile.geom = T,
-                        dot.col = c('white','firebrick'),
-                        rescale.min = -2,
-                        rescale.max = 2,
-                        midpoint = 0) + coord_flip()
-
-ggplot2::ggsave(paste0(path, "jjDotPlot.pdf"), 
-                height = 6, width = 6, dpi = 300, limitsize = FALSE)
-```  
+ 
 #### 画基因表达丰度图 ####
 ```r
 input_gene <- c("Nrxn3", "Gja1","Flt1","Dnah11","Ctss", "Mog", "Pdgfra")
