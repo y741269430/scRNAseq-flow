@@ -25,8 +25,10 @@ degmeta <- data.frame(table(seurat_integrated@meta.data$celltype.exp))
 # 为什么这里有这句命令，假设我们有2个样本，
 degmeta$cluster <- rep(1:length(unique(seurat_integrated$celltype)), each = 2)
 
+```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/degmeta.png" width="600" />
 
+```r
 # 分割每个样本进行DEG
 degmeta_ls <- lapply(split(degmeta, degmeta$cluster), function(x){ x <- x; return(x)})
 
