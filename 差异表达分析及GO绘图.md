@@ -142,21 +142,25 @@ for (i in 1:length(DEG)) { deg_num[[i]] <- length(DEG[[i]]$SYMBOL) }
 
 names(deg_num) <- names(ALL)
 
-cluster_names <- factor(c('B cells', 'CD4+ Treg+', 'CD4+ Treg-', 'CD8 T', 
-                          'Ly6c hi Mono', 'Ly6c low Mono', 'Neutrophils', 'NK cells', 'Basophils'), 
-                        levels = c('B cells', 'CD4+ Treg+', 'CD4+ Treg-', 'CD8 T', 
-                                   'Ly6c hi Mono', 'Ly6c low Mono', 'Neutrophils', 'NK cells', 'Basophils'))
+# 调整柱形图展示的顺序
+cluster_names <- factor(c('Neuron', 'Astrocyte', 'Endothelial_cell',
+                           'Ependymal_cell', 'Microglial_cell', 'Oligodendrocyte', 'OPCs'), 
+                        levels = c('Neuron', 'Astrocyte', 'Endothelial_cell',
+                                    'Ependymal_cell', 'Microglial_cell', 'Oligodendrocyte', 'OPCs'))
 
-cpname <- c('10d RES vs CTRL', '10d SUS vs CTRL', '10d SUS vs RES', '28d SUS vs CTRL')
+# 需要展示的对比
+cpname <- c('Tre1 vs CTRL', 'Tre2 vs CTRL')
 
 deg_num2 <- as.data.frame(unlist(deg_num))
-deg_num2$name <- rep(cpname, 9)
-deg_num2$celltype <- rep(cluster_names, each = 4)
+# 重复cpname多少次（细胞亚群的数量）
+deg_num2$name <- rep(cpname, length(cluster_names))
+# 重复cluster_names多少次（cpname的数量）
+deg_num2$celltype <- rep(cluster_names, each = length(cpname))
+
 colnames(deg_num2)[1] <- 'Value'
 rownames(deg_num2) <- 1:nrow(deg_num2)
 
 head(deg_num2)
-
 
 ggplot(deg_num2, aes(x=celltype, y=Value, fill=celltype, label = Value)) +
   geom_bar(stat="identity") + # 使用实际值作为高度
@@ -167,7 +171,7 @@ ggplot(deg_num2, aes(x=celltype, y=Value, fill=celltype, label = Value)) +
        y=NULL) + 
   theme_bw() + 
   ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-    scale_fill_manual(values = c(hue_pal()(9)))
+    scale_fill_manual(values = c(hue_pal()( length(cluster_names) ))) # 颜色为细胞亚群数量
 
 ggplot2::ggsave(paste0(path, "差异表达基因数量统计图.pdf"),
                 height = 6, width = 8, dpi = 300, limitsize = FALSE)
