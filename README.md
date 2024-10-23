@@ -727,26 +727,58 @@ saveRDS(seurat_integrated, paste0(path, "seurat_integrated_2.rds"))
 
 #### 统计细胞在样本之间的比例 ####
 ```r
-Cellratio <- prop.table(table(Idents(seurat_integrated), seurat_integrated$sample), margin = 2)*100 #计算各组样本不同细胞群比例
+# 细胞比例
 
-savedata <- as.data.frame.array(table(Idents(seurat_integrated), seurat_integrated$sample))
-# write.csv(savedata, paste0(path, 'Cellratio_celltype_count.csv'), row.names = T)
+Cellnum <- table(Idents(seurat_integrated), seurat_integrated$sample) 
+Cellratio <- prop.table(Cellnum, margin = 2)*100#计算各组样本不同细胞群比例
+
+# savedata <- as.data.frame.array(Cellnum)
+# savedata <- as.data.frame.array(Cellratio)
+#write.csv(savedata, paste0(path, 'Cellratio_celltype_count.csv'), row.names = T)
 
 Cellratio <- as.data.frame(Cellratio)
 colourCount = length(unique(Cellratio$Var1))
 
-ggplot(Cellratio,
-       aes(x = Var2, y = Freq, fill = as.factor(Var1), label = sprintf("%.1f%%", Freq))) +
-  geom_bar(stat = "identity", colour = '#222222') +
-  geom_text(position = position_stack(vjust = 0.8), color="white") +
+c1 <- ggplot(Cellratio,
+             aes(x = Var2, stratum = Var1, alluvium = Var1,
+                 y = Freq,
+                 fill = Var1, label = sprintf("%.1f%%", Freq))) +
+  geom_flow(width = 0.7) +
+  geom_stratum(alpha = 0.9, width = 0.7, colour = NA) +
+  geom_text(stat = "stratum", size = 5, color="white") +
   labs(x = "Sample", y = "Ratio", fill = "celltype") +
-  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme(legend.position = "none") + 
   theme_classic() + 
   theme(panel.border = element_rect(fill=NA, color="white", size=0.5, linetype="solid"),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) + scale_fill_manual(values = c(hue_pal()(colourCount)))
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
 
-ggplot2::ggsave(paste0(path, "Cellratio_celltype_bar.pdf"),
-                height = 8, width = 10, dpi = 300, limitsize = FALSE)
+# 细胞数量
+
+Cellnum2 <- as.data.frame(Cellnum)
+colourCount = length(unique(Cellnum2$Var1))
+
+c2 <- ggplot(Cellnum2,
+             aes(x = Var2, stratum = Var1, alluvium = Var1,
+                 y = Freq,
+                 fill = Var1, label = Freq)) +
+  geom_bar(stat = "identity") + # 柱形图
+  geom_text(position = position_stack(vjust = 0.8), color="white") +  # 柱形图
+  
+  # geom_flow(width = 0.7) +  # 桑基图
+  # geom_stratum(alpha = 0.9, width = 0.7, colour = NA) + # 桑基图
+  # geom_text(stat = "stratum", size = 5, color="white") + # 桑基图
+  
+  labs(x = "Sample", y = "Ratio", fill = "celltype") +
+  theme(legend.position = "none") + 
+  theme_classic() + 
+  theme(panel.border = element_rect(fill=NA, color="white", size=0.5, linetype="solid"),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+
+p <- plot_grid(c1, c2, nrow = 1)
+
+ggplot2::ggsave(paste0(path, "细胞比例柱形图.pdf"), plot = p, 
+                height = 9, width = 9, dpi = 300, limitsize = FALSE)
+
 ```
 
 #### 通过FindAllMarkers去查找每个细胞群高表达的基因 ####
