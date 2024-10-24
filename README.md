@@ -887,9 +887,9 @@ a1 <- ggplot(t1, aes(x = celltype, y = No.nuclei, fill = celltype)) +
   geom_text(aes(label = No.nuclei), vjust = -1, hjust = 0.5, color = "black") +
   xlab("Cell Type") +
   ylab("No.Nuclei") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   coord_flip() + theme_classic() + 
-  theme(axis.title.y = element_blank(),
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title.y = element_blank(),
         axis.text.y = element_blank(),
         legend.position = 'none'); a1
 
