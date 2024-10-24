@@ -747,10 +747,9 @@ c1 <- ggplot(Cellratio,
   geom_stratum(alpha = 0.9, width = 0.7, colour = NA) +
   geom_text(stat = "stratum", size = 5, color="white") +
   labs(x = "Sample", y = "Ratio", fill = "celltype") +
-  theme(legend.position = "none") + 
   theme_classic() + 
   theme(panel.border = element_rect(fill=NA, color="white", size=0.5, linetype="solid"),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), legend.position = "none")
 
 # 细胞数量
 
@@ -769,10 +768,9 @@ c2 <- ggplot(Cellnum2,
   # geom_text(stat = "stratum", size = 5, color="white") + # 桑基图
   
   labs(x = "Sample", y = "Ratio", fill = "celltype") +
-  theme(legend.position = "none") + 
   theme_classic() + 
   theme(panel.border = element_rect(fill=NA, color="white", size=0.5, linetype="solid"),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), legend.position = "none")
 
 p <- plot_grid(c1, c2, nrow = 1)
 
