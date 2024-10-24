@@ -208,8 +208,8 @@ before <- metadata %>%
   geom_bar(position = "dodge", show.legend = TRUE) +
   geom_text(stat = 'count', aes(label = after_stat(count)), position = position_dodge(0.9), vjust = -0.1) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
-  theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        plot.title = element_text(hjust = 0.5, face = "bold")) +
   ggtitle("Cell counts per sample")
 
 # 每个细胞的UMI计数 (UMI counts per cell)
@@ -247,8 +247,8 @@ a4 <- metadata %>%
   ggplot(aes(x=sample, y=log10(nFeature_RNA), fill=sample)) + 
   geom_boxplot() + 
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  theme(plot.title = element_text(hjust=0.5, face="bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+        plot.title = element_text(hjust=0.5, face="bold")) +
   ggtitle("Genes detected per cell across samples")
 
 p <- plot_grid(a1, a2, a3, a4, align = "v", nrow = 2)
@@ -332,8 +332,8 @@ after <- metadata2 %>%
   geom_bar(position = "dodge", show.legend = TRUE) +
   geom_text(stat = 'count', aes(label = after_stat(count)), position = position_dodge(0.9), vjust = -0.1) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
-  theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        plot.title = element_text(hjust = 0.5, face = "bold")) +
   ggtitle("Cell counts per sample")
 
 p <- plot_grid(before, after)
