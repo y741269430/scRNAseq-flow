@@ -725,7 +725,7 @@ saveRDS(seurat_integrated, paste0(path, "seurat_integrated_2.rds"))
 ---
 ## 10.画图 ####
 
-#### 统计细胞在样本之间的比例 ####
+#### 桑基图柱形图饼图 统计细胞在样本之间的比例 ####
 ```r
 # 细胞比例
 
@@ -831,7 +831,7 @@ markers_label <- FindAllMarkers(seurat_integrated,
 write.csv(markers_label, paste0(path, "markers_label.csv"), row.names = F)
 ```
 
-####  画前10个markers genes 的DoHeatmap ####
+####  热图 画前10个markers genes 的DoHeatmap ####
 ```r
 all.genes <- rownames(seurat_integrated)
 seurat_integrated <- ScaleData(seurat_integrated, features = all.genes)
@@ -846,7 +846,7 @@ ggplot2::ggsave(paste0(path, "DoHeatmap_top10_label.pdf"), plot = p,
                 height = 12, width = 20, dpi = 300, limitsize = FALSE)
 ```
 
-#### 画marker基因dotplot ####
+#### Dotplot图 画marker基因dotplot ####
 ```r
 DotPlot(object = seurat_integrated, features = marker, cols = c('white','firebrick')) + coord_flip()
 
@@ -929,7 +929,7 @@ ggplot2::ggsave(paste0(path, "long_merge.pdf"),
                 height = 8, width = 8, dpi = 300, limitsize = FALSE)
 ```                    
  
-#### 画基因表达丰度图 ####
+#### UMAP图 画基因表达丰度图 ####
 ```r
 input_gene <- c("Nrxn3", "Gja1","Flt1","Dnah11","Ctss", "Mog", "Pdgfra")
 
@@ -947,14 +947,17 @@ ggplot2::ggsave(paste0(path, "FeaturePlot.pdf"),
                 height = 25, width = 10, dpi = 300, limitsize = FALSE)
 ```              
 
-#### 基因在不同细胞亚群中，样本之间的表达差异 ####
+#### 小提琴图 基因在不同细胞亚群中，样本之间的表达差异 ####
 ```r
 Seurat::VlnPlot(seurat_integrated, split.by = 'sample', group.by = 'celltype',
                 input_gene, stack=T, pt.size = 0, flip = T) +
   xlab(NULL) +
   guides(fill = guide_legend(reverse = T))
+
+# 使用MySeuratWrappers::VlnPlot()会得到不一样的效果。。
+
 ```
-#### 基因在指定的细胞亚群中，样本之间的表达差异 添加p值 ####
+#### 箱线图 基因在指定的细胞亚群中，样本之间的表达差异 添加p值 ####
 ```r
 subsets_cell <- subset(seurat_integrated, ident = 'Endothelial_cell')
 
