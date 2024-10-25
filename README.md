@@ -821,6 +821,7 @@ ggplot2::ggsave(paste0(path, '细胞比例饼图.pdf'),
 
 #### 通过FindAllMarkers去查找每个细胞群高表达的基因 ####
 ```r
+# 设置min.pct = 0.25参数过滤掉那些在25%以下细胞中检测到的基因 
 markers_label <- FindAllMarkers(seurat_integrated,
                                 only.pos = TRUE,
                                 min.pct = 0.25,
