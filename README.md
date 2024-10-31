@@ -749,7 +749,8 @@ c1 <- ggplot(Cellratio,
   labs(x = "Sample", y = "Ratio", fill = "celltype") +
   theme_classic() + 
   theme(panel.border = element_rect(fill=NA, color="white", size=0.5, linetype="solid"),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), legend.position = "none")
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), legend.position = "none") +
+  scale_fill_manual(values = hue_pal()(colourCount))
 
 # 细胞数量
 
@@ -770,7 +771,8 @@ c2 <- ggplot(Cellnum2,
   labs(x = "Sample", y = "Ratio", fill = "celltype") +
   theme_classic() + 
   theme(panel.border = element_rect(fill=NA, color="white", size=0.5, linetype="solid"),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), legend.position = "none")
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), legend.position = "none") +
+  scale_fill_manual(values = hue_pal()(colourCount))
 
 p <- plot_grid(c1, c2, nrow = 1)
 
@@ -837,11 +839,11 @@ c1 <- ggplot(Cellratio, aes(x = Var1, y = Freq, fill = Var2, label = sprintf("%.
   geom_text(position = position_dodge(width = 0.9), size = 3.5, angle = 90) +
   labs(x = NULL, y = "Cell Ratio (%)", fill = "Cell Type") +
   theme_classic() +
-  scale_fill_manual(values = c("#929bca","#eebe80", "#d48984","#4F7936")) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
     panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid")
-  )
+  ) +
+  scale_fill_manual(values = hue_pal()(colourCount))
 
 
 Cellnum2 <- as.data.frame(Cellnum)
@@ -853,11 +855,11 @@ c2 <- ggplot(Cellnum2, aes(x = Var1, y = Freq, fill = Var2, label = Freq)) +
   geom_text(position = position_dodge(width = 0.9), size = 3.5, angle = 90) +
   labs(x = NULL, y = "Cell Ratio (%)", fill = "Cell Type") +
   theme_classic() +
-  scale_fill_manual(values = c("#929bca","#eebe80", "#d48984","#4F7936")) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
     panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid")
-  )
+  ) +
+  scale_fill_manual(values = hue_pal()(colourCount))
 
 p <- plot_grid(c1, c2, nrow = 1)
 
