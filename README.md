@@ -853,7 +853,7 @@ Cellnum2$Var2 <- factor(Cellnum2$Var2, levels = c('CTRL_1', 'Treat_1', 'Treat_2'
 c2 <- ggplot(Cellnum2, aes(x = Var1, y = Freq, fill = Var2, label = Freq)) +
   geom_bar(stat = "identity", position = "dodge") +
   geom_text(position = position_dodge(width = 0.9), size = 3.5, angle = 90) +
-  labs(x = NULL, y = "Cell Ratio (%)", fill = "Cell Type") +
+  labs(x = NULL, y = "Cell Number", fill = "Cell Type") +
   theme_classic() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
