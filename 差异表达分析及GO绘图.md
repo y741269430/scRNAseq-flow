@@ -155,6 +155,8 @@ deg_num2 <- as.data.frame(unlist(deg_num))
 # 重复cpname多少次（细胞亚群的数量）
 deg_num2$name <- rep(cpname, length(cluster_names))
 # 重复cluster_names多少次（cpname的数量）
+deg_num2$name <- factor(deg_num2$name, levels = cpname)
+
 deg_num2$celltype <- rep(cluster_names, each = length(cpname))
 
 colnames(deg_num2)[1] <- 'Value'
