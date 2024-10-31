@@ -725,7 +725,7 @@ saveRDS(seurat_integrated, paste0(path, "seurat_integrated_2.rds"))
 ---
 ## 10.画图 ####
 
-#### 桑基图柱形图饼图 统计细胞在样本之间的比例 ####
+#### 桑基图柱形图饼图 统计细胞在样本之间的比例 第一种展示方法 ####
 ```r
 # 细胞比例
 
@@ -817,6 +817,52 @@ cowplot::plot_grid(plotlist = plot, nrow = 1)
 ggplot2::ggsave(paste0(path, '细胞比例饼图.pdf'),
                 height = 7, width = 9, dpi = 300, limitsize = FALSE)
 
+```
+#### 统计细胞在样本之间的比例 第一种展示方法 ####
+```r
+Cellnum <- table(Idents(seurat_integrated), seurat_integrated$samplex) 
+Cellratio <- prop.table(Cellnum, margin = 2)*100#计算各组样本不同细胞群比例
+
+# savedata <- as.data.frame.array(Cellnum)
+# savedata <- as.data.frame.array(Cellratio)
+# write.csv(savedata, paste0(path, 'Cellratio_celltype_count.csv'), row.names = T)
+
+Cellratio <- as.data.frame(Cellratio)
+
+Cellratio$Var2 <- factor(Cellratio$Var2, levels = c('CTRL_3d', 'SUS_3d', 'RES_3d'))
+
+# 绘制柱形图
+c1 <- ggplot(Cellratio, aes(x = Var1, y = Freq, fill = Var2, label = sprintf("%.1f%%", Freq))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(position = position_dodge(width = 0.9), size = 3.5, angle = 90) +
+  labs(x = NULL, y = "Cell Ratio (%)", fill = "Cell Type") +
+  theme_classic() +
+  scale_fill_manual(values = c("#929bca","#eebe80", "#d48984","#4F7936")) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+    panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid")
+  )
+
+
+Cellnum2 <- as.data.frame(Cellnum)
+
+Cellnum2$Var2 <- factor(Cellnum2$Var2, levels = c('CTRL_3d', 'SUS_3d', 'RES_3d'))
+
+c2 <- ggplot(Cellnum2, aes(x = Var1, y = Freq, fill = Var2, label = Freq)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(position = position_dodge(width = 0.9), size = 3.5, angle = 90) +
+  labs(x = NULL, y = "Cell Ratio (%)", fill = "Cell Type") +
+  theme_classic() +
+  scale_fill_manual(values = c("#929bca","#eebe80", "#d48984","#4F7936")) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+    panel.border = element_rect(fill = NA, color = "black", size = 0.5, linetype = "solid")
+  )
+
+p <- plot_grid(c1, c2, nrow = 1)
+
+ggplot2::ggsave(paste0(path, "细胞比例柱形图.pdf"), plot = p, 
+                height = 6, width = 15, dpi = 300, limitsize = FALSE)
 ```
 
 #### 通过FindAllMarkers去查找每个细胞群高表达的基因 ####
