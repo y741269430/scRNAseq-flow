@@ -830,8 +830,8 @@ Cellratio <- prop.table(Cellnum, margin = 2)*100#计算各组样本不同细胞�
 # write.csv(savedata, paste0(path, 'Cellratio_celltype_count.csv'), row.names = T)
 
 Cellratio <- as.data.frame(Cellratio)
-
-Cellratio$Var2 <- factor(Cellratio$Var2, levels = c('CTRL_3d', 'SUS_3d', 'RES_3d'))
+colourCount = length(unique(Cellratio$Var1))
+Cellratio$Var2 <- factor(Cellratio$Var2, levels = c('CTRL_1', 'Treat_1', 'Treat_2'))
 
 # 绘制柱形图
 c1 <- ggplot(Cellratio, aes(x = Var1, y = Freq, fill = Var2, label = sprintf("%.1f%%", Freq))) +
@@ -847,8 +847,8 @@ c1 <- ggplot(Cellratio, aes(x = Var1, y = Freq, fill = Var2, label = sprintf("%.
 
 
 Cellnum2 <- as.data.frame(Cellnum)
-
-Cellnum2$Var2 <- factor(Cellnum2$Var2, levels = c('CTRL_3d', 'SUS_3d', 'RES_3d'))
+colourCount = length(unique(Cellnum2$Var1))
+Cellnum2$Var2 <- factor(Cellnum2$Var2, levels = c('CTRL_1', 'Treat_1', 'Treat_2'))
 
 c2 <- ggplot(Cellnum2, aes(x = Var1, y = Freq, fill = Var2, label = Freq)) +
   geom_bar(stat = "identity", position = "dodge") +
