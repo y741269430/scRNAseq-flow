@@ -29,7 +29,8 @@ rtools 版本 4.3.5863
 - 假如要安装一个CRAN的R包，找一个特定版本（旧版本！！！），就直接在这个页面找  https://cran.r-project.org/src/contrib/Archive/ （/后面加包的名字就会进入旧版本的页面，例如）
 https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_3.4.2.tar.gz 这个是直接下载该packages手动安装
 - 这个是让它自动安装并且把依赖的packages也一并安装  
-install.packages('https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_3.4.2.tar.gz', repos = NULL, type = 'source')  
+install.packages('https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_3.4.2.tar.gz', repos = NULL, type = 'source')
+- 20241102新增方法：直接找别人的library拷贝过来~~   
 
 #### 一些装包过程中报错的解决方案   
 https://github.com/satijalab/seurat-object/issues/166  
@@ -382,6 +383,10 @@ seurat_merged2 <- CreateSeuratObject(filtered_counts,
    - miRNA（MIR 开头的基因）
    - 其他特定基因（C1orf, AP0, -AS1 和 Z98 含有的基因等）
 
+关于删除线粒体，核糖体等基因，有一篇文章是这么写的：
+[Nat Immunol 25, 357–370 (2024).](https://www.nature.com/articles/s41590-023-01711-x#Sec14)     
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/Delete gene.png" />    
+
 ```r
 adult.genes <- rownames(seurat_merged2@assays$RNA)
 
@@ -463,7 +468,7 @@ ggplot2::ggsave(paste0(path, "UMAP_split1.pdf"), plot = p2,
 - 1.先做双细胞去除再做细胞注释； 
 - 2.先做细胞注释，然后根据细胞注释去做双细胞去除。（这里我做第二种。）  
 我一般用细胞marker去做注释，你也可以用singleR包注释  
-https://cellxgene.cziscience.com/cellguide 这个网站可以查人类或小鼠的细胞marker  
+[cellguide](https://cellxgene.cziscience.com/cellguide) 这个网站可以查人类或小鼠的细胞marker   
 
 ```r
 marker_ls <- list(Excitatory_neuron = c('Slc17a7','Slc17a6','Rorb', 'Sulf2', 'Cux2') ,
