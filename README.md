@@ -403,7 +403,7 @@ B.gene <- grep('^B[A-Z][0-9]',adult.genes, value = T); head(B.gene, 100)
 Hb.genes_total <- c("Hbb-bt","Hbb-bs","Hba-a3","Hba-a2","Hba-a1",
                     "Hba-a2.1","Alas2","Tent5c","Fech","Bpgm")
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/a1.png" />  
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/a1.png" width="600" />  
 
 ```r
 # 删除所有不需要的基因，如果你有想去除的基因list，则在后面补充  
