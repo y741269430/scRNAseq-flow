@@ -18,8 +18,8 @@
 
 ---
 ## -1.下载R的版本以及安装R包的方式 ####
-下载R（4.3.0版本）：https://mirrors.tuna.tsinghua.edu.cn/CRAN/
-下载Rstudio：https://posit.co/downloads/
+下载R（4.3.0版本）：https://mirrors.tuna.tsinghua.edu.cn/CRAN/    
+下载Rstudio：https://posit.co/downloads/    
 
 ```r
 R.Version()$version.string  # "R version 4.3.0 (2023-04-21 ucrt)"  
