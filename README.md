@@ -1,7 +1,8 @@
 # scRNAseq-flow
 
 ## 目录 ####
-- 0.加载以下包
+- -1.下载R的版本以及安装R包的方式
+- 0.加载包
 - 1.前期准备工作
 - 2.进行质控（这里绘制的是线粒体基因，红细胞基因，核糖体基因的小提琴图）
 - 3.评估质量指标 
@@ -16,7 +17,10 @@
 - 12.GO 富集分析 
 
 ---
-## 0.版本 ####
+## -1.下载R的版本以及安装R包的方式 ####
+下载R（4.3.0版本）：https://mirrors.tuna.tsinghua.edu.cn/CRAN/
+下载Rstudio：https://posit.co/downloads/
+
 ```r
 R.Version()$version.string  # "R version 4.3.0 (2023-04-21 ucrt)"  
 R.Version()$platform  # "x86_64-w64-mingw32"
@@ -36,7 +40,7 @@ install.packages('https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2
 https://github.com/satijalab/seurat-object/issues/166  
 https://github.com/bwlewis/irlba/issues/70
 
-## 0.加载以下包 ####
+## 0.加载包 ####
 ```r
 library(SingleCellExperiment) # 1.22.0
 library(Seurat) # 4.4.0
