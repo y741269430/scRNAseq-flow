@@ -118,6 +118,7 @@ ALL2 <- lapply(ALL, function(x){
 
 for (i in 1:length(ALL2)) { ALL2[[i]]$cluster <- names(ALL2)[i] }
 
+gap <- length(combinations[[1]])
 data1 <- Reduce(rbind, ALL2[c(seq(1, length(ALL2), gap))])
 
 a1 <- jjVolcano(diffData = data1, pSize = 1.5, log2FC.cutoff = 0.5,
