@@ -74,6 +74,7 @@ for(j in 1:length(unique(seurat_integrated$celltype)) ){
       object = seurat_integrated, # 记得改
       ident.1 = ident_1,
       ident.2 = ident_2,
+      min.cells.group = 1,
       logfc.threshold = 0.25
     )
     
