@@ -4,8 +4,8 @@
 - 1.差异表达分析 
 - 2.GO 富集分析 
 
-## 1.差异表达分析 ####
-### 参考 以下这篇文章的差异表达基因选取是+- 0.25
+## 1.差异表达分析 ####    
+参考 以下这篇文章的差异表达基因选取是 +/- 0.25    
 [Nat Neurosci (2024)](https://www.nature.com/articles/s41593-024-01791-4#Sec2)  Analysis of normal aging brains 部分    
 
 ```r
