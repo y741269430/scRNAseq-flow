@@ -40,6 +40,13 @@ install.packages('https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2
 https://github.com/satijalab/seurat-object/issues/166  
 https://github.com/bwlewis/irlba/issues/70
 
+#### 写点笔记        
+- nFeature_RNA：每个细胞所检测到的基因数目      
+- nCount_RNA：每个细胞的UMI数目    
+- nFeature_RNA图：反映的是样品中每个细胞表达的基因数量，表达过高可能是双细胞或者多细胞，表达过低可能是空液滴或者包裹的是环境RNA      
+- nCount_RNA图：反映的是每个细胞中包含的UMI数量也就是转录本的数量      
+- 在10X Genomics测序数据分析过程中，通过UMI对测序得到的reads进行简并之后，就可以看到一个细胞中被读到多少个基因。一般一个细胞可以得到40000-80000个有效的UMI，平均一个细胞的一个基因有10个左右的UMI。          
+
 ## 0.加载包 ####
 ```r
 library(SingleCellExperiment) # 1.22.0
