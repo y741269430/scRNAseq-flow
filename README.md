@@ -2,6 +2,7 @@
 
 ## 目录 ####
 - -1.下载R的版本以及安装R包的方式
+- 写点笔记        
 - 0.加载包
 - 1.前期准备工作
 - 2.进行质控（这里绘制的是线粒体基因，红细胞基因，核糖体基因的小提琴图）
@@ -28,7 +29,7 @@ BiocManager::version() # ‘3.17’
 ```
 rtools 版本 4.3.5863
 
-## 这是一个很无赖的安装R包方法，就是直接去官网找对应版本的页面  
+#### 这是一个很无赖的安装R包方法，就是直接去官网找对应版本的页面  ####
 - https://bioconductor.org/packages/3.17/BiocViews.html#___Software
 - 假如要安装一个CRAN的R包，找一个特定版本（旧版本！！！），就直接在这个页面找  https://cran.r-project.org/src/contrib/Archive/ （/后面加包的名字就会进入旧版本的页面，例如）
 https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_3.4.2.tar.gz 这个是直接下载该packages手动安装
@@ -40,7 +41,7 @@ install.packages('https://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2
 https://github.com/satijalab/seurat-object/issues/166  
 https://github.com/bwlewis/irlba/issues/70
 
-#### 写点笔记        
+### 写点笔记        
 - nFeature_RNA：每个细胞所检测到的基因数目      
 - nCount_RNA：每个细胞的UMI数目    
 - nFeature_RNA图：反映的是样品中每个细胞表达的基因数量，表达过高可能是双细胞或者多细胞，表达过低可能是空液滴或者包裹的是环境RNA      
