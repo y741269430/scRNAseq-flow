@@ -184,6 +184,13 @@ ggplot2::ggsave(paste0(path, "差异表达基因数量统计图.pdf"),
                 height = 6, width = 8, dpi = 300, limitsize = FALSE)
 ```
 
+#### 探讨FindMarkers是如何进行log2FC计算的 ####    
+参考[关于 FindMarkers与AverageExpression 两个函数的差异](http://www.bio-info-trainee.com/8707.html)    
+该文章其中一条函数挺有用的，可以用来观察某个基因的表达量，在某个细胞中的频数    
+```r
+hist(as.matrix(seurat_integrated@assays$RNA@data)['Ccr5', Idents(seurat_integrated)=='BAMs'])
+```
+
 ---
 ## 12.GO 富集分析 ####
 ### 差异表达基因分开上下调 #### 
