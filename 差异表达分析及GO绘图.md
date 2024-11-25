@@ -1,7 +1,12 @@
 # 差异表达分析及GO绘图
 
 ## 目录 ####
-- 1.差异表达分析 
+- 1.差异表达分析
+- 1.1 制作一个contrast的list，用来做循环
+- 1.2 提取差异基因
+- 1.3 差异基因火山图
+- 1.4 计算差异基因数量柱形图
+- 1.5 探讨FindMarkers是如何进行log2FC计算的
 - 2.GO 富集分析 
 
 ## 1.差异表达分析 ####    
@@ -20,7 +25,7 @@ Idents(seurat_integrated) <- seurat_integrated$celltype.exp
 
 table(seurat_integrated@meta.data$celltype.exp)
 ```
-#### 制作一个contrast的list，用来做循环
+#### 1.1 制作一个contrast的list，用来做循环
 ```r
 # 定义需要进行差异表达分析的细胞类型组合
 degmeta <- data.frame(table(seurat_integrated@meta.data$celltype.exp))
@@ -96,7 +101,7 @@ ALL <- lapply(ALL, function(x){
   return(x)
 })
 ```
-#### 提取差异基因
+#### 1.2 提取差异基因
 ```r
 DEG <- lapply(ALL, function(x){ 
   x <- subset(x, p_val < 0.05 & abs(avg_log2FC) >= 0.5) 
@@ -108,7 +113,7 @@ save(ALL, DEG, file = paste0(path, "DEG_list.RData"))
 
 write.xlsx(DEG, file = paste0(path, "DEG_list_log_05.xlsx"))
 ```
-#### 差异基因火山图 ####
+#### 1.3 差异基因火山图 ####
 ```r
 path = 'F:/R work/mmbrain/results/'
 load(paste0(path, "DEG_list.RData"))
@@ -138,7 +143,7 @@ ggplot2::ggsave(paste0(path, "火山图.pdf"), plot = a1,
                 height = 12, width = 13, dpi = 300, limitsize = FALSE)
 ```
 
-#### 计算差异基因数量柱形图 ####
+#### 1.4 计算差异基因数量柱形图 ####
 ```r
 
 # 统计差异基因列表的每个dataframe行数
@@ -184,7 +189,7 @@ ggplot2::ggsave(paste0(path, "差异表达基因数量统计图.pdf"),
                 height = 6, width = 8, dpi = 300, limitsize = FALSE)
 ```
 
-#### 探讨FindMarkers是如何进行log2FC计算的 ####    
+#### 1.5 探讨FindMarkers是如何进行log2FC计算的 ####    
 参考[关于 FindMarkers与AverageExpression 两个函数的差异](http://www.bio-info-trainee.com/8707.html)    
 该文章其中一条函数挺有用的，可以用来观察某个基因的表达量，在某个细胞中的频数    
 ```r
@@ -193,7 +198,7 @@ hist(as.matrix(seurat_integrated@assays$RNA@data)['Ccr5', Idents(seurat_integrat
 
 ---
 ## 12.GO 富集分析 ####
-### 差异表达基因分开上下调 #### 
+### 差异表达基因分开上下调 ####    
 ```r
 rna <- c(lapply(DEG, function(x){x <- x[x$avg_log2FC > 0,]}),
           lapply(DEG, function(x){x <- x[x$avg_log2FC < 0,]}))
@@ -207,10 +212,13 @@ for (i in 1:length(DEG)) {names_down <- c(names_down, paste0('DOWN ', names(DEG)
 names(rna) <- c(names_up, names_down)
 
 rna <- lapply(rna, function(x){x <- x$SYMBOL})
+```
 
-### 差异表达基因不分开上下调 #### 
+### 差异表达基因不分开上下调 ####    
+```r
 rna <- lapply(DEG, function(x){x <- x$SYMBOL})
 ```
+
 ### GO #### 
 ```r
 BP <- clusterProfiler::compareCluster(rna, fun = "enrichGO", ont = "BP", 
@@ -223,4 +231,61 @@ MF <- clusterProfiler::compareCluster(rna, fun = "enrichGO", ont = "MF",
                                       OrgDb = org.Mm.eg.db, keyType = 'SYMBOL', readable = T)
 
 save(BP, CC, MF, file = paste0(path, "DEG_GO.RData"))
+```
+
+#### 假如有两个组进行比较 ####
+比如说 tre2 vs con、 tre1 vs con， 以下函数可以同时展示两个组中，-log10pvalue前20的通路    
+
+```r
+MultiPathway <- function(x, num = 20) {
+  # 分组并提取每组前20个结果
+  GO_2 <- lapply(split(x@compareClusterResult, x@compareClusterResult$Cluster), function(x) {
+    head(x, num)
+  })
+  
+  # 合并所有结果
+  GO_3 <- Reduce(rbind, GO_2)
+  
+  # 提取基因比例中的总基因数
+  GO_3$rati <- as.numeric(str_split_fixed(GO_3$GeneRatio, '/', n = 2)[, 2])
+  
+  # 计算比例
+  GO_3$ratio <- (GO_3$Count / GO_3$rati) * 100
+  
+  # 重命名列
+  colnames(GO_3)[1] <- 'group'
+  
+  # 计算 -log10(pvalue)
+  enrich2 <- GO_3 %>%
+    mutate(log10pvalue = -log10(pvalue))
+  
+  # 处理描述字段，使其适合显示在图中
+  enrich2 <- enrich2 %>% mutate(Description = str_wrap(Description, width = 25))
+  
+  # 按 -log10(pvalue) 排序
+  enrich2 <- enrich2 %>% arrange(desc(log10pvalue))
+  
+  # 根据group数量取颜色
+  color <- c(hue_pal()(length(unique(GO_3$group))))
+  
+  # 创建柱形图
+  p <- ggplot(enrich2, aes(x = reorder(Description, log10pvalue), y = log10pvalue, fill = group)) +
+    geom_bar(stat = "identity", width = 0.8, alpha = 0.7) +
+    coord_flip() +
+    labs(x = "Pathway Description", y = '-log10(pvalue)') +
+    theme_minimal() +
+    theme(
+      axis.text.y = element_text(size = 12),
+      axis.text.x = element_text(size = 10),
+      legend.position = "bottom",
+      plot.title = element_text(hjust = 0.5)
+    ) +
+    geom_text(aes(label = paste0(round(ratio, 2), "%")), vjust = 0.5, size = 3) +
+    ggplot2::scale_x_discrete(labels = function(x) str_wrap(x, width = 70)) + 
+    scale_fill_manual(values = color)
+  
+  return(p)
+}
+
+MultiPathway(BP)
 ```
