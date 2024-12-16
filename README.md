@@ -484,6 +484,8 @@ ggplot2::ggsave(paste0(path, "UMAP_split1.pdf"), plot = p2,
 - 2.先做细胞注释，然后根据细胞注释去做双细胞去除。（这里我做第二种。）  
 我一般用细胞marker去做注释，你也可以用singleR包注释  
 [cellguide](https://cellxgene.cziscience.com/cellguide) 这个网站可以查人类或小鼠的细胞marker   
+[神经元和胶质细胞标记物](https://www.cellsignal.cn/pathways/neuronal-and-glial-cell-markers)
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/neuron_marker.png" width="400" />    
 
 ```r
 marker_ls <- list(Excitatory_neuron = c('Slc17a7','Slc17a6','Rorb', 'Sulf2', 'Cux2') ,
