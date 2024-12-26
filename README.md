@@ -442,6 +442,19 @@ readpath = 'F:/R work/mmbrain/'
 path = 'F:/R work/mmbrain/results/'
 ```
 #### 使用Harmony做整合分析 ####
+为什么用harmony而不用CCA（即Seurat 的三个函数，SelectIntegrationFeatures()、FindIntegrationAnchors()、IntegrateData(),函数做整合的主要思想，就是CCA）？    
+参考：    
+[Nat Methods 16, 1289–1296 (2019).](https://www.nature.com/articles/s41592-019-0619-0)     
+[Genome Biol 21, 12 (2020).](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1850-9)     
+[单细胞基础分析之多样本整合篇](https://zhuanlan.zhihu.com/p/562535338)     
+
+#### 算法原理(摘抄自上述知乎↑)    
+>Harmony需要输入低维空间的坐标值（embedding），单细胞一般使用PCA的降维结果（当然，有些情况使用NMF的方法进行线性降维）。Harmony导入PCA的降维数据后，首先将细胞分组到多数据集各自的clusters中，然后采用soft k-means clustering算法进行多样本细胞聚类。常用的聚类算法仅考虑细胞在低维空间的距离，但是soft clustering算法会考虑提供的校正因素（这里就是不同的样本因素）。举个简单的例子，细胞c2距离cluster1有点远，本来不能算作cluster1的一份子；但是c2和cluster1的细胞来自不同的数据集，因为期望不同的数据集融合，所以破例让它加入cluster1了。处理过程如下：
+>- 1.Harmony概率性地将细胞分配给cluster，从而使每个cluster内数据集的多样性最大化。
+>- 2.Harmony计算每个cluster的所有数据集的全局中心，以及特定数据集的中心。
+>- 3.在每个cluster中，Harmony基于中心为每个数据集计算校正因子。
+>- 4.最后，Harmony使用基于C的特定于细胞的因子校正每个细胞。由于Harmony使用软聚类，因此可以通过多个因子的线性组合对其A中进行的软聚类分配进行线性校正，来修正每个单细胞。   
+
 ```r
 seurat_integrated <- readRDS(paste0(path, "seurat_merged.rds"))
 
