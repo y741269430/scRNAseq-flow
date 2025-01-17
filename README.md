@@ -459,9 +459,9 @@ path = 'F:/R work/mmbrain/results/'
 有人提问，FindVariableFeatures里面，nfeatures为什么选择2000？
 >特征选择:    
 >scRNA-seq数据集降维的第一步通常是特征选择。在此步骤中，对数据集基因进行过滤仅保留对数据的变异性具有信息贡献的基因（在数据中变异大的基因）。这些基因通常被定义为高变化基因（HVG，highly variable genes）。根据任务和数据集的复杂性，通常选择1,000到5,000个HVG用于下游分析。Klein et al.的初步结果表明，下游分析对HVG的数量不太敏感。在HVG数量从200到2,400之间选择不同的数目时，评估显示PCA结果相差不大。基于此结果，我们宁愿选择更多的HVG用于下游分析。    
-[重磅综述：三万字长文读懂单细胞RNA测序分析的最佳实践教程 （原理、代码和评述）](https://mp.weixin.qq.com/s?__biz=MzI5MTcwNjA4NQ%3D%3D&chksm=ec0ddb70db7a5266a4826aa91f26e62c9b6c3fff6711ac646ef581511eaacb2a56df2f59d092&idx=1&mid=2247491322&scene=21&sn=0556e7e8723cac79cc32a2b99e7cadc6#wechat_redirect)    
-[多样本单细胞分析时高变基因的选择途径](https://www.jianshu.com/p/791b57be5fde)
+[重磅综述：三万字长文读懂单细胞RNA测序分析的最佳实践教程 （原理、代码和评述）](https://mp.weixin.qq.com/s?__biz=MzI5MTcwNjA4NQ%3D%3D&chksm=ec0ddb70db7a5266a4826aa91f26e62c9b6c3fff6711ac646ef581511eaacb2a56df2f59d092&idx=1&mid=2247491322&scene=21&sn=0556e7e8723cac79cc32a2b99e7cadc6#wechat_redirect)     
 [Current best practices in single‐cell RNA‐seq analysis: a tutorial](https://www.embopress.org/doi/10.15252/msb.20188746)      
+[多样本单细胞分析时高变基因的选择途径](https://www.jianshu.com/p/791b57be5fde)     
 
 ```r
 seurat_integrated <- readRDS(paste0(path, "seurat_merged.rds"))
