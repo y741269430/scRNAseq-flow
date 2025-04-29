@@ -649,7 +649,10 @@ rm(seurat_integrated); gc()
 ```r
 input_seurat <- seurat_split[[1]]
 ```
-#### 继续往下跑，跑完第一个跑第二个 #### 
+#### 继续往下跑，跑完第一个跑第二个 ####    
+
+#### paramSweep_v3这个函数存在于DoubletFinder 2.0.3版本，如果报错就从里下载吧 ####    
+
 ```r
 seurat_1 <- paramSweep_v3(input_seurat, PCs = 1:10, sct = FALSE)
 seurat_2 <- summarizeSweep(seurat_1, GT = F)
