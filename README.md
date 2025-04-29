@@ -652,6 +652,8 @@ input_seurat <- seurat_split[[1]]
 #### 继续往下跑，跑完第一个跑第二个 ####    
 
 #### paramSweep_v3这个函数存在于DoubletFinder 2.0.3版本，如果报错就从里下载吧 ####    
+- [x86_64-pc-linux-gnu](https://github.com/y741269430/scRNAseq-flow/blob/main/DoubletFinder-x86_64-pc-linux-gnu-Ubuntu%2022.04.3.7z)
+- [x86_64-w64-mingw32x64](https://github.com/y741269430/scRNAseq-flow/blob/main/DoubletFinder-x86_64-w64-mingw32x64-win10.7z)
 
 ```r
 seurat_1 <- paramSweep_v3(input_seurat, PCs = 1:10, sct = FALSE)
