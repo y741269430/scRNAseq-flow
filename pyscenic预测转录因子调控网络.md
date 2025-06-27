@@ -22,7 +22,7 @@ write.csv(matrix_cell, 'test.csv')
 ```
 vim change.py
 ```
-```
+```python
 import os
 import sys
 import loompy as lp
@@ -60,14 +60,14 @@ with open("loom_info.txt", "w") as f:
 
 print("Information has been written to loom_info.txt.")
 ```
-```
+```bash
 python change.py test.csv scrna.loom
 ```
 ## 3.输入loom构建调控网络 ####
 ```
 vim scenic.py
 ```
-```
+```python
 import os
 import subprocess
 import sys
@@ -126,7 +126,7 @@ run_step(aucell_command, "AUCELL step")
 
 print("Script finished successfully.")
 ```
-```
+```bash
 python scenic.py scrna.loom ./output
 ```
 
