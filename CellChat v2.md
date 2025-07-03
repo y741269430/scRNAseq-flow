@@ -375,8 +375,8 @@ netVisual_bubble(cellchat,
                  remove.isolate = F,
                  color.text = col_sample,
                  pairLR.use = pairLR.use)
-
 ```
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/netVisual_bubble.jpg" width="400" />
 
 6.1 Identify dysfunctional signaling by comparing the communication probabities     
 Moreover, CellChat can identify the up-regulated (increased) and down-regulated (decreased) signaling ligand-receptor pairs in one dataset compared to the other dataset. This can be done by specifying `max.dataset` and `min.dataset` in the function `netVisual_bubble`. The increased signaling means these signaling have higher communication probability (strength) in the second dataset compared to the first dataset. The ligand-receptor pairs shown in the bubble plot can be accessed via `gg1$data`.     
@@ -402,7 +402,7 @@ gg2 <- netVisual_bubble(cellchat,
 gg1 + gg2
 ```
 
-# 7.导出通路里面的基因
+## 7.导出通路里面的基因
 ```r
 pathways.show = c('PSAP', 'NEGR', 'L1CAM')
 
@@ -418,8 +418,11 @@ Seurat::VlnPlot(seurat_integrated2, split.by = 'sample', group.by = 'celltype',
   xlab(NULL) +
   guides(fill = guide_legend(reverse = T))
 
+# 或
+plotGeneExpression(cellchat, signaling = "PSAP", split.by = "datasets", colors.ggplot = T, type = "violin")
+
 ```
-# 8.查看基因所在通路的和弦图
+## 8.查看基因所在通路的和弦图
 `netVisual_chord_gene`和`netVisual_chord_cell`是不太一样的注意区别    
 ```r
 pathways.show = c('PSAP', 'NEGR', 'L1CAM')
@@ -439,10 +442,28 @@ netVisual_chord_gene(cell_list[[3]], sources.use = c(1:8), targets.use = c(1:8),
                      signaling = pathways.show[1], 
                      title.name = paste0(pathways.show[1], ' - R'))
 ```
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/netVisual_chord_gene.jpg" width="250" />
 
+## 9.Visually compare cell-cell communication using Chord diagram
+```r
+pathways.show <- 'PTN'
 
+par(mfrow = c(1,3), xpd=TRUE)
+for (i in 1:length(cell_list)) {
+  netVisual_aggregate(cell_list[[i]], signaling = pathways.show, layout = "chord", signaling.name = paste(pathways.show, names(cell_list)[i]))
+}
+```
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/netVisual_aggregate_select.jpg" width="600" />
 
-
+```r
+par(mfrow = c(1,3), xpd=TRUE)
+ht <- list()
+for (i in 1:length(cell_list)) {
+  ht[[i]] <- netVisual_heatmap(cell_list[[i]], signaling = pathways.show, color.heatmap = "Reds",title.name = paste(pathways.show, "signaling ",names(cell_list)[i]))
+}
+ComplexHeatmap::draw(ht[[1]] + ht[[2]] + ht[[3]], ht_gap = unit(0.5, "cm"))
+```
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/netVisual_heatmap_select.jpg" width="600" />
 
 
 
