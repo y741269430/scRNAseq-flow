@@ -15,6 +15,8 @@
 readpath <- 'results/'
 seurat_integrated <- readRDS(paste0(readpath, "seurat_scRNAseq.rds"))
 
+seurat_integrated2 <- subset(seurat_integrated, subset = c((sample == 'C') | (sample == 'S') | (sample == 'R')))
+
 path = 'results/cellchat/'
 
 table(seurat_integrated$sample)
@@ -122,8 +124,7 @@ ggplot2::ggsave(paste0(path, "compareInteractions.pdf"),
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/compareInteraction.jpg" width="400" />     
 
 ## 4. Compare the number of interactions and interaction strength among different cell populations    
-比较不同细胞群之间的相互作用数量和强度-线图 Export as A4 (`weight` 可改成 `count`)    
-4.1 The differential number of interactions or interaction strength in the cell-cell communication network between two datasets can be visualized using circle plot, where `red` (or `blue`) colored edges represent increased(or decreased) signaling in the second dataset compared to the first one.    
+4.1 The differential number of interactions or interaction strength in the cell-cell communication network between two datasets can be visualized using circle plot, where `red` (or `blue`) colored edges represent increased(or decreased) signaling in the second dataset compared to the first one. (比较不同细胞群之间的相互作用数量和强度-线图 Export as A4 (`weight` 可改成 `count`))     
 
 ```r
 par(mfrow = c(1,3))
@@ -133,8 +134,8 @@ netVisual_diffInteraction(cellchat, comparison = c(3,2), weight.scale = T, measu
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/netVisual_diffInteraction.jpg" width="600" />       
 
-比较不同细胞群之间的相互作用数量和强度-热图 Export as A4 (`weight` 可改成 `count`)      
-4.2 CellChat can also show differential number of interactions or interaction strength in greater details using a heatmap. The top colored bar plot represents the sum of each column of the absolute values displayed in the heatmap (incoming signaling). The right colored bar plot represents the sum of each row of the absolute values (outgoing signaling). Therefore, the bar height indicates the degree of change in terms of the number of interactions or interaction strength between the two conditions. In the colorbar, `red` (or `blue`) represents increased (or decreased) signaling in the second dataset compared to the first one.    
+    
+4.2 CellChat can also show differential number of interactions or interaction strength in greater details using a heatmap. The top colored bar plot represents the sum of each column of the absolute values displayed in the heatmap (incoming signaling). The right colored bar plot represents the sum of each row of the absolute values (outgoing signaling). Therefore, the bar height indicates the degree of change in terms of the number of interactions or interaction strength between the two conditions. In the colorbar, `red` (or `blue`) represents increased (or decreased) signaling in the second dataset compared to the first one. (比较不同细胞群之间的相互作用数量和强度-热图 Export as A4 (`weight` 可改成 `count`))      
 
 ```r
 b1 <- netVisual_heatmap(cellchat, measure = 'weight', comparison = c(1,2), title.name = 'S vs C')
@@ -146,8 +147,8 @@ b1+b2+b3 # pdf(4:11)
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/netVisual_heatmap.jpg" width="600" />     
 
 ## 5.Identify altered signaling with distinct interaction strength    
-5.1 Compare the overall information flow of each signaling pathway or ligand-receptor pair    
-比较每个信号通路的整体信息流    
+5.1 Compare the overall information flow of each signaling pathway or ligand-receptor pair (比较每个信号通路的整体信息流)     
+    
 ```r
 h1 <- rankNet(cellchat, comparison = c(1,2), mode = 'comparison', stacked = T, do.stat = T, color.use = col_sample[c(1,2)], title = 'S vs C')
 h2 <- rankNet(cellchat, comparison = c(1,3), mode = 'comparison', stacked = T, do.stat = T, color.use = col_sample[c(1,3)], title = 'R vs C') 
@@ -378,7 +379,7 @@ netVisual_bubble(cellchat,
 ```
 
 6.1 Identify dysfunctional signaling by comparing the communication probabities     
-Moreover, CellChat can identify the up-regulated (increased) and down-regulated (decreased) signaling ligand-receptor pairs in one dataset compared to the other dataset. This can be done by specifying `max.dataset` and `min.dataset` in the function `netVisual_bubble`. The increased signaling means these signaling have higher communication probability (strength) in the second dataset compared to the first dataset. The ligand-receptor pairs shown in the bubble plot can be accessed via `gg1$data`.    
+Moreover, CellChat can identify the up-regulated (increased) and down-regulated (decreased) signaling ligand-receptor pairs in one dataset compared to the other dataset. This can be done by specifying `max.dataset` and `min.dataset` in the function `netVisual_bubble`. The increased signaling means these signaling have higher communication probability (strength) in the second dataset compared to the first dataset. The ligand-receptor pairs shown in the bubble plot can be accessed via `gg1$data`.     
 ```r
 gg1 <- netVisual_bubble(cellchat, 
                         sources.use = 1, 
@@ -401,7 +402,41 @@ gg2 <- netVisual_bubble(cellchat,
 gg1 + gg2
 ```
 
+# 7.导出通路里面的基因
+```r
+pathways.show = c('PSAP', 'NEGR', 'L1CAM')
 
+gene <- list()
+
+for (i in pathways.show) { gene[[i]] <- extractEnrichedLR(cellchat, signaling = i, geneLR.return = TRUE, enriched.only = T)$geneLR }
+
+genes <- Reduce(c, gene)
+
+Seurat::VlnPlot(seurat_integrated2, split.by = 'sample', group.by = 'celltype',
+                genes[c(1:25)], pt.size = 0, flip = T, stack = T)+
+  ylab(NULL) +
+  xlab(NULL) +
+  guides(fill = guide_legend(reverse = T))
+
+```
+# 8.查看基因所在通路的和弦图
+`netVisual_chord_gene`和`netVisual_chord_cell`是不太一样的注意区别    
+```r
+netVisual_chord_gene(cell_list[[1]], sources.use = c(1:8), targets.use = c(1:8), 
+                     lab.cex = 0.5, legend.pos.y = 30, 
+                     signaling = pathways.show[1], 
+                     title.name = paste0(pathways.show[1], ' - C'))
+
+netVisual_chord_gene(cell_list[[2]], sources.use = c(1:8), targets.use = c(1:8), 
+                     lab.cex = 0.5, legend.pos.y = 30, 
+                     signaling = pathways.show[1], 
+                     title.name = paste0(pathways.show[1], ' - S'))
+
+netVisual_chord_gene(cell_list[[3]], sources.use = c(1:8), targets.use = c(1:8), 
+                     lab.cex = 0.5, legend.pos.y = 30, 
+                     signaling = pathways.show[1], 
+                     title.name = paste0(pathways.show[1], ' - R'))
+```
 
 
 
