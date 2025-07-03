@@ -80,15 +80,55 @@ names(cell_list)
 # 导出互作信息
 df.net <- CellChat::subsetCommunication(cellchat)
 ```
+比较交互总数和交互强度     
+```r
+a1 <- compareInteractions(cellchat, show.legend = F, group = c(1:3), measure = 'count', color.use = col_sample[1:3])
+a2 <- compareInteractions(cellchat, show.legend = F, group = c(1:3), measure = 'weight', color.use = col_sample[1:3])
 
-比较不同细胞群之间的相互作用数量和强度-线图 Export as A4 (weight 可改成 count)
+a1 <- data.frame(a1$data)
+a2 <- data.frame(a2$data)
+
+data <- cbind(a1, 'weight' = a2$count)
+
+ggplot(data, aes(x = dataset)) +
+  geom_bar(aes(y = count, fill = dataset), stat = "identity", alpha = 0.8, width = 0.4, position = position_nudge(x = -0.2)) +
+  geom_text(aes(y = count, label = count), vjust = -0.5, position = position_nudge(x = -0.2), size = 3) +
+  geom_bar(aes(y = weight * (max(count) / max(weight)), color = dataset), stat = "identity", fill = NA, size = 1, width = 0.4, position = position_nudge(x = 0.2), alpha = 0.8) +
+  geom_text(aes(y = weight * (max(count) / max(weight)), label = weight), vjust = -0.5, position = position_nudge(x = 0.2), size = 3) +
+  geom_hline(yintercept = 0, color = "black", size = 1) +  # 在 y = 0 处添加 x 轴线
+  scale_y_continuous(
+    name = "Number of inferred interactions",
+    sec.axis = sec_axis(~ . / (max(data$count) / max(data$weight)), name = "Inteaction strength")
+  ) +
+  scale_fill_manual(values = col_sample) +
+  scale_color_manual(values = col_sample) +
+  labs(x = NULL, title = "Cell chat") +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 0, hjust = 1, size = 10, face = "bold", vjust = 1.3),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    axis.title = element_text(size = 12, face = "bold"),
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
+    legend.position = "none"
+  )
+
+ggplot2::ggsave(paste0(path, "compareInteractions.pdf"),
+                height = 6, width = 8, dpi = 300, limitsize = FALSE)
+```
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/compareInteraction.jpg" width="600" />     
+
+比较不同细胞群之间的相互作用数量和强度-线图 Export as A4 (weight 可改成 count)    
 ```r
 par(mfrow = c(1,3))
 netVisual_diffInteraction(cellchat, comparison = c(1,2), weight.scale = T, measure = 'weight', title.name = 'S vs C')
 netVisual_diffInteraction(cellchat, comparison = c(1,3), weight.scale = T, measure = 'weight', title.name = 'R vs C')
 netVisual_diffInteraction(cellchat, comparison = c(3,2), weight.scale = T, measure = 'weight', title.name = 'S vs R')
 ```
-比较不同细胞群之间的相互作用数量和强度-热图 Export as A4 (weight 可改成 count)
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/netVisual_diffInteraction.jpg" width="600" />       
+
+比较不同细胞群之间的相互作用数量和强度-热图 Export as A4 (weight 可改成 count)      
 ```r
 b1 <- netVisual_heatmap(cellchat, measure = 'weight', comparison = c(1,2), title.name = 'S vs C')
 b2 <- netVisual_heatmap(cellchat, measure = 'weight', comparison = c(1,3), title.name = 'R vs C')
@@ -96,7 +136,9 @@ b3 <- netVisual_heatmap(cellchat, measure = 'weight', comparison = c(3,2), title
 
 b1+b2+b3 # pdf(4:11)
 ```
-比较每个信号通路的整体信息流
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/netVisual_heatmap.jpg" width="600" />     
+
+比较每个信号通路的整体信息流    
 ```r
 h1 <- rankNet(cellchat, comparison = c(1,2), mode = 'comparison', stacked = T, do.stat = T, color.use = col_sample[c(1,2)], title = 'S vs C')
 h2 <- rankNet(cellchat, comparison = c(1,3), mode = 'comparison', stacked = T, do.stat = T, color.use = col_sample[c(1,3)], title = 'R vs C') 
@@ -104,7 +146,9 @@ h3 <- rankNet(cellchat, comparison = c(3,2), mode = 'comparison', stacked = T, d
 
 h1+h2+h3 # pdf 14:20
 ```
-将这些差异的通路取交集看看
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/rankNet.jpg" width="600" />    
+
+将这些差异的通路取交集看看    
 ```r
 a1 <- h1$data[h1$data$pvalues < 0.05, ]
 a2 <- h2$data[h2$data$pvalues < 0.05, ]
@@ -121,5 +165,5 @@ ggvenn(data_ls,
 
 ggsave(paste0(path, 'Venn.pdf'), height = 7, width = 10, dpi = 300, limitsize = FALSE)
 ```
-
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/ggvenn.jpg" width="250" />   
 
