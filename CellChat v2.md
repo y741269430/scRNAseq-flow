@@ -1,6 +1,15 @@
 # CellChat    
 
 ## 目录
+- 1. 读取RDS，选择样本进行cellchat
+- 2. Extract the inferred cellular communication network as a data frame
+- 3. Compare the total number of interactions and interaction strength
+- 4. Compare the number of interactions and interaction strength among different cell populations
+- 5. Identify altered signaling with distinct interaction strength      
+- 6. Visualize cell-cell communication mediated by multiple ligand-receptors or signaling pathways
+- 7. 导出通路里面的基因
+- 8. 查看基因所在通路的和弦图
+- 9. Visually compare cell-cell communication using Chord diagram
 
 
 参考    
