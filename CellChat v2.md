@@ -11,13 +11,13 @@
 - 8.查看基因所在通路的和弦图
 - 9.Visually compare cell-cell communication using Chord diagram
 
+---
 
 参考    
 [单细胞分析之细胞交互-3：CellChat](https://www.jianshu.com/p/b3d26ac51c5a)     
 [CellChat Github](https://github.com/jinworks/CellChat)      
 [Inference and analysis of cell-cell communication using CellChat](https://htmlpreview.github.io/?https://github.com/jinworks/CellChat/blob/master/tutorial/CellChat-vignette.html)      
 [Comparison analysis of multiple datasets using CellChat](https://htmlpreview.github.io/?https://github.com/jinworks/CellChat/blob/master/tutorial/Comparison_analysis_of_multiple_datasets.html)     
----
 
 ## 1.读取RDS，选择样本进行cellchat   
 ```r
