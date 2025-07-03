@@ -422,6 +422,8 @@ Seurat::VlnPlot(seurat_integrated2, split.by = 'sample', group.by = 'celltype',
 # 8.查看基因所在通路的和弦图
 `netVisual_chord_gene`和`netVisual_chord_cell`是不太一样的注意区别    
 ```r
+pathways.show = c('PSAP', 'NEGR', 'L1CAM')
+
 netVisual_chord_gene(cell_list[[1]], sources.use = c(1:8), targets.use = c(1:8), 
                      lab.cex = 0.5, legend.pos.y = 30, 
                      signaling = pathways.show[1], 
