@@ -30,7 +30,7 @@ wget https://resources.aertslab.org/cistarget/motif2tf/motifs-v10nr_clust-nr.mgi
 Select motif database:    
 `scores`: Matrix containing motifs as rows and genes as columns and cluster-buster CRM scores as values. To be used with DEM.    
 `rankings`: Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values. To be used with cisTarget (R).    
-The search space around the TSS of the gene in which the motif is scored is indicated in the database name:
+The search space around the TSS of the gene in which the motif is scored is indicated in the database name:    
 `TSS+/-10kb`: 10kb around the TSS (total: 20kb).    
 `500bpUp100Dw`: 500bp upstream of TSS, and 100bp downstream.     
 ```bash
