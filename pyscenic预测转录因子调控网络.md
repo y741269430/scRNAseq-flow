@@ -3,6 +3,16 @@
 - 1.从seurat中选择基因
 - 2.把seurat转成loom
 - 3.输入loom构建调控网络
+- 4.提取 out_SCENIC.loom 信息
+- 5.读取rds
+- 6.选择转录因子进行展示
+- 7.查看不同单细胞亚群的转录因子活性平均值
+- 8.挑选各个单细胞亚群特异性的转录因子
+- 9.绘制每个cluster top5的转录因子
+
+---
+参考
+[Python版SCENIC转录因子分析（四）一文就够了](https://cloud.tencent.com/developer/article/2228252)    
 
 ## 0.数据库下载 ####
 从此下载[Welcome to the cisTarget resources website!](https://resources.aertslab.org/cistarget/)    
@@ -43,19 +53,34 @@ wget https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq
 ```
 
 ## 1.从seurat中选择基因 ####
-我这里个人选择的是一个处理中的一个细胞群，然后选择了差异基因，矩阵大小是4095 genes X 590 cells
+
 ```r
-# 输入基因
-gene = c()
-# 取出细胞亚群
-subsets_cell <- subset(seurat_integrated, idents = c('celltype'))
+readpath = './results/'
+seurat_integrated <- readRDS(paste0(readpath, "seurat.rds"))
+
+seurat_integrated <- subset(seurat_integrated, subset = 
+                              (sample == 'C')| 
+                              (sample == 'S')| 
+                              (sample == 'R')) 
+
+seurat.data <- subset(seurat_integrated, subset = (celltype == 'Endo'))
+
+saveRDS(seurat.data, paste0(readpath, "seurat_Endo.rds"))
+
+# 输入基因(只是示范)
+load('./results/DEG.RData')
+gene <- unique(c(ALL[[1]]$SYMBOL, ALL[[2]]$SYMBOL, ALL[[3]]$SYMBOL))
+
 # 取出矩阵
-matrix_cell <- subsets_cell@assays$RNA@counts
+matrix_cell <- seurat.data@assays$RNA@counts
 # 选择基因
 matrix_cell <- matrix_cell[rownames(matrix_cell) %in% gene, ]
 matrix_cell <- as.data.frame(matrix_cell)
+
+dir.create('./results/scenic/')
+
 # 保存
-write.csv(matrix_cell, 'test.csv')
+write.csv(matrix_cell, './results/scenic/subset_scienic.csv')
 ```
 ## 2.把seurat转成loom ####
 ```
@@ -100,7 +125,7 @@ with open("loom_info.txt", "w") as f:
 print("Information has been written to loom_info.txt.")
 ```
 ```bash
-python change.py test.csv scrna.loom
+python change.py ./results/scenic/subset_scienic.csv ./results/scenic/scrna.loom
 ```
 ## 3.输入loom构建调控网络 ####
 ```
@@ -125,9 +150,9 @@ if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
 # 设置其他文件路径
-tfs = '/home/jjyang/downloads/SCENIC_db/v1/mm_mgi_tfs.txt'
-feather = '/home/jjyang/downloads/SCENIC_db/v1/mm9-tss-centered-10kb-7species.mc9nr.feather'
-tbl = '/home/jjyang/downloads/SCENIC_db/v1/motifs-v9-nr.mgi-m0.001-o0.0.tbl'
+tfs = '/home/jjyang/downloads/SCENIC_db/allTFs_mm.txt'
+feather = '/home/jjyang/downloads/SCENIC_db/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather'
+tbl = '/home/jjyang/downloads/SCENIC_db/motifs-v10nr_clust-nr.mgi-m0.001-o0.0.tbl'
 
 # 创建一个日志文件记录每个步骤
 log_file = os.path.join(output_dir, "scenic_script_log.txt")
@@ -160,13 +185,141 @@ ctx_command = f"nohup pyscenic ctx {os.path.join(output_dir, 'adj.sample.tsv')} 
 run_step(ctx_command, "Contextualization step")
 
 # 3. AUCell step
-aucell_command = f"nohup pyscenic aucell {input_loom} {os.path.join(output_dir, 'reg.csv')} --output {os.path.join(output_dir, 'out_SCENIC.loom')} --num_workers 3"
+aucell_command = f"nohup pyscenic aucell {input_loom} {os.path.join(output_dir, 'reg.csv')} --output {os.path.join(output_dir, 'out_SCENIC.loom')} --num_workers 15"
 run_step(aucell_command, "AUCELL step")
 
 print("Script finished successfully.")
 ```
 ```bash
-python scenic.py scrna.loom ./output
+python scenic.py ./results/scenic/scrna.loom ./results/scenic/output
 ```
+## 4.提取 out_SCENIC.loom 信息 ####
+```r
+loom <- open_loom('./results/scenic/output/out_SCENIC.loom') 
+
+regulons_incidMat <- get_regulons(loom, column.attr.name="Regulons")
+regulons_incidMat[1:4,1:4] 
+regulons <- regulonsToGeneLists(regulons_incidMat)
+regulonAUC <- get_regulons_AUC(loom, column.attr.name='RegulonsAUC')
+regulonAucThresholds <- get_regulon_thresholds(loom)
+tail(regulonAucThresholds[order(as.numeric(names(regulonAucThresholds)))])
+
+embeddings <- get_embeddings(loom)  
+close_loom(loom)
+
+rownames(regulonAUC)
+names(regulons)
+```
+## 5.读取rds ####
+```r
+seurat.data <- readRDS(paste0('F:/output/', "seurat_Endo.rds"))
+seurat.data$seurat_clusters <- seurat.data$RNA_snn_res.0.4
+
+sub_regulonAUC <- regulonAUC[,match(colnames(seurat.data),colnames(regulonAUC))]
+
+dim(sub_regulonAUC)
+seurat.data
+
+#确认是否一致
+identical(colnames(sub_regulonAUC), colnames(seurat.data))
+
+cellClusters <- data.frame(row.names = colnames(seurat.data), 
+                           seurat_clusters = as.character(seurat.data$seurat_clusters))
+cellTypes <- data.frame(row.names = colnames(seurat.data), 
+                        celltype = seurat.data$seurat_clusters)
+head(cellTypes)
+head(cellClusters)
+sub_regulonAUC[1:4,1:4]
+```
+## 6.选择转录因子进行展示 ####
+```r
+regulonsToPlot = c('Atf1(+)','Bach1(+)')
+regulonsToPlot %in% row.names(sub_regulonAUC)
+seurat.data@meta.data = cbind(seurat.data@meta.data ,t(assay(sub_regulonAUC[regulonsToPlot,])))
+
+p1 = DotPlot(seurat.data, features = unique(regulonsToPlot), group.by = 'seurat_clusters') + RotatedAxis()
+p2 = RidgePlot(seurat.data, features = regulonsToPlot, ncol = 2, group.by = 'seurat_clusters') 
+p3 = VlnPlot(seurat.data, features = regulonsToPlot, pt.size = 0, group.by = 'seurat_clusters')
+p4 = FeaturePlot(seurat.data,features = regulonsToPlot)
+
+wrap_plots(p1,p2,p3,p4)
+```
+## 7.查看不同单细胞亚群的转录因子活性平均值 ####
+```r
+# Split the cells by cluster:
+selectedResolution <- "seurat_clusters" # select resolution
+cellsPerGroup <- split(rownames(cellTypes), 
+                       cellTypes[,1])
+
+# 去除extened regulons
+sub_regulonAUC <- sub_regulonAUC[onlyNonDuplicatedExtended(rownames(sub_regulonAUC)),] 
+dim(sub_regulonAUC)
+
+# Calculate average expression:
+regulonActivity_byGroup <- sapply(cellsPerGroup,
+                                  function(cells) 
+                                    rowMeans(getAUC(sub_regulonAUC)[,cells]))
+
+# Scale expression. 
+# Scale函数是对列进行归一化，所以要把regulonActivity_byGroup转置成细胞为行，基因为列
+# 参考：https://www.jianshu.com/p/115d07af3029
+regulonActivity_byGroup_Scaled <- t(scale(t(regulonActivity_byGroup),
+                                          center = T, scale=T)) 
+# 同一个regulon在不同cluster的scale处理
+dim(regulonActivity_byGroup_Scaled)
+
+regulonActivity_byGroup_Scaled = na.omit(regulonActivity_byGroup_Scaled)
+
+Heatmap(
+  regulonActivity_byGroup_Scaled,
+  name                         = "z-score",
+  col                          = colorRamp2(seq(from=-2,to=2,length=11),rev(brewer.pal(11, "Spectral"))),
+  show_row_names               = TRUE,
+  show_column_names            = TRUE,
+  row_names_gp                 = gpar(fontsize = 6),
+  clustering_method_rows = "ward.D2",
+  clustering_method_columns = "ward.D2",
+  row_title_rot                = 0,
+  cluster_rows                 = TRUE,
+  cluster_row_slices           = FALSE,
+  cluster_columns              = FALSE)
+```
+## 8.挑选各个单细胞亚群特异性的转录因子 ####
+```r
+rss <- calcRSS(AUC=getAUC(sub_regulonAUC), 
+               cellAnnotation=cellTypes[colnames(sub_regulonAUC), 1]) 
+rss=na.omit(rss) 
+rssPlot <- plotRSS(rss)
+plotly::ggplotly(rssPlot$plot)
+```
+## 9.绘制每个cluster top5的转录因子 ####
+```r
+rss=regulonActivity_byGroup_Scaled
+head(rss)
+df = do.call(rbind,
+             lapply(1:ncol(rss), function(i){
+               dat= data.frame(
+                 path  = rownames(rss),
+                 cluster =   colnames(rss)[i],
+                 sd.1 = rss[,i],
+                 sd.2 = apply(rss[,-i], 1, median)  
+               )
+             }))
+df$fc = df$sd.1 - df$sd.2
+top5 <- df %>% group_by(cluster) %>% top_n(5, fc)
+rowcn = data.frame(path = top5$cluster) 
+n = rss[top5$path,] 
+#rownames(rowcn) = rownames(n)
+pheatmap(n,
+         annotation_row = rowcn,
+         show_rownames = T)
+```
+
+
+
+
+
+
+
 
 
