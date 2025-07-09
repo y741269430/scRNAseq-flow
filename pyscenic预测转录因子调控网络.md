@@ -34,7 +34,7 @@ The search space around the TSS of the gene in which the motif is scored is indi
 - `TSS+/-10kb`: 10kb around the TSS (total: 20kb).    
 - `500bpUp100Dw`: 500bp upstream of TSS, and 100bp downstream.
 - 这个官网教程[tutorial](https://pyscenic.readthedocs.io/en/latest/tutorial.html)推荐用`rankings`，至于距离的话`TSS+/-10kb`能更好地覆盖大多数 TF 结合位点，如研究启动子近端调控的话就选`500bpUp100Dw`    
-下载速度有点慢，直接IDM下了再传服务器吧。    
+我自己就下载`mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather`(下载速度有点慢，直接IDM下了再传服务器吧)    
 ```bash
 wget https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather
 wget https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.scores.feather
