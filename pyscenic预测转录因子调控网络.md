@@ -15,7 +15,7 @@ wget https://resources.aertslab.org/cistarget/tf_lists/allTFs_mm.txt
 2.`motif2tf`里面，小鼠只有`motifs-v9-nr.mgi-m0.001-o0.0.tbl` 和 `motifs-v10nr_clust-nr.mgi-m0.001-o0.0.tbl`    
 - v9: Annotations based on the 2017 cisTarget motif collection. Use these files if you are using the mc9nr databases.    
 - v10: Annotations based on the 2022 SCENIC+ motif collection. Use these files if you are using the mc_v10_clust databases.
-- 二选一下载    
+- 二选一下载(下载速度有点慢，直接IDM下了再传服务器吧)    
 ```bash
 wget https://resources.aertslab.org/cistarget/motif2tf/motifs-v9-nr.hgnc-m0.001-o0.0.tbl
 wget https://resources.aertslab.org/cistarget/motif2tf/motifs-v10nr_clust-nr.mgi-m0.001-o0.0.tbl
@@ -28,11 +28,12 @@ wget https://resources.aertslab.org/cistarget/motif2tf/motifs-v10nr_clust-nr.mgi
  
 4.`gene_based`这里又细分了`scores`or`rankings`以及`TSS+/-10kb`or`500bpUp100Dw`，4种组合4种结果任君选择。。。    
 Select motif database:    
-`scores`: Matrix containing motifs as rows and genes as columns and cluster-buster CRM scores as values. To be used with DEM.    
-`rankings`: Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values. To be used with cisTarget (R).    
+- `scores`: Matrix containing motifs as rows and genes as columns and cluster-buster CRM scores as values. To be used with DEM.    
+- `rankings`: Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values. To be used with cisTarget (R).    
 The search space around the TSS of the gene in which the motif is scored is indicated in the database name:    
-`TSS+/-10kb`: 10kb around the TSS (total: 20kb).    
-`500bpUp100Dw`: 500bp upstream of TSS, and 100bp downstream.     
+- `TSS+/-10kb`: 10kb around the TSS (total: 20kb).    
+- `500bpUp100Dw`: 500bp upstream of TSS, and 100bp downstream.     
+下载速度有点慢，直接IDM下了再传服务器吧。    
 ```bash
 wget https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather
 wget https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.scores.feather
