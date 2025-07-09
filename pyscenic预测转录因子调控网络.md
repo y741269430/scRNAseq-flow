@@ -32,7 +32,8 @@ Select motif database:
 - `rankings`: Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values. To be used with cisTarget (R).    
 The search space around the TSS of the gene in which the motif is scored is indicated in the database name:    
 - `TSS+/-10kb`: 10kb around the TSS (total: 20kb).    
-- `500bpUp100Dw`: 500bp upstream of TSS, and 100bp downstream.     
+- `500bpUp100Dw`: 500bp upstream of TSS, and 100bp downstream.
+- 这个官网教程[tutorial](https://pyscenic.readthedocs.io/en/latest/tutorial.html)推荐用`rankings`，至于距离的话`TSS+/-10kb`能更好地覆盖大多数 TF 结合位点，如研究启动子近端调控的话就选`500bpUp100Dw`    
 下载速度有点慢，直接IDM下了再传服务器吧。    
 ```bash
 wget https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather
