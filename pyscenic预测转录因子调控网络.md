@@ -28,11 +28,11 @@ wget https://resources.aertslab.org/cistarget/motif2tf/motifs-v10nr_clust-nr.mgi
  
 4.`gene_based`这里又细分了`scores`or`rankings`以及`TSS+/-10kb`or`500bpUp100Dw`，4种组合4种结果任君选择。。。    
 Select motif database:    
-scores: Matrix containing motifs as rows and genes as columns and cluster-buster CRM scores as values. To be used with DEM.    
-rankings: Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values. To be used with cisTarget (R).    
+`scores`: Matrix containing motifs as rows and genes as columns and cluster-buster CRM scores as values. To be used with DEM.    
+`rankings`: Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values. To be used with cisTarget (R).    
 The search space around the TSS of the gene in which the motif is scored is indicated in the database name:
-TSS+/-10kb: 10kb around the TSS (total: 20kb).    
-500bpUp100Dw: 500bp upstream of TSS, and 100bp downstream.     
+`TSS+/-10kb`: 10kb around the TSS (total: 20kb).    
+`500bpUp100Dw`: 500bp upstream of TSS, and 100bp downstream.     
 ```bash
 wget https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather
 wget https://resources.aertslab.org/cistarget/databases/mus_musculus/mm10/refseq_r80/mc_v10_clust/gene_based/mm10_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.scores.feather
