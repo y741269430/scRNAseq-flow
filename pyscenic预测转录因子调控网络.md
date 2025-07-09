@@ -86,9 +86,9 @@ if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
 # 设置其他文件路径
-tfs = '/home/jjyang/jupyter_file/SCENIC_db/v1/mm_mgi_tfs.txt'
-feather = '/home/jjyang/jupyter_file/SCENIC_db/v1/mm9-tss-centered-10kb-7species.mc9nr.feather'
-tbl = '/home/jjyang/jupyter_file/SCENIC_db/v1/motifs-v9-nr.mgi-m0.001-o0.0.tbl'
+tfs = '/home/jjyang/downloads/SCENIC_db/v1/mm_mgi_tfs.txt'
+feather = '/home/jjyang/downloads/SCENIC_db/v1/mm9-tss-centered-10kb-7species.mc9nr.feather'
+tbl = '/home/jjyang/downloads/SCENIC_db/v1/motifs-v9-nr.mgi-m0.001-o0.0.tbl'
 
 # 创建一个日志文件记录每个步骤
 log_file = os.path.join(output_dir, "scenic_script_log.txt")
