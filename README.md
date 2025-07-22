@@ -196,8 +196,8 @@ ggplot2::ggsave(paste0(path, "QC_VlnPlot_five.pdf"), plot = p,
 
 seurat_objects <- lapply(seurat_objects, function(x){
   x@meta.data$sample <- x@meta.data$orig.ident
-  x@meta.data$nUMI <- x@meta.data$nCount_RNA
-  x@meta.data$nGene <- x@meta.data$nFeature_RNA
+  # x@meta.data$nUMI <- x@meta.data$nCount_RNA
+  # x@meta.data$nGene <- x@meta.data$nFeature_RNA
   return(x)
 })
 
@@ -231,7 +231,7 @@ before <- metadata %>%
 # 每个细胞的UMI计数 (UMI counts per cell)
 # 可视化每个细胞的UMI计数
 a1 <- metadata %>% 
-  ggplot(aes(color = sample, x = nUMI, fill = sample)) + 
+  ggplot(aes(color = sample, x = nCount_RNA, fill = sample)) + 
   geom_density(alpha = 0.2) + 
   scale_x_log10(breaks = c(500, 1000, 5000, 10000, 20000)) + 
   theme_classic() +
@@ -256,7 +256,7 @@ a3 <- metadata %>%
   theme_classic() +
   scale_x_log10(breaks = c(500, 1000, 2500, 5000, 10000)) + 
   geom_vline(xintercept = c(500, 1000, 2500, 5000, 10000), linetype = 'dotted') +
-  ggtitle("Genes per cell")
+  ggtitle("Number of genes per cell")
 
 # 每个细胞检测到的基因数量的分布（箱线图）
 a4 <- metadata %>% 
