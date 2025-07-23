@@ -60,7 +60,7 @@ sc.pl.umap(adata,
 
 plt.show()
 ```
-## 使用python绘图   
+## 3.使用python绘图   
 创建细胞-marker字典
 ```python
 marker_genes_dict = {
