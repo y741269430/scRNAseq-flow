@@ -15,7 +15,7 @@ Convert(paste0(readpath, "seurat.h5Seurat"), dest = "h5ad")
 import scanpy as sc
 import pandas as pd
 import os
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as pl
 from matplotlib.gridspec import GridSpec
 from matplotlib import rc_context
 
@@ -56,9 +56,9 @@ sc.pl.umap(adata,
            palette='Paired',
            show=False)                 
 
-#plt.savefig(outdir + '00-UMAP_clusters.pdf', format='pdf', bbox_inches='tight')
+#pl.savefig(outdir + '00-UMAP_clusters.pdf', format='pdf', bbox_inches='tight')
 
-plt.show()
+pl.show()
 ```
 ## 3.使用python绘图   
 创建细胞-marker字典
@@ -78,17 +78,17 @@ marker_genes_dict = {
 1.画散点图
 ```python
 sc.pl.dotplot(adata, marker_genes_dict, 'celltype', dendrogram=True)
-pl.savefig(outdir + "01-Dotplot_markers.pdf", format='pdf')
+#pl.savefig(outdir + "01-Dotplot_markers.pdf", format='pdf')
 ```
 2.画小提琴图
 ```python
 ax = sc.pl.stacked_violin(adata, marker_genes_dict, groupby='celltype', swap_axes=False, dendrogram=True)
-pl.savefig(outdir + "02-stacked-violin.pdf", format='pdf') 
+#pl.savefig(outdir + "02-stacked-violin.pdf", format='pdf') 
 ```
 3.画矩阵热图
 ```python
 sc.pl.matrixplot(adata, marker_genes_dict, 'celltype', dendrogram=True, cmap='Blues', standard_scale='var', colorbar_title='column scaled\nexpression')
-pl.savefig(outdir + "03-matrixplot.pdf", format='pdf')   
+#pl.savefig(outdir + "03-matrixplot.pdf", format='pdf')   
 ```
 4.画矩阵热图（标准化）
 ```python
@@ -106,7 +106,7 @@ ax3_dict = sc.pl.matrixplot(adata, marker_genes_dict, groupby='celltype', ax=ax3
 ax4_dict = sc.pl.matrixplot(adata, marker_genes_dict, groupby='celltype', ax=ax4, colorbar_title='mean z-score', layer='scaled', vmin=-2, vmax=2, cmap='RdBu_r')
 
 #pl.savefig(outdir + "05-plot_combined.pdf", format='pdf') 
-plt.show()
+pl.show()
 ```
 6.热图
 ```python
@@ -121,5 +121,5 @@ ax = sc.pl.heatmap(adata, marker_genes_dict, groupby='celltype', layer='scaled',
 8.Tracksplot
 ```python
 ax = sc.pl.tracksplot(adata, marker_genes_dict, groupby='celltype', dendrogram=True)
-#pl.savefig(outdir + "./07-tracksplot.pdf", format='pdf') 
+#pl.savefig(outdir + "./08-tracksplot.pdf", format='pdf') 
 ```
