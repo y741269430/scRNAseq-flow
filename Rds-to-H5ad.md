@@ -108,3 +108,18 @@ ax4_dict = sc.pl.matrixplot(adata, marker_genes_dict, groupby='celltype', ax=ax4
 #pl.savefig(outdir + "05-plot_combined.pdf", format='pdf') 
 plt.show()
 ```
+6.热图
+```python
+ax = sc.pl.heatmap(adata, marker_genes_dict, groupby='celltype', cmap='viridis', dendrogram=True)
+#pl.savefig(outdir + "06-Heatmaps.pdf", format='pdf') 
+```
+7.热图（标准化）
+```python
+ax = sc.pl.heatmap(adata, marker_genes_dict, groupby='celltype', layer='scaled', vmin=-2, vmax=2, cmap='RdBu_r', dendrogram=True, swap_axes=True, figsize=(11,4))
+#pl.savefig(outdir + "./07-Heatmaps_scaled.pdf", format='pdf')
+```
+8.Tracksplot
+```python
+ax = sc.pl.tracksplot(adata, marker_genes_dict, groupby='celltype', dendrogram=True)
+#pl.savefig(outdir + "./07-tracksplot.pdf", format='pdf') 
+```
