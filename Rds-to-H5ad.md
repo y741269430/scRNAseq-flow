@@ -15,7 +15,7 @@ Convert(paste0(readpath, "seurat.h5Seurat"), dest = "h5ad")
 import scanpy as sc
 import pandas as pd
 import os
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from matplotlib import rc_context
 
@@ -56,9 +56,9 @@ sc.pl.umap(adata,
            palette='Paired',
            show=False)                 
 
-#pl.savefig(outdir + '00-UMAP_clusters.pdf', format='pdf', bbox_inches='tight')
+#plt.savefig(outdir + '00-UMAP_clusters.pdf', format='pdf', bbox_inches='tight')
 
-pl.show()
+plt.show()
 ```
 ## 3.使用python绘图   
 创建细胞-marker字典
@@ -78,23 +78,23 @@ marker_genes_dict = {
 1.画散点图
 ```python
 sc.pl.dotplot(adata, marker_genes_dict, 'celltype', dendrogram=True)
-#pl.savefig(outdir + "01-Dotplot_markers.pdf", format='pdf')
+#plt.savefig(outdir + "01-Dotplot_markers.pdf", format='pdf')
 ```
 2.画小提琴图
 ```python
 ax = sc.pl.stacked_violin(adata, marker_genes_dict, groupby='celltype', swap_axes=False, dendrogram=True)
-#pl.savefig(outdir + "02-stacked-violin.pdf", format='pdf') 
+#plt.savefig(outdir + "02-stacked-violin.pdf", format='pdf') 
 ```
 3.画矩阵热图
 ```python
 sc.pl.matrixplot(adata, marker_genes_dict, 'celltype', dendrogram=True, cmap='Blues', standard_scale='var', colorbar_title='column scaled\nexpression')
-#pl.savefig(outdir + "03-matrixplot.pdf", format='pdf')   
+#plt.savefig(outdir + "03-matrixplot.pdf", format='pdf')   
 ```
 4.画矩阵热图（标准化）
 ```python
 adata.layers['scaled'] = sc.pp.scale(adata, copy=True).X
 sc.pl.matrixplot(adata, marker_genes_dict, 'celltype', dendrogram=True, colorbar_title='mean z-score', layer='scaled', vmin=-2, vmax=2, cmap='RdBu_r')
-#pl.savefig(outdir + "04-matrixplot-scaled.pdf", format='pdf')   
+#plt.savefig(outdir + "04-matrixplot-scaled.pdf", format='pdf')   
 ```
 5.组合图
 ```python
@@ -105,21 +105,21 @@ ax2_dict = sc.pl.stacked_violin(adata, marker_genes_dict, groupby='celltype', ax
 ax3_dict = sc.pl.matrixplot(adata, marker_genes_dict, groupby='celltype', ax=ax3, show=False, cmap='viridis')
 ax4_dict = sc.pl.matrixplot(adata, marker_genes_dict, groupby='celltype', ax=ax4, colorbar_title='mean z-score', layer='scaled', vmin=-2, vmax=2, cmap='RdBu_r')
 
-#pl.savefig(outdir + "05-plot_combined.pdf", format='pdf') 
-pl.show()
+#plt.savefig(outdir + "05-plot_combined.pdf", format='pdf') 
+plt.show()
 ```
 6.热图
 ```python
 ax = sc.pl.heatmap(adata, marker_genes_dict, groupby='celltype', cmap='viridis', dendrogram=True)
-#pl.savefig(outdir + "06-Heatmaps.pdf", format='pdf') 
+#plt.savefig(outdir + "06-Heatmaps.pdf", format='pdf') 
 ```
 7.热图（标准化）
 ```python
 ax = sc.pl.heatmap(adata, marker_genes_dict, groupby='celltype', layer='scaled', vmin=-2, vmax=2, cmap='RdBu_r', dendrogram=True, swap_axes=True, figsize=(11,4))
-#pl.savefig(outdir + "./07-Heatmaps_scaled.pdf", format='pdf')
+#plt.savefig(outdir + "./07-Heatmaps_scaled.pdf", format='pdf')
 ```
 8.Tracksplot
 ```python
 ax = sc.pl.tracksplot(adata, marker_genes_dict, groupby='celltype', dendrogram=True)
-#pl.savefig(outdir + "./08-tracksplot.pdf", format='pdf') 
+#plt.savefig(outdir + "./08-tracksplot.pdf", format='pdf') 
 ```
