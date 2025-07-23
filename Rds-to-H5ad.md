@@ -15,8 +15,9 @@ Convert(paste0(readpath, "seurat.h5Seurat"), dest = "h5ad")
 import scanpy as sc
 import pandas as pd
 import os
-from matplotlib.pyplot import rc_context
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+from matplotlib import rc_context
 
 adata = sc.read_h5ad(r'F:\R work\单细胞结果\seurat.h5ad')
 ```
