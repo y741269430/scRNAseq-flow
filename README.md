@@ -455,8 +455,17 @@ path = 'F:/R work/mmbrain/results/'
 >- 3.在每个cluster中，Harmony基于中心为每个数据集计算校正因子。
 >- 4.最后，Harmony使用基于C的特定于细胞的因子校正每个细胞。由于Harmony使用软聚类，因此可以通过多个因子的线性组合对其A中进行的软聚类分配进行线性校正，来修正每个单细胞。   
 
+#### ​​SCTransform​​ ####    
+整合了`NormalizeData`、`FindVariableFeatures`和`ScaleData`的功能。它使用正则化负二项回归模型，有效消除技术噪音（如测序深度影响），生成更清洁的归一化数据（Pearson残差）    
+```r
+# 例如
+seu<- CreateSeuratObject(data)
+seu <- SCTransform(seu)
+seu <- RunPCA(seu)
+seu <- RunUMAP(seu, dims = 1:10)
+```
+
 #### 特征基因为什么选择2000 ####
-有人提问，FindVariableFeatures里面，nfeatures为什么选择2000？
 >特征选择:    
 >scRNA-seq数据集降维的第一步通常是特征选择。在此步骤中，对数据集基因进行过滤仅保留对数据的变异性具有信息贡献的基因（在数据中变异大的基因）。这些基因通常被定义为高变化基因（HVG，highly variable genes）。根据任务和数据集的复杂性，通常选择1,000到5,000个HVG用于下游分析。Klein et al.的初步结果表明，下游分析对HVG的数量不太敏感。在HVG数量从200到2,400之间选择不同的数目时，评估显示PCA结果相差不大。基于此结果，我们宁愿选择更多的HVG用于下游分析。    
 [重磅综述：三万字长文读懂单细胞RNA测序分析的最佳实践教程 （原理、代码和评述）](https://mp.weixin.qq.com/s?__biz=MzI5MTcwNjA4NQ%3D%3D&chksm=ec0ddb70db7a5266a4826aa91f26e62c9b6c3fff6711ac646ef581511eaacb2a56df2f59d092&idx=1&mid=2247491322&scene=21&sn=0556e7e8723cac79cc32a2b99e7cadc6#wechat_redirect)     
@@ -466,11 +475,16 @@ path = 'F:/R work/mmbrain/results/'
 ```r
 seurat_integrated <- readRDS(paste0(path, "seurat_merged.rds"))
 
+# 默认使用"LogNormalize"方法，考虑测序深度差异并进行对数转换
 seurat_integrated <- Seurat::NormalizeData(seurat_integrated, verbose = FALSE, normalization.method = 'LogNormalize')
+# 识别在细胞间表达变化较大的基因，用于后续降维分析
 seurat_integrated <- FindVariableFeatures(seurat_integrated, selection.method = "vst", nfeatures = 2000)
-seurat_integrated <- ScaleData(seurat_integrated) 
+# 线性变换，使每个基因在所有细胞中的均值为0，方差为1，避免高表达基因主导分析
+seurat_integrated <- ScaleData(seurat_integrated)
+# 主成分分析，线性降维以保留关键生物学差异
 seurat_integrated <- RunPCA(seurat_integrated, features = VariableFeatures(seurat_integrated))
 seurat_integrated <- RunHarmony(seurat_integrated, 'orig.ident')
+# 基于前20个主成分进行UMAP非线性降维，用于可视化细胞群体关系
 seurat_integrated <- RunUMAP(seurat_integrated, dims = 1:20, reduction = 'harmony')
 seurat_integrated <- FindNeighbors(seurat_integrated, dims = 1:20, reduction = 'harmony')
 seurat_integrated <- FindClusters(seurat_integrated, resolution = seq(from = 0.4,by = 0.2, length = 3))
