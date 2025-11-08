@@ -92,6 +92,10 @@ setwd(r"{D:\R work\GSE171169_RAW\}")
 
 seurat_filter <- readRDS("1_QC_Files/seurat_filter.rds")
 
+# 创建输出目录
+if (!dir.exists("2_DoubletFinder")) {
+  dir.create("2_DoubletFinder")
+}
 ```
 4. 预处理 Seurat object    
 ```r
