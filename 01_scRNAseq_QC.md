@@ -301,7 +301,7 @@ colnames(cell_nums)[1:3] <- c('Sample','Cell_nums_before_filter','Cell_nums_afte
 write.table(cell_nums, '1_QC_Files/cell_nums.txt', row.names = F, quote = F, sep = '\t')
 write.xlsx(cell_nums, '1_QC_Files/cell_nums.xlsx', rowNames = F)
 # 生成Markdown表格
-knitr::kable(cell_nums, format = "markdown")
+knitr::kable(cell_nums, format = "markdown", align = 'c')
 
 saveRDS(seurat_filter, "1_QC_Files/seurat_filter.rds")
 ```    
