@@ -190,7 +190,7 @@ ggsave("1_QC_Files/02_QC_Four.png", p, height = 8, width = 12, dpi = 300)
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/02_QC_Four.png" width="600" />    
 
-## 质控3
+## 质控3    
 ```r
 # 线粒体基因计数占比 (Mitochondrial counts ratio)
 # 可视化每个细胞检测到的线粒体基因表达分布
@@ -230,9 +230,10 @@ ggplot2::ggsave("1_QC_Files/03_QC_Density.png", plot = p, height = 6, width = 8,
 # 检测到的UMI数对比基因数 (UMIs vs. genes detected)
 # 可视化每个细胞中检测到的基因数（nFeature_RNA）与UMI数（nCount_RNA）之间的关系，
 # 颜色代表线粒体基因计数占比（mitoRatio），并观察是否存在大量低基因数或低UMI数的细胞。
-```
+```    
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/03_QC_Density.png" width="600" />    
-```r
+
+```r    
 p <- combined_meta %>% 
   ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=mitoRatio)) + 
   geom_point() + 
@@ -247,11 +248,11 @@ p <- combined_meta %>%
 
 ggplot2::ggsave("1_QC_Files/04_QC_UMIs_vs_genes.pdf", plot = p, height = 8, width = 8, dpi = 300)
 ggplot2::ggsave("1_QC_Files/04_QC_UMIs_vs_genes.png", plot = p, height = 8, width = 8, dpi = 300)
-```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/04_QC_UMIs_vs_genes.png" width="600" />    
-
-## 细胞过滤
-```r
+```    
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/04_QC_UMIs_vs_genes.png" width="600" />     
+  
+## 细胞过滤    
+```r    
 # 细胞过滤，具体情况具体分析，我这里的指标是根据文献的指标而定的。
 seurat_filter <- lapply(seurat_objects, function(x){
   x <- subset(x, subset = 
@@ -270,9 +271,9 @@ filter_meta <- do.call(rbind, lapply(seq_along(seurat_filter), function(i) {
 
 # 细胞计数 (Cell Numbers before Filter)
 cell_nums_after_filter <- data.frame(table(filter_meta$sample))
-```
-## 可视化过滤前后的细胞计数
-```r
+```    
+## 可视化过滤前后的细胞计数    
+```r    
 after <- filter_meta %>%
   ggplot(aes(x = sample, fill = sample)) +
   geom_bar(position = "dodge", show.legend = TRUE) +
@@ -286,11 +287,11 @@ p <- plot_grid(before, after); p
 
 ggplot2::ggsave("1_QC_Files/05_QC_NCells.pdf", plot = p, height = 4, width = 8, dpi = 300)
 ggplot2::ggsave("1_QC_Files/05_QC_NCells.png", plot = p, height = 4, width = 8, dpi = 300)
-```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/05_QC_NCells.png" width="500" />    
+```    
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/05_QC_NCells.png" width="500" />      
 
-## 统计过滤前后的细胞数量，并保存结果
-```r
+## 统计过滤前后的细胞数量，并保存结果    
+```r    
 cell_nums <- cbind(cell_nums_before_filter, cell_nums_after_filter[,2])
 cell_nums$Vaild <- percent(cell_nums[,3]/cell_nums[,2])
 cell_nums$Filter <- percent(1 - cell_nums[,3]/cell_nums[,2])
@@ -303,7 +304,7 @@ write.xlsx(cell_nums, '1_QC_Files/cell_nums.xlsx', rowNames = F)
 knitr::kable(cell_nums, format = "markdown")
 
 saveRDS(seurat_filter, "1_QC_Files/seurat_filter.rds")
-```
+```    
 |Sample | Cell_nums_before_filter| Cell_nums_after_filter|Vaild  |Filter |
 |:------|:-----------------------:|:----------------------:|:------|:------|
 |05d_N1 |                    2542|                   2418|95.12% |4.88%  |
