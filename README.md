@@ -701,14 +701,17 @@ gc() # 再清缓存
 # 查看以下列名
 colnames(seurat_singlet@meta.data)
 
-# 根据列名进行选择
-
-seurat_singlet$DF_hi.lo <- seurat_singlet$DF.classifications_0.25_0.005_721
-seurat_singlet$DF_hi.lo[which(seurat_singlet$DF_hi.lo == "Doublet" & seurat_singlet$DF.classifications_0.25_0.005_474 == "Singlet")] <- "Doublet-Low Confidience"
-seurat_singlet$DF_hi.lo[which(seurat_singlet$DF_hi.lo == "Doublet")] <- "Doublet-High Confidience"
-
+# 创建新列，基于第二种参数的结果
 seurat_singlet$DF_hi.lo <- seurat_singlet$DF.classifications_0.25_0.005_474
 
+# 根据两种参数的一致性来标记置信度
+seurat_singlet$DF_hi.lo[which(seurat_singlet$DF_hi.lo == "Doublet" & 
+                              seurat_singlet$DF.classifications_0.25_0.005_721 == "Doublet")] <- "Doublet-High Confidence"
+
+seurat_singlet$DF_hi.lo[which(seurat_singlet$DF_hi.lo == "Doublet" & 
+                              seurat_singlet$DF.classifications_0.25_0.005_721 == "Singlet")] <- "Doublet-Low Confidence"
+
+# 查看分类结果
 table(seurat_singlet$DF_hi.lo)
 
 b1 <- DimPlot(seurat_singlet, reduction = 'umap', group.by ="DF_hi.lo") + coord_equal(ratio = 1) 
