@@ -49,39 +49,12 @@ DoubletFinder 包含以下关键参数：
 ## 二、单样本去除双细胞分析流程
 读取上一部分析中的rds [01_scRNAseq_QC](https://github.com/y741269430/scRNAseq-flow/blob/main/01_scRNAseq_QC.md)    
 
-1. 加载R包
+1. 加载R包    
 ```r
 # 1. 加载R包 ####
-library(SingleCellExperiment) # 1.22.0
-library(Seurat) # 4.4.0
-library(SeuratObject) # 4.1.4
-library(tidyverse) # 2.0.0
-library(Matrix) # 1.6-1 # 1.6-1.1 # 1.6-2 这三个版本都可以
-library(scales) # 1.2.1
-library(cowplot) # 1.1.1
-library(RCurl) # 1.98-1.12
-library(clustree) # 0.5.0
-library(SingleR) # 2.2.0
-library(clusterProfiler) # 4.8.1
-library(org.Mm.eg.db) # 3.17.0
-library(Scillus) # 0.5.0
-library(ggpubr) # 0.6.0
-library(ggplot2) # 3.4.2
-library(DoubletFinder) # 2.0.3
-library(harmony) # 1.2.0
-library(openxlsx) # 4.2.5.2
-library(MySeuratWrappers) # 0.1.0
-library(ggsci) # 3.0.0
-library(data.table) # 1.14.8
-library(scRNAtoolVis) # 0.0.7
-#remotes::install_github('https://github.com/ekernf01/DoubletFinder', force = T)
-#remotes::install_github("lyc-1995/MySeuratWrappers")
+source('my_scRNAseq.R')
 ```
-2. 计算双细胞率的函数    
-```r
-# 2. 计算双细胞率的函数 ####
-get_multiplet_rate <- function(cellnums) { min(0.004 * (cellnums / 500), 0.08) }
-```
+2. 根据该表格估算每个500个细胞有0.4%的多细胞率。      
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/doublet_rate.png" width="500" />
 
 3. 配置环境并读取rds
