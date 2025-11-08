@@ -234,7 +234,6 @@ saveRDS(seu_data_singlet, "2_DoubletFinder/seurat_singlet.rds")
 ```r
 # 设置工作目录，批量创建文件夹储存结果
 setwd(r"{D:\R work\GSE171169_RAW\}")
-setwd('/Users/mac/R work/GSE171169_RAW/')
 
 # 读取数据
 seurat_filter <- readRDS("1_QC_Files/seurat_filter.rds")
