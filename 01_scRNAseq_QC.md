@@ -25,6 +25,7 @@ library(MySeuratWrappers) # 0.1.0
 library(ggsci) # 3.0.0
 library(data.table) # 1.14.8
 library(scRNAtoolVis) # 0.0.7
+library(fs) # 1.6.6
 ```
 2. 配置环境
 ```r
