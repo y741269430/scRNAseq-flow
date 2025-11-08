@@ -1,4 +1,4 @@
-# 02_ DoubletFinder
+# 02_DoubletFinder
 
 ## 一、DoubletFinder 总览
 参考来源：[chris-mcginnis-ucsf/DoubletFinder](https://github.com/chris-mcginnis-ucsf/DoubletFinder?tab=readme-ov-file#pk-selection)     
