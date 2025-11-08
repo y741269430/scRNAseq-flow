@@ -327,3 +327,6 @@ saveRDS(seurat_filter, "1_QC_Files/seurat_filter.rds")
 | 14d_N1 |          2583           |          2524          |       2.28%       |       97.72%        |
 | 14d_N2 |          2313           |          2288          |       1.08%       |       98.92%        |
 
+## 联系方式
+- 作者: JJYang
+- 邮箱: y741269430@163.com
