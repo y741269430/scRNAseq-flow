@@ -116,7 +116,7 @@ combined_meta <- do.call(rbind, lapply(seq_along(seurat_objects), function(i) {
              seurat_objects[[i]]@meta.data)
 }))
 ```
-5. 质控1    
+5. 质控1（Gene Count、UMI Count、MT Ratio、Hb Percent、Ribo Percent）    
 ```r
 # 5. 质控1  ####
 # 创建质控图
@@ -152,7 +152,7 @@ before <- combined_meta %>%
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/01_QC_VlnPlot.png" width="500" />    
 
-6. 质控2    
+6. 质控2（每个细胞的UMI计数、复杂度、每个细胞检测到的基因数分布、每个细胞检测到的基因数量的分布（箱线图））    
 ```r
 # 6. 质控2  ####
 # 每个细胞的UMI计数 (UMI counts per cell)
@@ -200,7 +200,7 @@ ggsave("1_QC_Files/02_QC_Four.png", p, height = 8, width = 12, dpi = 300)
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/02_QC_Four.png" width="600" />    
 
-7. 质控3    
+7. 质控3（线粒体基因计数占比、红细胞基因计数占比、核糖体基因计数占比）    
 ```r
 # 7. 质控3 ####
 # 线粒体基因计数占比 (Mitochondrial counts ratio)
@@ -238,13 +238,14 @@ p <- plot_grid(a1, a2, a3, align = "v", nrow = 2)
 ggplot2::ggsave("1_QC_Files/03_QC_Density.pdf", plot = p, height = 6, width = 8, dpi = 300)
 ggplot2::ggsave("1_QC_Files/03_QC_Density.png", plot = p, height = 6, width = 8, dpi = 300)
 
-# 检测到的UMI数对比基因数 (UMIs vs. genes detected)
-# 可视化每个细胞中检测到的基因数（nFeature_RNA）与UMI数（nCount_RNA）之间的关系，
-# 颜色代表线粒体基因计数占比（mitoRatio），并观察是否存在大量低基因数或低UMI数的细胞。
 ```    
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/03_QC_Density.png" width="600" />    
 
-```r    
+```r
+# 检测到的UMI数对比基因数 (UMIs vs. genes detected)
+# 可视化每个细胞中检测到的基因数（nFeature_RNA）与UMI数（nCount_RNA）之间的关系，
+# 颜色代表线粒体基因计数占比（mitoRatio），并观察是否存在大量低基因数或低UMI数的细胞。
+
 p <- combined_meta %>% 
   ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=mitoRatio)) + 
   geom_point() + 
@@ -327,6 +328,28 @@ saveRDS(seurat_filter, "1_QC_Files/seurat_filter.rds")
 | 14d_N1 |          2583           |          2524          |       2.28%       |       97.72%        |
 | 14d_N2 |          2313           |          2288          |       1.08%       |       98.92%        |
 
+11. 目录树      
+```r
+fs::dir_tree("1_QC_Files", recurse = 2)
+```
+```bash
+1_QC_Files
+├── 01_QC_VlnPlot.pdf
+├── 01_QC_VlnPlot.png
+├── 02_QC_Four.pdf
+├── 02_QC_Four.png
+├── 03_QC_Density.pdf
+├── 03_QC_Density.png
+├── 04_QC_UMIs_vs_genes.pdf
+├── 04_QC_UMIs_vs_genes.png
+├── 05_QC_NCells.pdf
+├── 05_QC_NCells.png
+├── cell_nums.txt
+├── cell_nums.xlsx
+├── markdown.txt
+├── seurat_filter.rds
+└── seurat_objects.rds
+```
 ## 联系方式
 - 作者: JJYang
 - 邮箱: y741269430@163.com
