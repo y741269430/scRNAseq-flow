@@ -317,3 +317,32 @@ saveRDS(seurat_filter, "1_QC_Files/seurat_filter.rds")
 |14d_N1 |                    2583|                   2524|97.72% |2.28%  |
 |14d_N2 |                    2313|                   2288|98.92% |1.08%  |
 
+---
+目录树      
+```r
+fs::dir_tree("1_QC_Files", recurse = 2)
+```
+```
+1_QC_Files
+├── 01_QC_VlnPlot.pdf
+├── 01_QC_VlnPlot.png
+├── 02_QC_Four.pdf
+├── 02_QC_Four.png
+├── 03_QC_Density.pdf
+├── 03_QC_Density.png
+├── 04_QC_UMIs_vs_genes.pdf
+├── 04_QC_UMIs_vs_genes.png
+├── 05_QC_NCells.pdf
+├── 05_QC_NCells.png
+├── cell_nums.txt
+├── cell_nums.xlsx
+├── markdown.txt
+├── seurat_filter.rds
+└── seurat_objects.rds
+```
+
+### 联系方式    
+- 作者：JJYang
+- 邮箱：y741269430@163.com
+- 创建日期：2025-11-08
+- 修改日期：2025-11-08
