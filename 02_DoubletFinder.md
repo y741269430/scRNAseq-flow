@@ -51,6 +51,7 @@ DoubletFinder 包含以下关键参数：
 
 1. 加载R包
 ```r
+# 1. 加载R包 ####
 library(SingleCellExperiment) # 1.22.0
 library(Seurat) # 4.4.0
 library(SeuratObject) # 4.1.4
@@ -78,12 +79,14 @@ library(scRNAtoolVis) # 0.0.7
 ```
 2. 计算双细胞率的函数    
 ```r
+# 2. 计算双细胞率的函数 ####
 get_multiplet_rate <- function(cellnums) { min(0.004 * (cellnums / 500), 0.08) }
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/doublet_rate.png" width="500" />
 
 3. 配置环境并读取rds
 ```r
+# 3. 配置环境并读取rds ####
 # 调整R内允许对象大小的限制（默认值是500*1024 ^ 2 = 500 Mb）
 options(future.globals.maxSize = 500 * 1024 ^ 2)
 
@@ -99,6 +102,7 @@ if (!dir.exists("2_DoubletFinder")) {
 ```
 4. 预处理 Seurat object    
 ```r
+# 4. 预处理 Seurat object ####
 # 取一个样本进行示范
 input_data <- seurat_filter[[1]]
 
@@ -115,6 +119,7 @@ table(seu_data$seurat_clusters)
 ```
 5. 计算最优 pK (no ground-truth)    
 ```r
+# 5. 计算最优 pK (no ground-truth) ####
 sweep.res.list <- paramSweep_v3(seu_data, PCs = 1:10, sct = F)
 sweep.res.list <- summarizeSweep(sweep.res.list, GT = F)
 bcmvn <- find.pK(sweep.res.list)
@@ -122,6 +127,7 @@ mpK <- as.numeric(as.vector(bcmvn$pK[which.max(bcmvn$BCmetric)])); mpK # mpK = 0
 ```
 6. 可视化
 ```r
+# 6. 可视化 ####
 p <- ggplot(bcmvn, aes(x = pK, y = BCmetric, group = 1)) + 
   labs(x = 'pK', 
        y = 'BCmvn',
@@ -141,6 +147,7 @@ ggplot2::ggsave("2_DoubletFinder/01_BCmvn_distributions.png", plot = p, height =
 
 7. 计算理论双细胞比例与同源双细胞比例
 ```r
+# 7. 计算理论双细胞比例与同源双细胞比例 ####
 annotations <- seu_data@meta.data$seurat_clusters
 homotypic.prop <- modelHomotypic(annotations) # 同源双细胞比例估算
 
@@ -159,6 +166,7 @@ ncol(seu_data@meta.data)
 ```
 8. 使用`doubletFinder_v3`计算双细胞数量
 ```r
+# 8. 使用doubletFinder_v3计算双细胞数量 ####
 seu_data <- doubletFinder_v3(seu_data, PCs = 1:10, pN = 0.25, pK = mpK, nExp = nExp_poi, 
                              reuse.pANN = F, sct = F)
 
@@ -193,6 +201,7 @@ seu_data$DF_hi.lo <- ifelse(
 ```
 9. 可视化评估双细胞的结果
 ```r
+# 9. 可视化评估双细胞的结果 ####
 p1 <- DimPlot(seu_data, reduction = 'umap', group.by ="seurat_clusters") + coord_equal(ratio = 1) 
 p2 <- DimPlot(seu_data, reduction = 'umap', group.by ="DF_hi.lo") + coord_equal(ratio = 1) 
 p <- plot_grid(p1, p2, nrow = 1, align = "hv", axis = "tblr")
@@ -215,6 +224,7 @@ ggplot2::ggsave("2_DoubletFinder/03_Violin_DoubletFinder.png", plot = p, height 
 
 10. 双细胞数量的统计表
 ```r
+# 10. 双细胞数量的统计表 ####
 doubletFinder_res <- as.data.frame.matrix(t(table(seu_data$DF_hi.lo)))
 doubletFinder_res$Cell_Discard_Rate <- percent(c(1 - c(doubletFinder_res[,3] / ncol(seu_data) )), 0.01)
 doubletFinder_res$Cell_Retention_Rate <- percent(c(doubletFinder_res[,3] / ncol(seu_data) ), 0.01)
@@ -226,15 +236,16 @@ write.xlsx(doubletFinder_res, '2_DoubletFinder/singlet.xlsx', rowNames = F)
 txt <- knitr::kable(doubletFinder_res, format = "markdown", align = 'c')
 write.table(txt, '2_DoubletFinder/markdown.txt', row.names = F, quote = F, col.names = F)
 ```
-11. 保存去除双细胞后的结果。  
+11. 保存去除双细胞后的结果  
 ```r
+# 11. 保存去除双细胞后的结果 ####
 Idents(seu_data) <- seu_data$DF_hi.lo
 seu_data_singlet <- subset(seu_data, idents = 'Singlet')
 saveRDS(seu_data_singlet, "2_DoubletFinder/seurat_singlet.rds")
 ```
 ---
 ## 三、多样本批量运行 DoubletFinder
-输入准备
+1. 输入准备
 ```r
 # 设置工作目录，批量创建文件夹储存结果
 setwd(r"{D:\R work\GSE171169_RAW\}")
@@ -253,7 +264,7 @@ if (!dir.exists("2_DoubletFinder")) {
 # 检查每个样本列数是否是10列，计算双细胞时，会在metadata后面添加第11列，12列，13列
 ncol(seurat_filter[[1]]@meta.data)
 ```
-批量运行
+2. 批量运行
 ```r
 # 存储所有样本的结果
 all_results <- list()
@@ -385,7 +396,7 @@ for (i in 1:length(seurat_filter)) {
   cat("样本", sample_name, "处理完成!\n\n")
 }
 ```
-合并所有样本结果(xlsx, txt, markdown)
+3. 合并所有样本结果(xlsx, txt, markdown)
 ```r
 if (length(all_results) > 0) {
   combined_results <- do.call(rbind, all_results)
