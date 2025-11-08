@@ -228,3 +228,187 @@ Idents(seu_data) <- seu_data$DF_hi.lo
 seu_data_singlet <- subset(seu_data, idents = 'Singlet')
 saveRDS(seu_data_singlet, "2_DoubletFinder/seurat_singlet.rds")
 ```
+---
+## 三、多样本批量运行 DoubletFinder
+输入准备
+```r
+# 设置工作目录，批量创建文件夹储存结果
+setwd(r"{D:\R work\GSE171169_RAW\}")
+setwd('/Users/mac/R work/GSE171169_RAW/')
+
+# 读取数据
+seurat_filter <- readRDS("1_QC_Files/seurat_filter.rds")
+
+# 双细胞率计算函数
+get_multiplet_rate <- function(cellnums) { min(0.004 * (cellnums / 500), 0.08) }
+
+# 创建输出目录
+if (!dir.exists("2_DoubletFinder")) {
+  dir.create("2_DoubletFinder")
+}
+
+# 检查每个样本列数是否是10列，计算双细胞时，会在metadata后面添加第11列，12列，13列
+ncol(seurat_filter[[1]]@meta.data)
+```
+批量运行
+```r
+# 存储所有样本的结果
+all_results <- list()
+
+# 批量处理每个样本
+for (i in 1:length(seurat_filter)) {
+  sample_name <- names(seurat_filter)[i]
+  cat("正在处理样本:", sample_name, "\n")
+  
+  # 为每个样本创建子目录
+  sample_dir <- paste0("2_DoubletFinder/", sample_name)
+  if (!dir.exists(sample_dir)) {
+    dir.create(sample_dir)
+  }
+  
+  # 获取当前样本数据
+  input_data <- seurat_filter[[i]]
+  
+  # 预处理
+  seu_data <- input_data %>%
+    NormalizeData() %>%
+    FindVariableFeatures() %>%
+    ScaleData() %>% 
+    RunPCA() %>% 
+    RunUMAP(dims = 1:10) %>%
+    FindNeighbors(dims = 1:10) %>% 
+    FindClusters(resolution = 0.2)
+  
+  # DoubletFinder参数优化
+  sweep.res.list <- paramSweep_v3(seu_data, PCs = 1:10, sct = F)
+  sweep.res.list <- summarizeSweep(sweep.res.list, GT = F)
+  bcmvn <- find.pK(sweep.res.list)
+  mpK <- as.numeric(as.vector(bcmvn$pK[which.max(bcmvn$BCmetric)]))
+  
+  ## 可视化参数优化结果
+  p <- ggplot(bcmvn, aes(x = pK, y = BCmetric, group = 1)) + 
+    labs(x = 'pK', 
+         y = 'BCmvn',
+         title = paste0('BCmvn Distribution - ', sample_name),
+         subtitle = paste0('Optimal pK = ', mpK)) + 
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+          plot.title = element_text(face = "bold", size = 14),
+          plot.subtitle = element_text(color = "blue", size = 12)) +
+    geom_point(color = 'red', size = 1.5) + 
+    geom_line(color = 'blue', linewidth = 0.5)
+  
+  ggplot2::ggsave(paste0(sample_dir, "/01_BCmvn_distributions.pdf"), plot = p, height = 4, width = 6, dpi = 300)
+  ggplot2::ggsave(paste0(sample_dir, "/01_BCmvn_distributions.png"), plot = p, height = 4, width = 6, dpi = 300)
+  
+  # 计算同源双细胞比例
+  annotations <- seu_data@meta.data$seurat_clusters
+  homotypic.prop <- modelHomotypic(annotations) 
+  
+  # 计算双细胞率
+  cellnums <- ncol(seu_data)
+  rate <- get_multiplet_rate(cellnums)
+  cat("样本", sample_name, "细胞数:", cellnums, "-> 双细胞率:", percent(rate, 0.001), "\n")
+  
+  nExp_poi <- round(rate * ncol(seu_data))
+  nExp_poi.adj <- round(nExp_poi * (1 - homotypic.prop))
+  
+  # 运行DoubletFinder
+  seu_data <- doubletFinder_v3(seu_data, PCs = 1:10, pN = 0.25, pK = mpK, nExp = nExp_poi, 
+                               reuse.pANN = F, sct = F)
+  
+  seu_data <- doubletFinder_v3(seu_data, PCs = 1:10, pN = 0.25, pK = mpK, nExp = nExp_poi.adj, 
+                               reuse.pANN = colnames(seu_data@meta.data)[[11]], sct = F)
+  
+  # 置信度分级
+  seu_data$DF_hi.lo <- ifelse(
+    seu_data@meta.data[,12] == "Doublet" & 
+      seu_data@meta.data[,13] == "Doublet",
+    "Doublet-High Confidence",
+    ifelse(
+      seu_data@meta.data[,12] == "Doublet" | 
+        seu_data@meta.data[,13] == "Doublet",
+      "Doublet-Low Confidence",
+      "Singlet"
+    )
+  )
+  
+  # UMAP可视化
+  p1 <- DimPlot(seu_data, reduction = 'umap', group.by = "seurat_clusters") + 
+    coord_equal(ratio = 1) +
+    ggtitle(paste0("Seurat Clusters - ", sample_name))
+  
+  p2 <- DimPlot(seu_data, reduction = 'umap', group.by = "DF_hi.lo") + 
+    coord_equal(ratio = 1) +
+    ggtitle(paste0("DoubletFinder - ", sample_name))
+  
+  p <- plot_grid(p1, p2, nrow = 1, align = "hv", axis = "tblr")
+  
+  ggplot2::ggsave(paste0(sample_dir, "/02_UMAP_DoubletFinder.pdf"), plot = p, height = 6, width = 12, dpi = 300)
+  ggplot2::ggsave(paste0(sample_dir, "/02_UMAP_DoubletFinder.png"), plot = p, height = 6, width = 12, dpi = 300)
+  
+  # 小提琴图
+  p <- Seurat::VlnPlot(seu_data, group.by = "DF_hi.lo", 
+                       features = c("nCount_RNA", "nFeature_RNA"), 
+                       pt.size = 0, ncol = 2) 
+  
+  ggplot2::ggsave(paste0(sample_dir, "/03_Violin_DoubletFinder.pdf"), plot = p, height = 5, width = 10, dpi = 300)
+  ggplot2::ggsave(paste0(sample_dir, "/03_Violin_DoubletFinder.png"), plot = p, height = 5, width = 10, dpi = 300)
+  
+  # 统计结果
+  doubletFinder_res <- as.data.frame.matrix(t(table(seu_data$DF_hi.lo)))
+  doubletFinder_res$Sample <- sample_name
+  doubletFinder_res$Total_Cells <- ncol(seu_data)
+  doubletFinder_res$Cell_Discard_Rate <- percent(1 - (doubletFinder_res[,3] / ncol(seu_data)), 0.01)
+  doubletFinder_res$Cell_Retention_Rate <- percent(doubletFinder_res[,3] / ncol(seu_data), 0.01)
+  doubletFinder_res <- doubletFinder_res[,c(4,5,1,2,3,6,7)]
+  
+  # 保存单个样本结果
+  write.table(doubletFinder_res, paste0(sample_dir, "/singlet.txt"), row.names = F, quote = F, sep = '\t')
+  write.xlsx(doubletFinder_res, paste0(sample_dir, "/singlet.xlsx"), rowNames = F)
+  
+  # 保存markdown表格
+  txt <- knitr::kable(doubletFinder_res, format = "markdown", align = 'c')
+  write.table(txt, paste0(sample_dir, "/markdown.txt"), row.names = F, quote = F, col.names = F)
+  
+  # 保存单细胞数据
+  Idents(seu_data) <- seu_data$DF_hi.lo
+  seu_data_singlet <- subset(seu_data, idents = 'Singlet')
+  saveRDS(seu_data_singlet, paste0(sample_dir, "/seurat_singlet.rds"))
+  
+  # 存储结果
+  all_results[[sample_name]] <- doubletFinder_res
+  
+  cat("样本", sample_name, "处理完成!\n\n")
+}
+```
+合并所有样本结果(xlsx, txt, markdown)
+```r
+if (length(all_results) > 0) {
+  combined_results <- do.call(rbind, all_results)
+  write.xlsx(combined_results, "2_DoubletFinder/combined_results.xlsx", rowNames = F)
+  write.table(combined_results, "2_DoubletFinder/combined_results.txt", row.names = F, quote = F, sep = '\t')
+  rownames(combined_results) <- NULL
+  txt <- knitr::kable(combined_results, format = "markdown", align = 'c')
+  write.table(txt, "2_DoubletFinder/combined_markdown.txt", row.names = F, quote = F, col.names = F)
+  
+  # 生成汇总报告
+  summary_df <- data.frame(
+    Sample = names(all_results),
+    Total_Cells = sapply(all_results, function(x) x$Total_Cells[1]),
+    Singlet_Cells = sapply(all_results, function(x) x[,3][1]),
+    Retention_Rate = sapply(all_results, function(x) x$Cell_Retention_Rate[1])
+  )
+  rownames(summary_df) <- NULL
+  
+  print("=== 双细胞检测汇总 ===")
+  print(summary_df)
+}
+```
+结果汇总
+| Sample | Total_Cells | Doublet-High Confidence | Doublet-Low Confidence | Singlet | Cell_Discard_Rate | Cell_Retention_Rate |
+|:------:|:-----------:|:-----------------------:|:----------------------:|:-------:|:-----------------:|:-------------------:|
+| 05d_N1 |    2418     |           38            |           9            |  2371   |       1.94%       |       98.06%        |
+| 05d_N2 |    3289     |           72            |           15           |  3202   |       2.65%       |       97.35%        |
+| 14d_N1 |    2524     |           44            |           7            |  2473   |       2.02%       |       97.98%        |
+| 14d_N2 |    2288     |           36            |           6            |  2246   |       1.84%       |       98.16%        |
