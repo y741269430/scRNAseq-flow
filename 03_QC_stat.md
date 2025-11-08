@@ -191,7 +191,13 @@ fs::dir_tree("3_QC_stat", recurse = 2)
 ├── QC_Final_Comparison.pdf
 ├── QC_Final_Comparison.png
 ├── combined_qc.txt
-└── combined_qc.xlsx
+├── combined_qc.xlsx
+├── 细胞质量指标统计_01_原始矩阵.txt
+├── 细胞质量指标统计_01_原始矩阵.xlsx
+├── 细胞质量指标统计_02_初次过滤.txt
+├── 细胞质量指标统计_02_初次过滤.xlsx
+├── 细胞质量指标统计_03_双细胞去除.txt
+└── 细胞质量指标统计_03_双细胞去除.xlsx
 ```
 
 ### 联系方式    
