@@ -415,3 +415,38 @@ if (length(all_results) > 0) {
 | 05d_N2 |    3289     |           72            |           15           |  3202   |       2.65%       |       97.35%        |
 | 14d_N1 |    2524     |           44            |           7            |  2473   |       2.02%       |       97.98%        |
 | 14d_N2 |    2288     |           36            |           6            |  2246   |       1.84%       |       98.16%        |
+
+---
+目录树     
+```r
+fs::dir_tree("2_DoubletFinder", recurse = 2)
+```
+```bash
+2_DoubletFinder
+├── 05d_N1
+│   ├── 01_BCmvn_distributions.pdf
+│   ├── 01_BCmvn_distributions.png
+│   ├── 02_UMAP_DoubletFinder.pdf
+│   ├── 02_UMAP_DoubletFinder.png
+│   ├── 03_Violin_DoubletFinder.pdf
+│   ├── 03_Violin_DoubletFinder.png
+│   ├── markdown.txt
+│   ├── seurat_singlet.rds
+│   ├── singlet.txt
+│   └── singlet.xlsx
+├── 05d_N2
+│   ├── ......
+├── 14d_N1
+│   ├── ......
+├── 14d_N2
+│   ├── ......
+├── combined_markdown.txt
+├── combined_results.txt
+└── combined_results.xlsx
+```
+
+### 联系方式    
+- 作者：JJYang
+- 邮箱：y741269430@163.com
+- 创建日期：2025-11-08
+- 修改日期：2025-11-08
