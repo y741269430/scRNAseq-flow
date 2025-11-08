@@ -2,6 +2,7 @@
 读取——质控——过滤
 1. 加载R包
 ```r
+# 1. 加载R包 ####
 library(SingleCellExperiment) # 1.22.0
 library(Seurat) # 4.4.0
 library(SeuratObject) # 4.1.4
@@ -27,6 +28,7 @@ library(scRNAtoolVis) # 0.0.7
 ```
 2. 配置环境
 ```r
+# 2. 配置环境 ####
 # 调整R内允许对象大小的限制（默认值是500*1024 ^ 2 = 500 Mb）
 options(future.globals.maxSize = 500 * 1024 ^ 2)
 
@@ -46,6 +48,7 @@ projects <- list.files("RawData"); projects
 ```
 3. 创建函数批量读取单细胞矩阵    
 ```r
+# 3. 创建函数批量读取单细胞矩阵 ####
 process_multiple_projects <- function(projects, base_dir = 'RawData') {
 
   process_single_project <- function(project) {
@@ -85,6 +88,7 @@ saveRDS(seurat_objects, "1_QC_Files/seurat_objects.rds")
 ```
 4. 生成质控指标    
 ```r
+# 4. 生成质控指标  ####
 # 检查矩阵行名，是ENSEMBL还是gene name（SYMBOL）
 head(rownames(seurat_objects[[1]]@assays$RNA))
 
@@ -114,6 +118,7 @@ combined_meta <- do.call(rbind, lapply(seq_along(seurat_objects), function(i) {
 ```
 5. 质控1    
 ```r
+# 5. 质控1  ####
 # 创建质控图
 plots <- list(
   ggplot(combined_meta, aes(sample, nFeature_RNA, fill = sample)) + geom_violin() + labs(title = "Gene Count"),
@@ -149,6 +154,7 @@ before <- combined_meta %>%
 
 6. 质控2    
 ```r
+# 6. 质控2  ####
 # 每个细胞的UMI计数 (UMI counts per cell)
 a1 <- combined_meta %>% 
   ggplot(aes(color = sample, x = nCount_RNA, fill = sample)) + 
@@ -196,6 +202,7 @@ ggsave("1_QC_Files/02_QC_Four.png", p, height = 8, width = 12, dpi = 300)
 
 7. 质控3    
 ```r
+# 7. 质控3 ####
 # 线粒体基因计数占比 (Mitochondrial counts ratio)
 # 可视化每个细胞检测到的线粒体基因表达分布
 a1 <- combined_meta %>% 
@@ -256,7 +263,8 @@ ggplot2::ggsave("1_QC_Files/04_QC_UMIs_vs_genes.png", plot = p, height = 8, widt
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/04_QC_UMIs_vs_genes.png" width="600" />     
   
 8. 细胞过滤     
-```r    
+```r
+# 8. 细胞过滤 ####    
 # 细胞过滤，具体情况具体分析，我这里的指标是根据文献的指标而定的。
 seurat_filter <- lapply(seurat_objects, function(x){
   x <- subset(x, subset = 
@@ -277,7 +285,8 @@ filter_meta <- do.call(rbind, lapply(seq_along(seurat_filter), function(i) {
 cell_nums_after_filter <- data.frame(table(filter_meta$sample))
 ```
 9. 可视化过滤前后的细胞计数    
-```r    
+```r
+# 9. 可视化过滤前后的细胞计数 #### 
 after <- filter_meta %>%
   ggplot(aes(x = sample, fill = sample)) +
   geom_bar(position = "dodge", show.legend = TRUE) +
@@ -295,10 +304,11 @@ ggplot2::ggsave("1_QC_Files/05_QC_NCells.png", plot = p, height = 4, width = 8, 
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/05_QC_NCells.png" width="500" />      
 
 10. 统计过滤前后的细胞数量，并保存结果    
-```r    
+```r
+# 10. 统计过滤前后的细胞数量，并保存结果 #### 
 cell_nums <- cbind(cell_nums_before_filter, cell_nums_after_filter[,2])
-cell_nums$Vaild <- percent(cell_nums[,3]/cell_nums[,2])
-cell_nums$Filter <- percent(1 - cell_nums[,3]/cell_nums[,2])
+cell_nums$Cell_Discard_Rate <- percent(1 - cell_nums[,3]/cell_nums[,2])
+cell_nums$Cell_Retention_Rate <- percent(cell_nums[,3]/cell_nums[,2])
 
 colnames(cell_nums)[1:3] <- c('Sample','Cell_nums_before_filter','Cell_nums_after_filter')
 
@@ -310,10 +320,10 @@ write.table(txt, '1_QC_Files/markdown.txt', row.names = F, quote = F, col.names 
 
 saveRDS(seurat_filter, "1_QC_Files/seurat_filter.rds")
 ```    
-|Sample | Cell_nums_before_filter| Cell_nums_after_filter|Vaild  |Filter |
-|:------|:-----------------------:|:----------------------:|:------|:------|
-|05d_N1 |                    2542|                   2418|95.12% |4.88%  |
-|05d_N2 |                    3484|                   3289|94.40% |5.60%  |
-|14d_N1 |                    2583|                   2524|97.72% |2.28%  |
-|14d_N2 |                    2313|                   2288|98.92% |1.08%  |
+| Sample | Cell_nums_before_filter | Cell_nums_after_filter | Cell_Discard_Rate | Cell_Retention_Rate |
+|:------:|:-----------------------:|:----------------------:|:-----------------:|:-------------------:|
+| 05d_N1 |          2542           |          2418          |       4.88%       |       95.12%        |
+| 05d_N2 |          3484           |          3289          |       5.60%       |       94.40%        |
+| 14d_N1 |          2583           |          2524          |       2.28%       |       97.72%        |
+| 14d_N2 |          2313           |          2288          |       1.08%       |       98.92%        |
 
