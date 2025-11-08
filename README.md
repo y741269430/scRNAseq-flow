@@ -53,28 +53,7 @@ https://github.com/bwlewis/irlba/issues/70
 
 ## 0.加载包 ####
 ```r
-library(SingleCellExperiment) # 1.22.0
-library(Seurat) # 4.4.0
-library(SeuratObject) # 4.1.4
-library(tidyverse) # 2.0.0
-library(Matrix) # 1.6-1 # 1.6-1.1 # 1.6-2 这三个版本都可以
-library(scales) # 1.2.1
-library(cowplot) # 1.1.1
-library(RCurl) # 1.98-1.12
-library(clustree) # 0.5.0
-library(SingleR) # 2.2.0
-library(clusterProfiler) # 4.8.1
-library(org.Mm.eg.db) # 3.17.0
-library(Scillus) # 0.5.0
-library(ggpubr) # 0.6.0
-library(ggplot2) # 3.4.2
-library(DoubletFinder) # 2.0.3
-library(harmony) # 1.2.0
-library(openxlsx) # 4.2.5.2
-library(MySeuratWrappers) # 0.1.0
-library(ggsci) # 3.0.0
-library(data.table) # 1.14.8
-library(scRNAtoolVis) # 0.0.7
+source('my_scRNAseq.R')
 ```
 ---
 ## 1.前期准备工作 ####
