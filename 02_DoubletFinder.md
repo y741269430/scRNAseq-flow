@@ -144,7 +144,7 @@ p <- ggplot(bcmvn, aes(x = pK, y = BCmetric, group = 1)) +
 ggplot2::ggsave("2_DoubletFinder/01_BCmvn_distributions.pdf", plot = p, height = 4, width = 6, dpi = 300)
 ggplot2::ggsave("2_DoubletFinder/01_BCmvn_distributions.png", plot = p, height = 4, width = 6, dpi = 300)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/tree/main/img/2_DoubletFinder/01_BCmvn_distributions.png" width="500" />    
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/2_DoubletFinder/01_BCmvn_distributions.png" width="500" />    
 
 7. 计算理论双细胞比例与同源双细胞比例
 ```r
@@ -208,17 +208,17 @@ p
 ggplot2::ggsave("2_DoubletFinder/02_UMAP_DoubletFinder.pdf", plot = p, height = 6, width = 12, dpi = 300)
 ggplot2::ggsave("2_DoubletFinder/02_UMAP_DoubletFinder.png", plot = p, height = 6, width = 12, dpi = 300)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/tree/main/img/2_DoubletFinder/02_UMAP_DoubletFinder.png" width="500" />    
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/2_DoubletFinder/02_UMAP_DoubletFinder.png" width="700" />    
 
 ```r
 p <- Seurat::VlnPlot(seu_data, group.by = "DF_hi.lo", 
                      features = c("nCount_RNA", "nFeature_RNA"), 
-                     pt.size = 0, ncol = 2)
+                     pt.size = 0, ncol = 2) 
 
-ggplot2::ggsave("2_DoubletFinder/03_Violin_DoubletFinder.pdf", plot = p, height = 4, width = 6, dpi = 300)
-ggplot2::ggsave("2_DoubletFinder/03_Violin_DoubletFinder.png", plot = p, height = 4, width = 6, dpi = 300)
+ggplot2::ggsave("2_DoubletFinder/03_Violin_DoubletFinder.pdf", plot = p, height = 5, width = 10, dpi = 300)
+ggplot2::ggsave("2_DoubletFinder/03_Violin_DoubletFinder.png", plot = p, height = 5, width = 10, dpi = 300)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/tree/main/img/2_DoubletFinder/03_Violin_DoubletFinder.png" width="500" />    
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/2_DoubletFinder/03_Violin_DoubletFinder.png" width="500" />    
 
 10. 双细胞数量的统计表
 ```r
