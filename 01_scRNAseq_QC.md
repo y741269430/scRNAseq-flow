@@ -1,6 +1,6 @@
 # 01_scRNAseq_QC   
 读取——质控——过滤
-## 加载R包
+1. 加载R包
 ```r
 library(SingleCellExperiment) # 1.22.0
 library(Seurat) # 4.4.0
@@ -25,7 +25,7 @@ library(ggsci) # 3.0.0
 library(data.table) # 1.14.8
 library(scRNAtoolVis) # 0.0.7
 ```
-## 配置环境
+2. 配置环境
 ```r
 # 调整R内允许对象大小的限制（默认值是500*1024 ^ 2 = 500 Mb）
 options(future.globals.maxSize = 500 * 1024 ^ 2)
@@ -33,14 +33,18 @@ options(future.globals.maxSize = 500 * 1024 ^ 2)
 # 设置工作目录，批量创建文件夹储存结果
 setwd(r"{D:\R work\GSE171169_RAW\}")
 
-folders <- c("1_QC_Files", "2_DoubletFinder", "3_Cluster_result", "4_DEG_result", "5_GOKEGG_Enrichment", "6_CellChat")
+# 创建输出目录
+if (!dir.exists("1_QC_Files")) {
+  dir.create("1_QC_Files")
+}
 
-for(folder in folders){ dir.create(folder) }
+#folders <- c("1_QC_Files", "2_DoubletFinder", "3_Cluster_result", "4_DEG_result", "5_GOKEGG_Enrichment", "6_CellChat")
+#for(folder in folders){ dir.create(folder) }
 
 # 查看RawData下的文件夹名称，后续每个样本都是命名为该名称
 projects <- list.files("RawData"); projects
 ```
-## 创建函数批量读取单细胞矩阵
+3. 创建函数批量读取单细胞矩阵    
 ```r
 process_multiple_projects <- function(projects, base_dir = 'RawData') {
 
@@ -79,7 +83,7 @@ seurat_objects <- process_multiple_projects(projects)
 
 saveRDS(seurat_objects, "1_QC_Files/seurat_objects.rds")
 ```
-## 生成质控指标
+4. 生成质控指标    
 ```r
 # 检查矩阵行名，是ENSEMBL还是gene name（SYMBOL）
 head(rownames(seurat_objects[[1]]@assays$RNA))
@@ -108,7 +112,7 @@ combined_meta <- do.call(rbind, lapply(seq_along(seurat_objects), function(i) {
              seurat_objects[[i]]@meta.data)
 }))
 ```
-## 质控1
+5. 质控1    
 ```r
 # 创建质控图
 plots <- list(
@@ -143,7 +147,7 @@ before <- combined_meta %>%
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/01_QC_VlnPlot.png" width="500" />    
 
-## 质控2
+6. 质控2    
 ```r
 # 每个细胞的UMI计数 (UMI counts per cell)
 a1 <- combined_meta %>% 
@@ -190,7 +194,7 @@ ggsave("1_QC_Files/02_QC_Four.png", p, height = 8, width = 12, dpi = 300)
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/02_QC_Four.png" width="600" />    
 
-## 质控3    
+7. 质控3    
 ```r
 # 线粒体基因计数占比 (Mitochondrial counts ratio)
 # 可视化每个细胞检测到的线粒体基因表达分布
@@ -251,7 +255,7 @@ ggplot2::ggsave("1_QC_Files/04_QC_UMIs_vs_genes.png", plot = p, height = 8, widt
 ```    
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/04_QC_UMIs_vs_genes.png" width="600" />     
   
-## 细胞过滤    
+8. 细胞过滤     
 ```r    
 # 细胞过滤，具体情况具体分析，我这里的指标是根据文献的指标而定的。
 seurat_filter <- lapply(seurat_objects, function(x){
@@ -271,8 +275,8 @@ filter_meta <- do.call(rbind, lapply(seq_along(seurat_filter), function(i) {
 
 # 细胞计数 (Cell Numbers before Filter)
 cell_nums_after_filter <- data.frame(table(filter_meta$sample))
-```    
-## 可视化过滤前后的细胞计数    
+```
+9. 可视化过滤前后的细胞计数    
 ```r    
 after <- filter_meta %>%
   ggplot(aes(x = sample, fill = sample)) +
@@ -290,7 +294,7 @@ ggplot2::ggsave("1_QC_Files/05_QC_NCells.png", plot = p, height = 4, width = 8, 
 ```    
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/05_QC_NCells.png" width="500" />      
 
-## 统计过滤前后的细胞数量，并保存结果    
+10. 统计过滤前后的细胞数量，并保存结果    
 ```r    
 cell_nums <- cbind(cell_nums_before_filter, cell_nums_after_filter[,2])
 cell_nums$Vaild <- percent(cell_nums[,3]/cell_nums[,2])
@@ -301,7 +305,8 @@ colnames(cell_nums)[1:3] <- c('Sample','Cell_nums_before_filter','Cell_nums_afte
 write.table(cell_nums, '1_QC_Files/cell_nums.txt', row.names = F, quote = F, sep = '\t')
 write.xlsx(cell_nums, '1_QC_Files/cell_nums.xlsx', rowNames = F)
 # 生成Markdown表格
-knitr::kable(cell_nums, format = "markdown", align = 'c')
+txt <- knitr::kable(cell_nums, format = "markdown", align = 'c')
+write.table(txt, '1_QC_Files/markdown.txt', row.names = F, quote = F, col.names = F)
 
 saveRDS(seurat_filter, "1_QC_Files/seurat_filter.rds")
 ```    
