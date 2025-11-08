@@ -179,6 +179,7 @@ ggsave("3_QC_stat/QC_Final_Comparison.png", final_comparison, width = 10, height
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/3_QC_stat/QC_Final_Comparison.png" width="600" />
 
+---
 目录树     
 ```r
 fs::dir_tree("3_QC_stat", recurse = 2)
