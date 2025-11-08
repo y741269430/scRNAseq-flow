@@ -76,23 +76,12 @@ library(scRNAtoolVis) # 0.0.7
 #remotes::install_github('https://github.com/ekernf01/DoubletFinder', force = T)
 #remotes::install_github("lyc-1995/MySeuratWrappers")
 ```
-2. 计算双细胞率的函数
+2. 计算双细胞率的函数    
 ```r
-get_multiplet_rate <- function(cellnums) {
-  # 每500个细胞对应0.4%的双细胞率
-  base_rate <- 0.004  # 0.4%
-  cells_per_increment <- 500
-  # 计算倍数
-  increment <- cellnums / cells_per_increment
-  # 计算双细胞率
-  rate <- base_rate * increment
-  # 最大不超过8%
-  if (rate > 0.08) {
-    rate <- 0.08
-  }
-  return(rate)
-}
+get_multiplet_rate <- function(cellnums) { min(0.004 * (cellnums / 500), 0.08) }
 ```
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/doublet_rate.png" width="500" />
+
 3. 配置环境并读取rds
 ```r
 # 调整R内允许对象大小的限制（默认值是500*1024 ^ 2 = 500 Mb）
