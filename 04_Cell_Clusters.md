@@ -199,7 +199,7 @@ p_combined <- plot_grid(c1, c2, nrow = 1, labels = "AUTO")
 ggsave("4_Cell_Clusters/03_Cell_proportion_stratum.pdf", plot = p_combined, height = 6, width = 12, dpi = 300)
 ggsave("4_Cell_Clusters/03_Cell_proportion_stratum.png", plot = p_combined, height = 6, width = 12, dpi = 300)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/03_Cell_proportion_stratum.png" width="500" />    
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/03_Cell_proportion_stratum.png" width="600" />    
 
 5.5 细胞亚群比例圆环图
 ```r
@@ -392,6 +392,7 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-08
 - 修改日期：2025-11-08
+
 
 
 
