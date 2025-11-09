@@ -59,6 +59,7 @@ seurat_integrated <- seurat_merged %>%
   FindClusters(resolution = 0.2)
 
 Idents(seurat_integrated) <- seurat_integrated$RNA_snn_res.0.2
+saveRDS(seurat_integrated, '4_Cell_Clusters/seurat_integrated.rds')
 ```
 4. UMAP 绘制
 4.1 UMAP 多个样本整合
@@ -385,13 +386,15 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 ├── Cellratio_clusters.xlsx
 ├── Cellratio_clusters_markdown.txt
 ├── cluster_markers.txt
-└── cluster_markers.xlsx
+├── cluster_markers.xlsx
+└── seurat_integrated.rds
 ```
 ### 联系方式    
 - 作者：JJYang
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-10
 - 修改日期：2025-11-10
+
 
 
 
