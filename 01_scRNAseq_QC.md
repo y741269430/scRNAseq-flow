@@ -83,7 +83,7 @@ seurat_objects <- lapply(seurat_objects, function(obj) {
 
 # 合并metadata
 combined_meta <- do.call(rbind, lapply(seq_along(seurat_objects), function(i) {
-  data.frame(sample = ifelse(!is.null(names(seurat_objects)), names(seurat_objects)[i], paste0("Sample", i)),
+  data.frame(Sample = ifelse(!is.null(names(seurat_objects)), names(seurat_objects)[i], paste0("Sample", i)),
              seurat_objects[[i]]@meta.data)
 }))
 ```
@@ -91,11 +91,11 @@ combined_meta <- do.call(rbind, lapply(seq_along(seurat_objects), function(i) {
 ```r
 # 创建质控图
 plots <- list(
-  ggplot(combined_meta, aes(sample, nFeature_RNA, fill = sample)) + geom_violin() + labs(title = "Gene Count"),
-  ggplot(combined_meta, aes(sample, nCount_RNA, fill = sample)) + geom_violin() + labs(title = "UMI Count"),
-  ggplot(combined_meta, aes(sample, mitoRatio, fill = sample)) + geom_violin() + labs(title = "MT Ratio"),
-  ggplot(combined_meta, aes(sample, percent.Hb, fill = sample)) + geom_violin() + labs(title = "Hb Percent"),
-  ggplot(combined_meta, aes(sample, percent.ribo, fill = sample)) + geom_violin() + labs(title = "Ribo Percent")
+  ggplot(combined_meta, aes(Sample, nFeature_RNA, fill = Sample)) + geom_violin() + labs(title = "Gene Count"),
+  ggplot(combined_meta, aes(Sample, nCount_RNA, fill = Sample)) + geom_violin() + labs(title = "UMI Count"),
+  ggplot(combined_meta, aes(Sample, mitoRatio, fill = Sample)) + geom_violin() + labs(title = "MT Ratio"),
+  ggplot(combined_meta, aes(Sample, percent.Hb, fill = Sample)) + geom_violin() + labs(title = "Hb Percent"),
+  ggplot(combined_meta, aes(Sample, percent.ribo, fill = Sample)) + geom_violin() + labs(title = "Ribo Percent")
 )
 
 # 应用统一主题
@@ -108,11 +108,11 @@ ggsave("1_QC_Files/01_QC_VlnPlot.pdf", p, height = 5, width = 7, dpi = 300)
 ggsave("1_QC_Files/01_QC_VlnPlot.png", p, height = 5, width = 7, dpi = 300)
 
 # 细胞计数 (Cell Numbers before Filter)
-cell_nums_before_filter <- data.frame(table(combined_meta$sample))
+cell_nums_before_filter <- data.frame(table(combined_meta$Sample))
 
 # 细胞计数可视化
 before <- combined_meta %>%
-  ggplot(aes(x = sample, fill = sample)) +
+  ggplot(aes(x = Sample, fill = Sample)) +
   geom_bar(position = "dodge", show.legend = TRUE) +
   geom_text(stat = 'count', aes(label = after_stat(count)), position = position_dodge(1), vjust = -0.1) +
   theme_classic() +
@@ -126,7 +126,7 @@ before <- combined_meta %>%
 ```r
 # 每个细胞的UMI计数 (UMI counts per cell)
 a1 <- combined_meta %>% 
-  ggplot(aes(color = sample, x = nCount_RNA, fill = sample)) + 
+  ggplot(aes(color = Sample, x = nCount_RNA, fill = Sample)) + 
   geom_density(alpha = 0.2) + 
   scale_x_log10(breaks = c(500, 1000, 5000, 10000, 20000)) + 
   theme_classic() +
@@ -138,7 +138,7 @@ a1 <- combined_meta %>%
 # 复杂度 (Complexity)
 # 通过可视化基因数与UMI的比率（log10基因数/UMI）来表示基因表达的整体复杂性
 a2 <- combined_meta %>%
-  ggplot(aes(x=log10GenesPerUMI, color = sample, fill = sample)) +
+  ggplot(aes(x=log10GenesPerUMI, color = Sample, fill = Sample)) +
   geom_density(alpha = 0.2) +
   theme_classic() +
   geom_vline(xintercept = c(0.8, 0.85, 0.9, 0.95), linetype = 'dotted') +
@@ -146,7 +146,7 @@ a2 <- combined_meta %>%
 
 # 每个细胞检测到的基因数分布
 a3 <- combined_meta %>% 
-  ggplot(aes(color=sample, x=nFeature_RNA, fill = sample)) + 
+  ggplot(aes(color=Sample, x=nFeature_RNA, fill = Sample)) + 
   geom_density(alpha = 0.2) + 
   theme_classic() +
   scale_x_log10(breaks = c(500, 1000, 2500, 5000, 10000)) + 
@@ -155,12 +155,12 @@ a3 <- combined_meta %>%
 
 # 每个细胞检测到的基因数量的分布（箱线图）
 a4 <- combined_meta %>% 
-  ggplot(aes(x=sample, y=log10(nFeature_RNA), fill=sample)) + 
+  ggplot(aes(x=Sample, y=log10(nFeature_RNA), fill=Sample)) + 
   geom_boxplot() + 
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
         plot.title = element_text(hjust=0.5, face="bold")) +
-  ggtitle("Genes detected per cell across samples")
+  ggtitle("Genes detected per cell across Samples")
 
 p <- plot_grid(a1, a2, a3, a4, align = "v", nrow = 2)
 
@@ -174,7 +174,7 @@ ggsave("1_QC_Files/02_QC_Four.png", p, height = 8, width = 12, dpi = 300)
 # 线粒体基因计数占比 (Mitochondrial counts ratio)
 # 可视化每个细胞检测到的线粒体基因表达分布
 a1 <- combined_meta %>% 
-  ggplot(aes(color=sample, x=mitoRatio, fill=sample)) + 
+  ggplot(aes(color=Sample, x=mitoRatio, fill=Sample)) + 
   geom_density(alpha = 0.25) + 
   theme_classic() +
   scale_x_log10(breaks = c(0.001, 0.01, 0.1, 0.3)) + 
@@ -184,7 +184,7 @@ a1 <- combined_meta %>%
 # 红细胞基因计数占比 (HB counts ratio)
 # 可视化每个细胞检测到的红细胞基因表达分布
 a2 <- combined_meta %>% 
-  ggplot(aes(color=sample, x=percent.Hb, fill=sample)) + 
+  ggplot(aes(color=Sample, x=percent.Hb, fill=Sample)) + 
   geom_density(alpha = 0.25) + 
   theme_classic() +
   scale_x_log10(breaks = c(0.001, 0.01, 0.1, 0.5)) + 
@@ -194,7 +194,7 @@ a2 <- combined_meta %>%
 # 核糖体基因计数占比 (RB counts ratio)
 # 可视化每个细胞检测到的核糖体基因表达分布
 a3 <- combined_meta %>% 
-  ggplot(aes(color=sample, x=percent.ribo, fill=sample)) + 
+  ggplot(aes(color=Sample, x=percent.ribo, fill=Sample)) + 
   geom_density(alpha = 0.25) + 
   theme_classic() +
   scale_x_log10(breaks = c(0.1, 1, 10)) + 
@@ -223,7 +223,7 @@ p <- combined_meta %>%
   theme_classic() +
   geom_vline(xintercept = 500) +
   geom_hline(yintercept = 250) +
-  facet_wrap(~sample)
+  facet_wrap(~Sample)
 
 ggplot2::ggsave("1_QC_Files/04_QC_UMIs_vs_genes.pdf", plot = p, height = 8, width = 8, dpi = 300)
 ggplot2::ggsave("1_QC_Files/04_QC_UMIs_vs_genes.png", plot = p, height = 8, width = 8, dpi = 300)
@@ -244,17 +244,17 @@ seurat_filter <- lapply(seurat_objects, function(x){
 
 # 统计
 filter_meta <- do.call(rbind, lapply(seq_along(seurat_filter), function(i) {
-  data.frame(sample = ifelse(!is.null(names(seurat_filter)), names(seurat_filter)[i], paste0("Sample", i)),
+  data.frame(Sample = ifelse(!is.null(names(seurat_filter)), names(seurat_filter)[i], paste0("Sample", i)),
              seurat_filter[[i]]@meta.data)
 }))
 
 # 细胞计数 (Cell Numbers before Filter)
-cell_nums_after_filter <- data.frame(table(filter_meta$sample))
+cell_nums_after_filter <- data.frame(table(filter_meta$Sample))
 ```
 8. 可视化过滤前后的细胞计数    
 ```r    
 after <- filter_meta %>%
-  ggplot(aes(x = sample, fill = sample)) +
+  ggplot(aes(x = Sample, fill = Sample)) +
   geom_bar(position = "dodge", show.legend = TRUE) +
   geom_text(stat = 'count', aes(label = after_stat(count)), position = position_dodge(1), vjust = -0.1) +
   theme_classic() +
@@ -321,3 +321,4 @@ fs::dir_tree("1_QC_Files", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-08
 - 修改日期：2025-11-08
+
