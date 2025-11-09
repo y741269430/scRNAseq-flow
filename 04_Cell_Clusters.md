@@ -74,7 +74,7 @@ ggplot2::ggsave("4_Cell_Clusters/01_UMAP_all_sample.pdf", plot = p1,
 ggplot2::ggsave("4_Cell_Clusters/01_UMAP_all_sample.png", plot = p1, 
                 height = 5, width = 7, dpi = 300, limitsize = FALSE)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/01_UMAP_all_sample.png" width="500" />    
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/01_UMAP_all_sample.png" width="600" />    
 
 4.2 UMAP 分开样本绘制
 ```r
@@ -270,7 +270,7 @@ p <- plot_grid(c1, c2, nrow = 1, labels = "AUTO", label_size = 14)
 ggsave("4_Cell_Clusters/05_Cell_proportion_barplot.pdf", plot = p, height = 6, width = 15, dpi = 300)
 ggsave("4_Cell_Clusters/05_Cell_proportion_barplot.png", plot = p, height = 6, width = 15, dpi = 300)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/05_Cell_proportion_barplot.png" width="500" />    
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/05_Cell_proportion_barplot.png" width="600" />    
 
 6. 通过FindAllMarkers去查找每个细胞亚群高表达的基因
 6.1 查找每个细胞亚群高表达的基因
@@ -332,7 +332,7 @@ DotPlot(object = seurat_integrated, features = top2_genes, cols = c('white','fir
 ggsave("4_Cell_Clusters/07_DotPlot_top2.pdf", height = 6, width = 6, dpi = 300, limitsize = FALSE)
 ggsave("4_Cell_Clusters/07_DotPlot_top2.png", height = 6, width = 6, dpi = 300, limitsize = FALSE)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/07_DotPlot_top2.png" width="500" />    
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/07_DotPlot_top2.png" width="400" />    
 
 6.4 jjDotPlot图 画marker基因散点图
 ```r
@@ -354,7 +354,7 @@ scRNAtoolVis::jjDotPlot(object = seurat_integrated,
 ggsave("4_Cell_Clusters/08_jjDotPlot_top2.pdf", height = 6, width = 7, dpi = 300, limitsize = FALSE)
 ggsave("4_Cell_Clusters/08_jjDotPlot_top2.png", height = 6, width = 7, dpi = 300, limitsize = FALSE)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/08_jjDotPlot_top2.png" width="500" />    
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/08_jjDotPlot_top2.png" width="400" />    
 
 ---
 ```r
@@ -392,6 +392,7 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-08
 - 修改日期：2025-11-08
+
 
 
 
