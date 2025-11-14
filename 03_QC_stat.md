@@ -29,18 +29,12 @@ if (!dir.exists("3_QC_stat")) {
 1. 细胞质量指标统计_01_原始矩阵
 ```r
 # 01_原始矩阵 ####
-seurat_objects <- readRDS("1_QC_Files/seurat_objects.rds")
-
-combined_meta <- do.call(rbind, lapply(seq_along(seurat_objects), function(i) {
-  data.frame(Sample = ifelse(!is.null(names(seurat_objects)), 
-                             names(seurat_objects)[i], paste0("Sample", i)),
-             seurat_objects[[i]]@meta.data)
-}))
+combined_meta <- read.csv('1_QC_Files/combined_meta.csv')
 
 qc_results1 <- generate_qc_report(combined_meta, "3_QC_stat/细胞质量指标统计_01_原始矩阵")
 
 print(qc_results1)
-knitr::kable(qc_results1, format = "markdown", align = 'c')
+#knitr::kable(qc_results1, format = "markdown", align = 'c')
 ```
 | Sample | Mean_Reads_per_Cell | Median_Genes_per_Cell | Total_Cells | Total_Reads | Mean_Genes_per_Cell | Min_Reads | Max_Reads | Min_Genes | Max_Genes |
 |:------:|:-------------------:|:---------------------:|:-----------:|:-----------:|:-------------------:|:---------:|:---------:|:---------:|:---------:|
@@ -53,18 +47,12 @@ knitr::kable(qc_results1, format = "markdown", align = 'c')
 2. 细胞质量指标统计_02_初次过滤
 ```r
 # 02_初次过滤 ####
-seurat_filter <- readRDS("1_QC_Files/seurat_filter.rds")
+filter_meta <- read.csv('1_QC_Files/filter_meta.csv')
 
-combined_meta_filter <- do.call(rbind, lapply(seq_along(seurat_filter), function(i) {
-  data.frame(Sample = ifelse(!is.null(names(seurat_filter)), 
-                             names(seurat_filter)[i], paste0("Sample", i)),
-             seurat_filter[[i]]@meta.data)
-}))
-
-qc_results2 <- generate_qc_report(combined_meta_filter, "3_QC_stat/细胞质量指标统计_02_初次过滤")
+qc_results2 <- generate_qc_report(filter_meta, "3_QC_stat/细胞质量指标统计_02_初次过滤")
 
 print(qc_results2)
-knitr::kable(qc_results2, format = "markdown", align = 'c')
+#knitr::kable(qc_results2, format = "markdown", align = 'c')
 ```
 | Sample | Mean_Reads_per_Cell | Median_Genes_per_Cell | Total_Cells | Total_Reads | Mean_Genes_per_Cell | Min_Reads | Max_Reads | Min_Genes | Max_Genes |
 |:------:|:-------------------:|:---------------------:|:-----------:|:-----------:|:-------------------:|:---------:|:---------:|:---------:|:---------:|
@@ -216,3 +204,4 @@ fs::dir_tree("3_QC_stat", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-08
 - 修改日期：2025-11-08
+
