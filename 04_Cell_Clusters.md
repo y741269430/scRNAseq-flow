@@ -96,6 +96,8 @@ ggplot2::ggsave("4_Cell_Clusters/02_UMAP_split_sample.png", plot = p2,
 5.1 输出每个细胞亚群的细胞比例
 ```r
 # 5.1 输出每个细胞亚群的细胞比例
+Cellnum <- table(Idents(seurat_integrated), seurat_integrated$Sample) 
+
 Cellratio <- round(prop.table(Cellnum, margin = 2) * 100, 2)
 Cellratio_save <- Cellratio %>% 
   as.data.frame.matrix() %>% 
@@ -394,6 +396,7 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-10
 - 修改日期：2025-11-10
+
 
 
 
