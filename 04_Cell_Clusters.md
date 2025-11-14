@@ -333,7 +333,7 @@ ggsave("4_Cell_Clusters/06_DoHeatmap_top10_label.png", plot = p, height = 15, wi
 6.3 Dotplot图 画marker基因散点图
 ```r
 # 6.3
-top2_genes <- cluster_markers %>%
+top2_genes <- Cluster_markers %>%
   group_by(cluster) %>%
   slice_max(order_by = avg_log2FC, n = 2) %>%
   pull(gene) %>%
@@ -386,27 +386,26 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 ├── 04_Cell_proportion_donut.png
 ├── 05_Cell_proportion_barplot.pdf
 ├── 05_Cell_proportion_barplot.png
-├── 06_DoHeatmap_top10_label.pdf
-├── 06_DoHeatmap_top10_label.png
 ├── 07_DotPlot_top2.pdf
 ├── 07_DotPlot_top2.png
 ├── 08_jjDotPlot_top2.pdf
 ├── 08_jjDotPlot_top2.png
 ├── Cellnum_clusters.txt
 ├── Cellnum_clusters.xlsx
-├── Cellnum_clusters_markdown.txt
 ├── Cellratio_clusters.txt
 ├── Cellratio_clusters.xlsx
-├── Cellratio_clusters_markdown.txt
-├── cluster_markers.txt
-├── cluster_markers.xlsx
+├── Cluster_markers.txt
+├── Cluster_markers.xlsx
+├── Cluster_markers_top_10.txt
+├── Cluster_markers_top_10.xlsx
 └── seurat_integrated.rds
 ```
 ### 联系方式    
 - 作者：JJYang
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-10
-- 修改日期：2025-11-10
+- 修改日期：2025-11-14
+
 
 
 
