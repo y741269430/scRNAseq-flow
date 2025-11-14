@@ -279,9 +279,9 @@ colnames(cell_nums)[1:3] <- c('Sample','Cell_nums_before_filter','Cell_nums_afte
 
 write.table(cell_nums, '1_QC_Files/cell_nums.txt', row.names = F, quote = F, sep = '\t')
 write.xlsx(cell_nums, '1_QC_Files/cell_nums.xlsx', rowNames = F)
-# 生成Markdown表格
-txt <- knitr::kable(cell_nums, format = "markdown", align = 'c')
-write.table(txt, '1_QC_Files/markdown.txt', row.names = F, quote = F, col.names = F)
+# #生成Markdown表格
+# txt <- knitr::kable(cell_nums, format = "markdown", align = 'c')
+# write.table(txt, '1_QC_Files/markdown.txt', row.names = F, quote = F, col.names = F)
 
 saveRDS(seurat_filter, "1_QC_Files/seurat_filter.rds")
 ```    
@@ -311,7 +311,6 @@ fs::dir_tree("1_QC_Files", recurse = 2)
 ├── 05_QC_NCells.png
 ├── cell_nums.txt
 ├── cell_nums.xlsx
-├── markdown.txt
 ├── seurat_filter.rds
 └── seurat_objects.rds
 ```
@@ -321,5 +320,6 @@ fs::dir_tree("1_QC_Files", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-08
 - 修改日期：2025-11-08
+
 
 
