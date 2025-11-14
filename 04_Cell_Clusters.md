@@ -64,6 +64,7 @@ saveRDS(seurat_integrated, '4_Cell_Clusters/seurat_integrated.rds')
 4. UMAP 绘制
 4.1 UMAP 多个样本整合
 ```r
+# 4.1
 # UMAP 多个样本整合
 p1 <- DimPlot(seurat_integrated,
               reduction = "umap", 
@@ -79,6 +80,7 @@ ggplot2::ggsave("4_Cell_Clusters/01_UMAP_all_sample.png", plot = p1,
 
 4.2 UMAP 分开样本绘制
 ```r
+# 4.2
 # UMAP 分开样本绘制
 p2 <- DimPlot(seurat_integrated,
               reduction = "umap", 
@@ -95,7 +97,7 @@ ggplot2::ggsave("4_Cell_Clusters/02_UMAP_split_sample.png", plot = p2,
 5. 细胞亚群比例统计    
 5.1 输出每个细胞亚群的细胞比例
 ```r
-# 5.1 输出每个细胞亚群的细胞比例
+# 5.1
 Cellnum <- table(Idents(seurat_integrated), seurat_integrated$Sample) 
 
 Cellratio <- round(prop.table(Cellnum, margin = 2) * 100, 2)
@@ -127,6 +129,7 @@ write.table(Cellratio_save, '4_Cell_Clusters/Cellratio_clusters.txt', quote = F,
 
 5.2 输出每个细胞亚群的细胞数量
 ```r
+# 5.2
 Cellnum <- table(Idents(seurat_integrated), seurat_integrated$Sample) 
 Cellnum_save <- Cellnum %>% 
   as.data.frame.matrix() %>% 
@@ -155,6 +158,7 @@ write.table(Cellnum_save, '4_Cell_Clusters/Cellnum_clusters.txt', quote = F, sep
 
 5.3 数据框转换
 ```r
+# 5.3
 Cellratio_df <- as.data.frame(Cellratio)
 Cellnum_df <- as.data.frame(Cellnum)
 
@@ -167,6 +171,7 @@ color_palette <- scales::hue_pal()(colourCount)
 
 5.4 桑基图+柱状图 展示细胞亚群的比例与数量
 ```r
+# 5.4
 c1 <- ggplot(Cellratio_df,
              aes(x = Sample, stratum = CellType, alluvium = CellType,
                  y = Percentage,
@@ -206,6 +211,7 @@ ggsave("4_Cell_Clusters/03_Cell_proportion_stratum.png", plot = p_combined, heig
 
 5.5 细胞亚群比例圆环图
 ```r
+# 5.5
 create_donut_plots <- function(cell_data) {
   data_list <- split(cell_data, cell_data$Sample)
   create_single_donut <- function(data, sample_name) {
@@ -241,6 +247,7 @@ donut_plot <- create_donut_plots(Cellratio_df)
 
 5.6 柱形图 展示细胞亚群的比例与数量
 ```r
+# 5.6
 colourCount <- length(unique(Cellratio_df$Sample))
 
 # 细胞亚群百分比柱形图
@@ -275,9 +282,10 @@ ggsave("4_Cell_Clusters/05_Cell_proportion_barplot.png", plot = p, height = 6, w
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/05_Cell_proportion_barplot.png" width="600" />    
 
-6. 通过FindAllMarkers去查找每个细胞亚群高表达的基因
+6. 通过FindAllMarkers去查找每个细胞亚群高表达的基因    
 6.1 查找每个细胞亚群高表达的基因
 ```r
+# 6.1
 Cluster_markers <- FindAllMarkers(seurat_integrated,
                                   min.pct = 0.1,          # 设置min.pct = 0.1参数代表在细胞亚群中，基因在10%以上的细胞中有表达
                                   logfc.threshold = 0.25, # 设置logfc.threshold = 0.25过滤掉那些在不同细胞亚群之间平均表达的差异倍数低于0.25的基因
@@ -298,6 +306,7 @@ head(Cluster_markers)
 
 6.2 热图 可视化每个细胞亚群top10高差异倍数基因
 ```r
+# 6.2
 all.genes <- rownames(seurat_integrated)
 #seurat_integrated <- ScaleData(seurat_integrated, features = all.genes)
 
@@ -323,6 +332,7 @@ ggsave("4_Cell_Clusters/06_DoHeatmap_top10_label.png", plot = p, height = 15, wi
 
 6.3 Dotplot图 画marker基因散点图
 ```r
+# 6.3
 top2_genes <- cluster_markers %>%
   group_by(cluster) %>%
   slice_max(order_by = avg_log2FC, n = 2) %>%
@@ -339,6 +349,7 @@ ggsave("4_Cell_Clusters/07_DotPlot_top2.png", height = 6, width = 6, dpi = 300, 
 
 6.4 jjDotPlot图 画marker基因散点图
 ```r
+# 6.4
 scRNAtoolVis::jjDotPlot(object = seurat_integrated, 
                         gene = top2_genes,
                         id = 'seurat_clusters',
@@ -396,6 +407,7 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-10
 - 修改日期：2025-11-10
+
 
 
 
