@@ -205,14 +205,14 @@ p <- plot_grid(a1, a2, a3, align = "v", nrow = 2)
 
 ggplot2::ggsave("1_QC_Files/03_QC_Density.pdf", plot = p, height = 6, width = 8, dpi = 300)
 ggplot2::ggsave("1_QC_Files/03_QC_Density.png", plot = p, height = 6, width = 8, dpi = 300)
-
-# 检测到的UMI数对比基因数 (UMIs vs. genes detected)
-# 可视化每个细胞中检测到的基因数（nFeature_RNA）与UMI数（nCount_RNA）之间的关系，
-# 颜色代表线粒体基因计数占比（mitoRatio），并观察是否存在大量低基因数或低UMI数的细胞。
 ```    
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/03_QC_Density.png" width="600" />    
 
-```r    
+```r
+# 检测到的UMI数对比基因数 (UMIs vs. genes detected)
+# 可视化每个细胞中检测到的基因数（nFeature_RNA）与UMI数（nCount_RNA）之间的关系，
+# 颜色代表线粒体基因计数占比（mitoRatio），并观察是否存在大量低基因数或低UMI数的细胞。
+
 p <- combined_meta %>% 
   ggplot(aes(x=nCount_RNA, y=nFeature_RNA, color=mitoRatio)) + 
   geom_point() + 
@@ -321,4 +321,5 @@ fs::dir_tree("1_QC_Files", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-08
 - 修改日期：2025-11-08
+
 
