@@ -148,10 +148,10 @@ p3 <- ggplot(combined_qc, aes(x = Stage, y = Total_Cells, fill = Sample)) +
 trend_plots <- (p1 | p2) / p3
 print(trend_plots)
 
-ggsave("3_QC_stat/QC_Combined.pdf", trend_plots, width = 12, height = 8, dpi = 300)
-ggsave("3_QC_stat/QC_Combined.png", trend_plots, width = 12, height = 8, dpi = 300)
+ggsave("3_QC_stat/01_QC_Combined.pdf", trend_plots, width = 12, height = 8, dpi = 300)
+ggsave("3_QC_stat/01_QC_Combined.png", trend_plots, width = 12, height = 8, dpi = 300)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/3_QC_stat/QC_Combined.png" width="600" />
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/3_QC_stat/01_QC_Combined.png" width="600" />
 
 可视化图表2
 ```r
@@ -173,10 +173,10 @@ p5 <- ggplot(final_data, aes(x = Sample, y = Median_Genes_per_Cell, fill = Sampl
 final_comparison <- p4 / p5
 print(final_comparison)
 
-ggsave("3_QC_stat/QC_Final_Comparison.pdf", final_comparison, width = 10, height = 6, dpi = 300)
-ggsave("3_QC_stat/QC_Final_Comparison.png", final_comparison, width = 10, height = 6, dpi = 300)
+ggsave("3_QC_stat/02_QC_Final_Comparison.pdf", final_comparison, width = 10, height = 6, dpi = 300)
+ggsave("3_QC_stat/02_QC_Final_Comparison.png", final_comparison, width = 10, height = 6, dpi = 300)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/3_QC_stat/QC_Final_Comparison.png" width="600" />
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/3_QC_stat/02_QC_Final_Comparison.png" width="600" />
 
 ---
 目录树     
@@ -185,12 +185,13 @@ fs::dir_tree("3_QC_stat", recurse = 2)
 ```
 ```bash
 3_QC_stat
-├── QC_Combined.pdf
-├── QC_Combined.png
-├── QC_Final_Comparison.pdf
-├── QC_Final_Comparison.png
+├── 01_QC_Combined.pdf
+├── 01_QC_Combined.png
+├── 02_QC_Final_Comparison.pdf
+├── 02_QC_Final_Comparison.png
 ├── combined_qc.txt
 ├── combined_qc.xlsx
+├── seurat_merged.rds
 ├── 细胞质量指标统计_01_原始矩阵.txt
 ├── 细胞质量指标统计_01_原始矩阵.xlsx
 ├── 细胞质量指标统计_02_初次过滤.txt
@@ -203,5 +204,6 @@ fs::dir_tree("3_QC_stat", recurse = 2)
 - 作者：JJYang
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-08
-- 修改日期：2025-11-08
+- 修改日期：2025-11-14
+
 
