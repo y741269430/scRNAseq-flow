@@ -33,12 +33,12 @@ seurat_merged <- merge(x = seurat_list[[1]],
                              seurat_list[[4]]
                              ),
                        add.cell.id = sample_names)
-rm(seurat_list); gc()
 
 seurat_merged$Sample <- seurat_merged$orig.ident
 
 saveRDS(seurat_merged, '3_QC_stat/seurat_merged.rds')
-rm(ls = list()); gc()
+
+rm(list = ls()); gc()
 ```
 3. 降维聚类
 ```r
@@ -394,6 +394,7 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-10
 - 修改日期：2025-11-10
+
 
 
 
