@@ -86,6 +86,8 @@ combined_meta <- do.call(rbind, lapply(seq_along(seurat_objects), function(i) {
   data.frame(Sample = ifelse(!is.null(names(seurat_objects)), names(seurat_objects)[i], paste0("Sample", i)),
              seurat_objects[[i]]@meta.data)
 }))
+
+#write.csv(combined_meta, '1_QC_Files/combined_meta.csv', row.names = F)
 ```
 4. 质控1    
 ```r
@@ -248,6 +250,8 @@ filter_meta <- do.call(rbind, lapply(seq_along(seurat_filter), function(i) {
              seurat_filter[[i]]@meta.data)
 }))
 
+write.csv(filter_meta, '1_QC_Files/filter_meta.csv', row.names = F)
+
 # 细胞计数 (Cell Numbers before Filter)
 cell_nums_after_filter <- data.frame(table(filter_meta$Sample))
 ```
@@ -311,6 +315,8 @@ fs::dir_tree("1_QC_Files", recurse = 2)
 ├── 05_QC_NCells.png
 ├── cell_nums.txt
 ├── cell_nums.xlsx
+├── combined_meta.csv
+├── filter_meta.csv
 ├── seurat_filter.rds
 └── seurat_objects.rds
 ```
@@ -320,6 +326,7 @@ fs::dir_tree("1_QC_Files", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-08
 - 修改日期：2025-11-08
+
 
 
 
