@@ -106,8 +106,8 @@ Cellratio_save <- Cellratio %>%
 
 write.xlsx(Cellratio_save, '4_Cell_Clusters/Cellratio_clusters.xlsx', rownames = F)
 write.table(Cellratio_save, '4_Cell_Clusters/Cellratio_clusters.txt', quote = F, sep = '\t', row.names = F)
-txt <- knitr::kable(Cellratio_save, format = "markdown", align = 'c')
-write.table(txt, "4_Cell_Clusters/Cellratio_clusters_markdown.txt", row.names = F, quote = F, col.names = F)
+#txt <- knitr::kable(Cellratio_save, format = "markdown", align = 'c')
+#write.table(txt, "4_Cell_Clusters/Cellratio_clusters_markdown.txt", row.names = F, quote = F, col.names = F)
 ```
 
 | Clusters | 05d_N1 | 05d_N2 | 14d_N1 | 14d_N2 |
@@ -134,8 +134,8 @@ Cellnum_save <- Cellnum %>%
 
 write.xlsx(Cellnum_save, '4_Cell_Clusters/Cellnum_clusters.xlsx', rownames = F)
 write.table(Cellnum_save, '4_Cell_Clusters/Cellnum_clusters.txt', quote = F, sep = '\t', row.names = F)
-txt <- knitr::kable(Cellnum_save, format = "markdown", align = 'c')
-write.table(txt, "4_Cell_Clusters/Cellnum_clusters_markdown.txt", row.names = F, quote = F, col.names = F)
+#txt <- knitr::kable(Cellnum_save, format = "markdown", align = 'c')
+#write.table(txt, "4_Cell_Clusters/Cellnum_clusters_markdown.txt", row.names = F, quote = F, col.names = F)
 ```
 
 | Clusters | 05d_N1 | 05d_N2 | 14d_N1 | 14d_N2 |
@@ -396,6 +396,7 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-10
 - 修改日期：2025-11-10
+
 
 
 
