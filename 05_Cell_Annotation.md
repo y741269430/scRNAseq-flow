@@ -191,7 +191,7 @@ DotPlot(object = seurat_integrated, features = input_genes, cols = c('white','fi
 ggsave("5_Cell_Annotation/05_DotPlot_anno_markers.pdf", height = 8, width = 6, dpi = 300, limitsize = FALSE)
 ggsave("5_Cell_Annotation/05_DotPlot_anno_markers.png", height = 8, width = 6, dpi = 300, limitsize = FALSE)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/5_Cell_Annotation/05_DotPlot_anno_markers.png" width="600" />
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/5_Cell_Annotation/05_DotPlot_anno_markers.png" width="300" />
 
 ## 四、批量绘制 UMAP      
 4.1 使用markers基因 批量绘制 UMAP        
