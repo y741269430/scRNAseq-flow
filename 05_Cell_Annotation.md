@@ -86,7 +86,7 @@ p2 <- DimPlot(seurat_integrated,
               label = T, 
               label.size = 3) + coord_equal(ratio = 1)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/5_Cell_Annotation/01_VlnPlot_marker.png" width="600" />
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/5_Cell_Annotation/01_VlnPlot_marker.png" width="400" />
 
 2.2 手动注释     
 ```r
@@ -178,7 +178,7 @@ p <- MySeuratWrappers::DoHeatmap(seurat_integrated,
 ggsave("5_Cell_Annotation/04_DoHeatmap_anno_markers.pdf", plot = p, height = 7, width = 9, dpi = 300, limitsize = F)
 ggsave("5_Cell_Annotation/04_DoHeatmap_anno_markers.png", plot = p, height = 7, width = 9, dpi = 300, limitsize = F)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/5_Cell_Annotation/04_DoHeatmap_anno_markers.png" width="600" />
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/5_Cell_Annotation/04_DoHeatmap_anno_markers.png" width="500" />
 
 3.3 绘制点图
 ```r
@@ -213,7 +213,7 @@ for (i in 1:length(marker_ls)) {
          height = 8, width = 4, dpi = 300, limitsize = FALSE)
 }
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/5_Cell_Annotation/UMAP_markers/UMAP_markers_1.png" width="600" />
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/5_Cell_Annotation/UMAP_markers/UMAP_markers_1.png" width="300" />
 
 4.2 使用markers基因 批量绘制 UMAP SplitBySample          
 ```r
