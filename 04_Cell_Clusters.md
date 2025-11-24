@@ -370,6 +370,75 @@ ggsave("4_Cell_Clusters/08_jjDotPlot_top2.png", height = 6, width = 7, dpi = 300
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/08_jjDotPlot_top2.png" width="400" />    
 
+6.5 Pearson相关性热图 使用每个细胞亚群的Top 5 marker基因
+```r
+# 6.5
+marker_genes <- read.xlsx('4_Cell_Clusters/Cluster_markers.xlsx')
+
+# 选择每个cluster的top marker基因
+top_markers <- marker_genes %>%
+  arrange(cluster, desc(avg_log2FC)) %>%
+  distinct(gene, .keep_all = TRUE) %>%
+  group_by(cluster) %>%
+  slice_head(n = 5) %>%
+  ungroup()
+
+# 获取这些基因在所有cluster中的表达矩阵
+expression_matrix <- AverageExpression(seurat_integrated,
+                                       assays = "RNA",
+                                       features = unique(top_markers$gene),
+                                       slot = "data")$RNA
+
+# 转置矩阵
+cluster_expression_profiles <- t(expression_matrix)
+
+# 计算cluster表达谱之间的相关性
+corr_matrix <- cor(cluster_expression_profiles, method = "pearson")
+
+# 添加细胞亚群注释信息
+tag <- top_markers[top_markers$gene %in% rownames(corr_matrix), ]
+
+# 获取cluster信息并保持factor顺序
+cluster_levels <- levels(Idents(seurat_integrated))  # 获取factor的levels顺序
+cluster_info <- factor(tag$cluster, levels = cluster_levels)
+
+# 创建注释信息
+annotation_col <- data.frame(Seurat_Cluster = cluster_info)
+rownames(annotation_col) <- rownames(corr_matrix)
+
+# 按照factor levels顺序设置颜色
+n_clusters <- length(cluster_levels)
+cluster_colors <- colorRampPalette(brewer.pal(8, "Set1"))(n_clusters)
+names(cluster_colors) <- cluster_levels  # 按照levels顺序命名
+
+annotation_colors <- list(Seurat_Cluster = cluster_colors)
+
+# 绘制热图（添加anno色块）
+plot <- pheatmap(corr_matrix,
+         color = colorRampPalette(c("navy", "white", "firebrick3"))(100),
+         breaks = seq(-1, 1, length.out = 101),
+         cluster_rows = F,     # 不能做行聚类，因为热图的cluster是按照marker基因的排序而定的
+         cluster_cols = F,     # 不能做列聚类，因为热图的cluster是按照marker基因的排序而定的
+         display_numbers = F,  # 显示相关系数
+         number_format = "%.2f",
+         number_color = "black",
+         fontsize_number = 6,
+         annotation_col = annotation_col,      # 列注释
+         annotation_colors = annotation_colors, # 注释颜色
+         main = "Cluster Correlation Based on Marker Gene Expression Profiles",
+         fontsize = 10,
+         border_color = NA,
+         fontsize_row = 8,
+         fontsize_col = 8,
+         silent = T)
+
+plot_grid(plot$gtable)
+
+ggsave("4_Cell_Clusters/09_Pearson_Cluster_markers.pdf", plot = plot, height = 9, width = 10, dpi = 300, limitsize = FALSE)
+ggsave("4_Cell_Clusters/09_Pearson_Cluster_markers.png", plot = plot, height = 9, width = 10, dpi = 300, limitsize = FALSE)
+```
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/09_Pearson_Cluster_markers.png" width="400" />    
+
 ---
 ```r
 fs::dir_tree("4_Cell_Clusters", recurse = 2)
@@ -404,7 +473,8 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 - 作者：JJYang
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-10
-- 修改日期：2025-11-14
+- 修改日期：2025-11-25
+
 
 
 
