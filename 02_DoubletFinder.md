@@ -49,7 +49,7 @@ DoubletFinder 包含以下关键参数：
 ## 二、单样本去除双细胞分析流程
 读取上一部分析中的rds [01_scRNAseq_QC](https://github.com/y741269430/scRNAseq-flow/blob/main/01_scRNAseq_QC.md)    
 
-1. 配置环境
+### 1. 配置环境
 ```r
 # 调整R内允许对象大小的限制（默认值是500*1024 ^ 2 = 500 Mb）
 options(future.globals.maxSize = 500 * 1024 ^ 2)
@@ -63,15 +63,15 @@ if (!dir.exists("2_DoubletFinder")) {
   dir.create("2_DoubletFinder")
 }
 ```
-2. 双细胞率推算     
+### 2. 双细胞率推算     
 
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/doublet_rate.png" width="500" />
 
-3. 读取rds
+### 3. 读取rds
 ```r
 seurat_filter <- readRDS("1_QC_Files/seurat_filter.rds")
 ```
-4. 预处理 Seurat object    
+### 4. 预处理 Seurat object    
 ```r
 # 取一个样本进行示范
 input_data <- seurat_filter[[1]]
@@ -87,14 +87,14 @@ seu_data <-  input_data %>%
 
 table(seu_data$seurat_clusters)
 ```
-5. 计算最优 pK (no ground-truth)    
+### 5. 计算最优 pK (no ground-truth)    
 ```r
 sweep.res.list <- paramSweep_v3(seu_data, PCs = 1:10, sct = F)
 sweep.res.list <- summarizeSweep(sweep.res.list, GT = F)
 bcmvn <- find.pK(sweep.res.list)
 mpK <- as.numeric(as.vector(bcmvn$pK[which.max(bcmvn$BCmetric)])); mpK # mpK = 0.005
 ```
-6. 可视化
+### 6. 可视化
 ```r
 p <- ggplot(bcmvn, aes(x = pK, y = BCmetric, group = 1)) + 
   labs(x = 'pK', 
@@ -113,7 +113,7 @@ ggplot2::ggsave("2_DoubletFinder/01_BCmvn_distributions.png", plot = p, height =
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/2_DoubletFinder/01_BCmvn_distributions.png" width="500" />    
 
-7. 计算理论双细胞比例与同源双细胞比例
+### 7. 计算理论双细胞比例与同源双细胞比例
 ```r
 annotations <- seu_data@meta.data$seurat_clusters
 homotypic.prop <- modelHomotypic(annotations) # 同源双细胞比例估算
@@ -131,7 +131,7 @@ nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop)); nExp_poi.adj
 # 检查列数是否是10列，计算双细胞时，会在metadata后面添加第11列，12列，13列
 ncol(seu_data@meta.data)
 ```
-8. 使用`doubletFinder_v3`计算双细胞数量
+### 8. 使用`doubletFinder_v3`计算双细胞数量
 ```r
 seu_data <- doubletFinder_v3(seu_data, PCs = 1:10, pN = 0.25, pK = mpK, nExp = nExp_poi, 
                              reuse.pANN = F, sct = F)
@@ -165,7 +165,7 @@ seu_data$DF_hi.lo <- ifelse(
   )
 )
 ```
-9. 可视化评估双细胞的结果
+### 9. 可视化评估双细胞的结果
 ```r
 p1 <- DimPlot(seu_data, reduction = 'umap', group.by ="seurat_clusters") + coord_equal(ratio = 1) 
 p2 <- DimPlot(seu_data, reduction = 'umap', group.by ="DF_hi.lo") + coord_equal(ratio = 1) 
@@ -187,7 +187,7 @@ ggplot2::ggsave("2_DoubletFinder/03_Violin_DoubletFinder.png", plot = p, height 
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/2_DoubletFinder/03_Violin_DoubletFinder.png" width="500" />    
 
-10. 双细胞数量的统计表
+### 10. 双细胞数量的统计表
 ```r
 doubletFinder_res <- as.data.frame.matrix(t(table(seu_data$DF_hi.lo)))
 doubletFinder_res$Cell_Discard_Rate <- percent(c(1 - c(doubletFinder_res[,3] / ncol(seu_data) )), 0.01)
@@ -200,7 +200,7 @@ write.xlsx(doubletFinder_res, '2_DoubletFinder/singlet.xlsx', rowNames = F)
 txt <- knitr::kable(doubletFinder_res, format = "markdown", align = 'c')
 write.table(txt, '2_DoubletFinder/markdown.txt', row.names = F, quote = F, col.names = F)
 ```
-11. 保存去除双细胞后的结果。  
+### 11. 保存去除双细胞后的结果。  
 ```r
 Idents(seu_data) <- seu_data$DF_hi.lo
 seu_data_singlet <- subset(seu_data, idents = 'Singlet')
@@ -250,3 +250,4 @@ fs::dir_tree("2_DoubletFinder", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-08
 - 修改日期：2025-11-08
+
