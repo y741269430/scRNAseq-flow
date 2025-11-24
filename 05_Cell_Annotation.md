@@ -496,6 +496,37 @@ ggsave("5_Cell_Annotation/10_Boxplot_for_QC.png", plot = pmerge, height = 8, wid
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/5_Cell_Annotation/10_Boxplot_for_QC.png" width="600" />
 
+## 七、Pearson 相关性热图 展示         
+```r
+# 7.1
+# 待补充
+
+# 绘制热图
+plot <- pheatmap(corr_matrix,
+         color = colorRampPalette(c("navy", "white", "firebrick3"))(100),
+         breaks = seq(-1, 1, length.out = 101),
+         cluster_rows = F,     # 不能做行聚类，因为热图的cluster是按照marker基因的排序而定的
+         cluster_cols = F,     # 不能做列聚类，因为热图的cluster是按照marker基因的排序而定的
+         display_numbers = F,  # 显示相关系数
+         number_format = "%.2f",
+         number_color = "black",
+         fontsize_number = 6,
+         annotation_col = annotation_col,      # 列注释
+         annotation_colors = annotation_colors, # 注释颜色
+         main = "Cluster Correlation Based on Marker Gene Expression Profiles",
+         fontsize = 10,
+         border_color = NA,
+         fontsize_row = 8,
+         fontsize_col = 8,
+         silent = T)
+
+plot_grid(plot$gtable)
+
+ggsave("5_Cell_Annotation/11_Pearson_Cluster_markers.pdf", plot = plot, height = 9, width = 10, dpi = 300, limitsize = FALSE)
+ggsave("5_Cell_Annotation/11_Pearson_Cluster_markers.png", plot = plot, height = 9, width = 10, dpi = 300, limitsize = FALSE)
+```
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/5_Cell_Annotation/11_Pearson_Cluster_markers.png" width="400" />
+
 ---
 目录树  
 ```r
@@ -523,6 +554,8 @@ fs::dir_tree("5_Cell_Annotation", recurse = 2)
 ├── 09_VlnPlot_markers_SplieBySample.png
 ├── 10_Boxplot_for_QC.pdf
 ├── 10_Boxplot_for_QC.png
+├── 11_Pearson_Cluster_markers.pdf
+├── 11_Pearson_Cluster_markers.png
 ├── Cellnum_clusters_anno.txt
 ├── Cellnum_clusters_anno.xlsx
 ├── Cellratio_clusters_anno.txt
@@ -543,5 +576,5 @@ fs::dir_tree("5_Cell_Annotation", recurse = 2)
 - 作者：JJYang
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-14
-- 修改日期：2025-11-14
+- 修改日期：2025-11-25
 
