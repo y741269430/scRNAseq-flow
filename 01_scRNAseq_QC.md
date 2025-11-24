@@ -1,6 +1,6 @@
 # 01_scRNAseq_QC   
 读取——质控——过滤
-1. 配置环境
+### 1. 配置环境
 ```r
 # 调整R内允许对象大小的限制（默认值是500*1024 ^ 2 = 500 Mb）
 options(future.globals.maxSize = 500 * 1024 ^ 2)
@@ -19,7 +19,7 @@ if (!dir.exists("1_QC_Files")) {
 projects <- list.files("RawData"); projects
 ```
 
-2. 创建函数批量读取单细胞矩阵    
+### 2. 创建函数批量读取单细胞矩阵    
 ```r
 process_multiple_projects <- function(projects, base_dir = 'RawData') {
 
@@ -58,7 +58,7 @@ seurat_objects <- process_multiple_projects(projects)
 
 saveRDS(seurat_objects, "1_QC_Files/seurat_objects.rds")
 ```
-3. 生成质控指标    
+### 3. 生成质控指标    
 ```r
 # 检查矩阵行名，是ENSEMBL还是gene name（SYMBOL）
 head(rownames(seurat_objects[[1]]@assays$RNA))
@@ -89,7 +89,7 @@ combined_meta <- do.call(rbind, lapply(seq_along(seurat_objects), function(i) {
 
 #write.csv(combined_meta, '1_QC_Files/combined_meta.csv', row.names = F)
 ```
-4. 质控1    
+### 4. 质控1    
 ```r
 # 创建质控图
 plots <- list(
@@ -124,7 +124,7 @@ before <- combined_meta %>%
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/01_QC_VlnPlot.png" width="500" />    
 
-5. 质控2    
+### 5. 质控2    
 ```r
 # 每个细胞的UMI计数 (UMI counts per cell)
 a1 <- combined_meta %>% 
@@ -171,7 +171,7 @@ ggsave("1_QC_Files/02_QC_Four.png", p, height = 8, width = 12, dpi = 300)
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/02_QC_Four.png" width="600" />    
 
-6. 质控3    
+### 6. 质控3    
 ```r
 # 线粒体基因计数占比 (Mitochondrial counts ratio)
 # 可视化每个细胞检测到的线粒体基因表达分布
@@ -232,7 +232,7 @@ ggplot2::ggsave("1_QC_Files/04_QC_UMIs_vs_genes.png", plot = p, height = 8, widt
 ```    
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/04_QC_UMIs_vs_genes.png" width="600" />     
   
-7. 细胞过滤     
+### 7. 细胞过滤     
 ```r    
 # 细胞过滤，具体情况具体分析，我这里的指标是根据文献的指标而定的。
 seurat_filter <- lapply(seurat_objects, function(x){
@@ -255,7 +255,7 @@ write.csv(filter_meta, '1_QC_Files/filter_meta.csv', row.names = F)
 # 细胞计数 (Cell Numbers before Filter)
 cell_nums_after_filter <- data.frame(table(filter_meta$Sample))
 ```
-8. 可视化过滤前后的细胞计数    
+### 8. 可视化过滤前后的细胞计数    
 ```r    
 after <- filter_meta %>%
   ggplot(aes(x = Sample, fill = Sample)) +
@@ -273,7 +273,7 @@ ggplot2::ggsave("1_QC_Files/05_QC_NCells.png", plot = p, height = 4, width = 8, 
 ```    
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/1_QC_Files/05_QC_NCells.png" width="500" />      
 
-9. 统计过滤前后的细胞数量，并保存结果    
+### 9. 统计过滤前后的细胞数量，并保存结果    
 ```r    
 cell_nums <- cbind(cell_nums_before_filter, cell_nums_after_filter[,2])
 cell_nums$Vaild <- percent(cell_nums[,3]/cell_nums[,2])
@@ -326,6 +326,7 @@ fs::dir_tree("1_QC_Files", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-08
 - 修改日期：2025-11-08
+
 
 
 
