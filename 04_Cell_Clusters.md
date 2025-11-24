@@ -1,6 +1,6 @@
 # 04_Cell_Clusters    
 
-1. 输入准备
+### 1. 输入准备
 ```r
 # 设置工作目录，批量创建文件夹储存结果
 setwd(r"{D:\R work\GSE171169_RAW\}")
@@ -12,7 +12,7 @@ if (!dir.exists("4_Cell_Clusters")) {
   dir.create("4_Cell_Clusters")
 }
 ```
-2. 读取去除双细胞后的矩阵
+### 2. 读取去除双细胞后的矩阵
 ```r
 singlet_files <- list.files(path = "2_DoubletFinder", 
                             pattern = "seurat_singlet.rds$", 
@@ -40,7 +40,7 @@ saveRDS(seurat_merged, '3_QC_stat/seurat_merged.rds')
 
 rm(list = ls()); gc()
 ```
-3. 降维聚类
+### 3. 降维聚类
 ```r
 # 读取数据
 seurat_merged <- readRDS('3_QC_stat/seurat_merged.rds')
@@ -61,7 +61,7 @@ seurat_integrated <- seurat_merged %>%
 Idents(seurat_integrated) <- seurat_integrated$RNA_snn_res.0.2
 saveRDS(seurat_integrated, '4_Cell_Clusters/seurat_integrated.rds')
 ```
-4. UMAP 绘制
+### 4. UMAP 绘制
 4.1 UMAP 多个样本整合
 ```r
 # 4.1
@@ -94,7 +94,7 @@ ggplot2::ggsave("4_Cell_Clusters/02_UMAP_split_sample.png", plot = p2,
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/02_UMAP_split_sample.png" width="500" />    
 
-5. 细胞亚群比例统计    
+### 5. 细胞亚群比例统计    
 5.1 输出每个细胞亚群的细胞比例
 ```r
 # 5.1
@@ -282,7 +282,7 @@ ggsave("4_Cell_Clusters/05_Cell_proportion_barplot.png", plot = p, height = 6, w
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/05_Cell_proportion_barplot.png" width="600" />    
 
-6. 通过FindAllMarkers去查找每个细胞亚群高表达的基因    
+### 6. 通过FindAllMarkers去查找每个细胞亚群高表达的基因    
 6.1 查找每个细胞亚群高表达的基因
 ```r
 # 6.1
@@ -370,7 +370,7 @@ ggsave("4_Cell_Clusters/08_jjDotPlot_top2.png", height = 6, width = 7, dpi = 300
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/08_jjDotPlot_top2.png" width="400" />    
 
-6.5 Pearson相关性热图 使用每个细胞亚群的Top 5 marker基因
+### 7. Pearson相关性热图 使用每个细胞亚群的Top 5 marker基因
 ```r
 # 6.5
 marker_genes <- read.xlsx('4_Cell_Clusters/Cluster_markers.xlsx')
@@ -476,6 +476,7 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-10
 - 修改日期：2025-11-25
+
 
 
 
