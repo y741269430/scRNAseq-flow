@@ -419,6 +419,7 @@ plot <- pheatmap(corr_matrix,
          breaks = seq(-1, 1, length.out = 101),
          cluster_rows = F,
          cluster_cols = F,
+         show_rownames = F,
          display_numbers = F,  # 显示相关系数
          number_format = "%.2f",
          number_color = "black",
@@ -476,6 +477,7 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-10
 - 修改日期：2025-11-25
+
 
 
 
