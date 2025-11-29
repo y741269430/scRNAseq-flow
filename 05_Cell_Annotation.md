@@ -18,26 +18,8 @@ if (!dir.exists("5_Cell_Annotation")) {
 1.2 读取矩阵并重新降维
 ```r
 # 读取数据
-seurat_merged <- readRDS('3_QC_stat/seurat_merged.rds')
-seurat_merged@meta.data <- seurat_merged@meta.data[, c(1:8)]
-seurat_merged$Sample <- seurat_merged$orig.ident
-
-# 增加细胞亚群用于手动/自动注释 ####
-seurat_integrated <- seurat_merged %>%
-  NormalizeData() %>%                                    # 默认使用"LogNormalize"方法，考虑测序深度差异并进行对数转换
-  FindVariableFeatures() %>%                             # 识别在细胞间表达变化较大的基因，用于后续降维分析
-  ScaleData() %>%                                        # 线性变换，使每个基因在所有细胞中的均值为0，方差为1，避免高表达基因主导分析
-  RunPCA(dims = 1:20) %>%                                # 主成分分析，线性降维以保留关键生物学差异
-  RunHarmony('orig.ident') %>% 
-  RunUMAP(dims = 1:20, reduction = 'harmony') %>%        # 基于前20个主成分进行UMAP非线性降维，用于可视化细胞群体关系
-  RunTSNE(dims = 1:20, reduction = 'harmony') %>% 
-  FindNeighbors(dims = 1:20, reduction = 'harmony') %>% 
-  FindClusters(resolution = 0.8)
-
+seurat_integrated <- readRDS('4_Cell_Clusters/seurat_integrated_tmp.rds')
 Idents(seurat_integrated) <- seurat_integrated$RNA_snn_res.0.8
-table(Idents(seurat_integrated))
-
-saveRDS(seurat_integrated, '5_Cell_Annotation/seurat_integrated_tmp.rds')
 ```
 
 ## 二、细胞注释      
