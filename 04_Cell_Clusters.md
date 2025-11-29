@@ -52,14 +52,17 @@ seurat_integrated <- seurat_merged %>%
   NormalizeData() %>%                                    # 默认使用"LogNormalize"方法，考虑测序深度差异并进行对数转换
   FindVariableFeatures() %>%                             # 识别在细胞间表达变化较大的基因，用于后续降维分析
   ScaleData() %>%                                        # 线性变换，使每个基因在所有细胞中的均值为0，方差为1，避免高表达基因主导分析
-  RunPCA(dims = 1:10) %>%                                # 主成分分析，线性降维以保留关键生物学差异
+  RunPCA(dims = 1:20) %>%                                # 主成分分析，线性降维以保留关键生物学差异
   RunHarmony('orig.ident') %>% 
-  RunUMAP(dims = 1:10, reduction = 'harmony') %>%        # 基于前20个主成分进行UMAP非线性降维，用于可视化细胞群体关系
-  FindNeighbors(dims = 1:10, reduction = 'harmony') %>% 
-  FindClusters(resolution = 0.2)
+  RunUMAP(dims = 1:20, reduction = 'harmony') %>%        # 基于前20个主成分进行UMAP非线性降维，用于可视化细胞群体关系
+  RunTSNE(dims = 1:20, reduction = 'harmony') %>% 
+  FindNeighbors(dims = 1:20, reduction = 'harmony') %>% 
+  FindClusters(resolution = 0.8)
 
-Idents(seurat_integrated) <- seurat_integrated$RNA_snn_res.0.2
-saveRDS(seurat_integrated, '4_Cell_Clusters/seurat_integrated.rds')
+Idents(seurat_integrated) <- seurat_integrated$RNA_snn_res.0.8
+table(Idents(seurat_integrated))
+
+saveRDS(seurat_integrated, '4_Cell_Clusters/seurat_integrated_tmp.rds')
 ```
 ### 4. UMAP 绘制
 4.1 UMAP 多个样本整合
@@ -114,18 +117,27 @@ write.table(Cellratio_save, '4_Cell_Clusters/Cellratio_clusters.txt', quote = F,
 
 | Clusters | 05d_N1 | 05d_N2 | 14d_N1 | 14d_N2 |
 |:--------:|:------:|:------:|:------:|:------:|
-|    0     | 24.76% | 22.80% | 15.97% | 29.88% |
-|    1     | 20.41% | 16.30% | 11.24% | 20.44% |
-|    2     | 2.95%  | 3.28%  | 32.39% | 17.76% |
-|    3     | 22.78% | 19.18% | 4.93%  | 3.74%  |
-|    4     | 11.22% | 20.86% | 5.42%  | 2.98%  |
-|    5     | 4.89%  | 4.15%  | 12.49% | 11.62% |
-|    6     | 2.53%  | 2.84%  | 9.99%  | 4.10%  |
-|    7     | 6.50%  | 4.87%  | 2.39%  | 2.14%  |
-|    8     | 1.10%  | 1.06%  | 2.43%  | 4.10%  |
-|    9     | 1.01%  | 1.06%  | 1.54%  | 2.14%  |
-|    10    | 0.93%  | 1.25%  | 1.17%  | 1.11%  |
-|    11    | 0.93%  | 2.34%  | 0.04%  | 0.00%  |
+|    0     | 18.22% | 15.58% | 4.49%  | 3.12%  |
+|    1     | 8.35%  | 7.87%  | 11.04% | 17.10% |
+|    2     | 14.13% | 11.21% | 4.37%  | 12.51% |
+|    3     | 14.80% | 10.49% | 5.90%  | 10.95% |
+|    4     | 10.92% | 20.42% | 4.41%  | 2.49%  |
+|    5     | 1.69%  | 1.72%  | 20.02% | 12.15% |
+|    6     | 4.98%  | 4.18%  | 12.37% | 11.80% |
+|    7     | 2.57%  | 2.90%  | 9.95%  | 4.05%  |
+|    8     | 0.67%  | 0.94%  | 10.43% | 4.76%  |
+|    9     | 6.54%  | 4.18%  | 2.43%  | 2.18%  |
+|    10    | 2.24%  | 1.81%  | 4.16%  | 7.75%  |
+|    11    | 1.10%  | 1.09%  | 2.43%  | 4.19%  |
+|    12    | 2.53%  | 3.28%  | 0.24%  | 0.49%  |
+|    13    | 1.01%  | 1.37%  | 3.23%  | 1.42%  |
+|    14    | 1.86%  | 2.87%  | 0.57%  | 0.45%  |
+|    15    | 2.70%  | 2.53%  | 0.28%  | 0.04%  |
+|    16    | 0.97%  | 1.53%  | 1.33%  | 1.25%  |
+|    17    | 0.97%  | 1.03%  | 1.33%  | 1.87%  |
+|    18    | 1.05%  | 3.15%  | 0.04%  | 0.00%  |
+|    19    | 2.02%  | 1.19%  | 0.24%  | 0.45%  |
+|    20    | 0.67%  | 0.62%  | 0.73%  | 0.98%  |
 
 5.2 输出每个细胞亚群的细胞数量
 ```r
@@ -143,18 +155,27 @@ write.table(Cellnum_save, '4_Cell_Clusters/Cellnum_clusters.txt', quote = F, sep
 
 | Clusters | 05d_N1 | 05d_N2 | 14d_N1 | 14d_N2 |
 |:--------:|:------:|:------:|:------:|:------:|
-|    0     |  587   |  730   |  395   |  671   |
-|    1     |  484   |  522   |  278   |  459   |
-|    2     |   70   |  105   |  801   |  399   |
-|    3     |  540   |  614   |  122   |   84   |
-|    4     |  266   |  668   |  134   |   67   |
-|    5     |  116   |  133   |  309   |  261   |
-|    6     |   60   |   91   |  247   |   92   |
-|    7     |  154   |  156   |   59   |   48   |
-|    8     |   26   |   34   |   60   |   92   |
-|    9     |   24   |   34   |   38   |   48   |
-|    10    |   22   |   40   |   29   |   25   |
-|    11    |   22   |   75   |   1    |   0    |
+|    0     |  432   |  499   |  111   |   70   |
+|    1     |  198   |  252   |  273   |  384   |
+|    2     |  335   |  359   |  108   |  281   |
+|    3     |  351   |  336   |  146   |  246   |
+|    4     |  259   |  654   |  109   |   56   |
+|    5     |   40   |   55   |  495   |  273   |
+|    6     |  118   |  134   |  306   |  265   |
+|    7     |   61   |   93   |  246   |   91   |
+|    8     |   16   |   30   |  258   |  107   |
+|    9     |  155   |  134   |   60   |   49   |
+|    10    |   53   |   58   |  103   |  174   |
+|    11    |   26   |   35   |   60   |   94   |
+|    12    |   60   |  105   |   6    |   11   |
+|    13    |   24   |   44   |   80   |   32   |
+|    14    |   44   |   92   |   14   |   10   |
+|    15    |   64   |   81   |   7    |   1    |
+|    16    |   23   |   49   |   33   |   28   |
+|    17    |   23   |   33   |   33   |   42   |
+|    18    |   25   |  101   |   1    |   0    |
+|    19    |   48   |   38   |   6    |   10   |
+|    20    |   16   |   20   |   18   |   22   |
 
 5.3 数据框转换
 ```r
@@ -212,8 +233,9 @@ ggsave("4_Cell_Clusters/03_Cell_proportion_stratum.png", plot = p_combined, heig
 5.5 细胞亚群比例圆环图
 ```r
 # 5.5
-create_donut_plots <- function(cell_data) {
-  data_list <- split(cell_data, cell_data$Sample)
+create_donut_plots <- function(Cellratio_df) {
+  data_list <- split(Cellratio_df, Cellratio_df$Sample)
+  
   create_single_donut <- function(data, sample_name) {
     data <- data[order(data$Percentage, decreasing = TRUE), ]
     ggdonutchart(data, "Percentage",
@@ -224,17 +246,16 @@ create_donut_plots <- function(cell_data) {
       labs(title = sample_name, fill = "Cell Type") +
       theme_void() +
       theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 12),
-            legend.position = "bottom",
-            legend.text = element_text(size = 8)) +
-      guides(fill = guide_legend(ncol = 1))
+            legend.position = "none", legend.text = element_text(size = 8)) +
+      guides(fill = guide_legend(nrow = 1, byrow = T))
   }
-
+  
   plots <- lapply(names(data_list), function(sample_name) {
     create_single_donut(data_list[[sample_name]], sample_name)
-    })
+  })
   
   combined_plot <- plot_grid(plotlist = plots, nrow = 1)
-
+  
   ggsave("4_Cell_Clusters/04_Cell_proportion_donut.pdf", plot = combined_plot, height = 5, width = 8, dpi = 300)
   ggsave("4_Cell_Clusters/04_Cell_proportion_donut.png", plot = combined_plot, height = 5, width = 8, dpi = 300)
   
@@ -342,8 +363,8 @@ top2_genes <- Cluster_markers %>%
 DotPlot(object = seurat_integrated, features = top2_genes, cols = c('white','firebrick')) + 
   coord_flip() # 翻转坐标轴
 
-ggsave("4_Cell_Clusters/07_DotPlot_top2.pdf", height = 6, width = 6, dpi = 300, limitsize = FALSE)
-ggsave("4_Cell_Clusters/07_DotPlot_top2.png", height = 6, width = 6, dpi = 300, limitsize = FALSE)
+ggsave("4_Cell_Clusters/07_DotPlot_top2.pdf", height = 6, width = 8, dpi = 300, limitsize = FALSE)
+ggsave("4_Cell_Clusters/07_DotPlot_top2.png", height = 6, width = 8, dpi = 300, limitsize = FALSE)
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/07_DotPlot_top2.png" width="400" />    
 
@@ -373,10 +394,10 @@ ggsave("4_Cell_Clusters/08_jjDotPlot_top2.png", height = 6, width = 7, dpi = 300
 ### 7. Pearson相关性热图 使用每个细胞亚群的Top 5 marker基因
 ```r
 # 6.5
-marker_genes <- read.xlsx('4_Cell_Clusters/Cluster_markers.xlsx')
+Cluster_markers <- read.xlsx('4_Cell_Clusters/Cluster_markers.xlsx')
 
 # 选择每个cluster的top marker基因
-top_markers <- marker_genes %>%
+top_markers <- Cluster_markers %>%
   arrange(cluster, desc(avg_log2FC)) %>%
   distinct(gene, .keep_all = TRUE) %>%
   group_by(cluster) %>%
@@ -417,8 +438,8 @@ annotation_colors <- list(Seurat_Cluster = cluster_colors)
 plot <- pheatmap(corr_matrix,
          color = colorRampPalette(c("navy", "white", "firebrick3"))(100),
          breaks = seq(-1, 1, length.out = 101),
-         cluster_rows = F,
-         cluster_cols = F,
+         cluster_rows = T,
+         cluster_cols = T,
          show_rownames = F,
          show_colnames = F,
          display_numbers = F,  # 显示相关系数
@@ -477,7 +498,7 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 - 作者：JJYang
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-10
-- 修改日期：2025-11-25
+- 修改日期：2025-11-29
 
 
 
