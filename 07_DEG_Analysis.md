@@ -29,6 +29,9 @@ Idents(seurat_integrated) <- seurat_integrated$celltype.exp
 
 # 定义需要进行差异表达分析的细胞类型组合
 degmeta <- data.frame(table(seurat_integrated$celltype.exp))
+degmeta$Sample <- str_split_fixed(degmeta$Var1, '-', n = 2)[,1]
+degmeta$cluster <- str_split_fixed(degmeta$Var1, '-', n = 2)[,2]
+degmeta_ls <- lapply(split(degmeta, degmeta$cluster), function(x){ x <- x; return(x)})
 
 combinations <- lapply(degmeta_ls, function(cell_data){
   TRE <- cell_data[cell_data$Sample == "14d_N1", "Var1"]
