@@ -74,10 +74,10 @@ p2 <- DimPlot(seurat_integrated,
 ```r
 # 2.2 手动进行细胞注释
 seurat_integrated <- RenameIdents(seurat_integrated,
-                                  "0" = "gd_T_cells",
-                                  "1" = "Microglia_1",
-                                  "2" = "Macrophages_2",
-                                  "3" = "gd_T_cells",
+                                  "0" = "Microglia_1",
+                                  "1" = "gd_T_cells",
+                                  "2" = "gd_T_cells",
+                                  "3" = "Macrophages_2",
                                   "4" = "cDCs",
                                   "5" = "ab_T_cells",
                                   "6" = "NK_cells",
@@ -87,9 +87,9 @@ seurat_integrated <- RenameIdents(seurat_integrated,
                                   "10" = "Macrophages_2",
                                   "11" = "Neutrophils",
                                   "12" = "Macrophages_2",
-                                  "13" = "Microglia_1",
-                                  "14" = "ab_T_cells",
-                                  "15" = "Macrophages_2",
+                                  "13" = "ab_T_cells",
+                                  "14" = "gd_T_cells",
+                                  "15" = "Microglia_1",
                                   "16" = "pDCs",
                                   "17" = "ab_T_cells",
                                   "18" = "Microglia_2",
@@ -525,5 +525,5 @@ fs::dir_tree("5_Cell_Annotation", recurse = 2)
 - 作者：JJYang
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-14
-- 修改日期：2025-11-25
+- 修改日期：2025-11-29
 
