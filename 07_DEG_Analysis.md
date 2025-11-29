@@ -117,6 +117,7 @@ merged_DEG_list_p <- lapply(merged_DEG_list, function(x){
 
 write.xlsx(merged_DEG_list, file = "7_DEG_Analysis/DEG_list_log_025.xlsx")
 write.xlsx(merged_DEG_list_p, file = "7_DEG_Analysis/DEG_list_log_025_p_005.xlsx")
+save(merged_DEG_list, merged_DEG_list_p, file = "7_DEG_Analysis/DEG_list.RData")
 ```
 
 | 变量名 (Variable) | 英文解释 | 中文解释 |
@@ -223,6 +224,7 @@ fs::dir_tree("7_DEG_Analysis", recurse = 2)
 ├── 01_DEG_volcano.png
 ├── 02_DEG_counts.pdf
 ├── 02_DEG_counts.png
+├── DEG_list.RData
 ├── DEG_list_log_025.xlsx
 └── DEG_list_log_025_p_005.xlsx
 ```
