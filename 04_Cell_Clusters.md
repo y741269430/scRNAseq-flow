@@ -354,25 +354,25 @@ ggsave("4_Cell_Clusters/06_DoHeatmap_top10_label.png", plot = p, height = 15, wi
 6.3 Dotplot图 画marker基因散点图
 ```r
 # 6.3
-top2_genes <- Cluster_markers %>%
+top1_genes <- Cluster_markers %>%
   group_by(cluster) %>%
-  slice_max(order_by = avg_log2FC, n = 2) %>%
+  slice_max(order_by = avg_log2FC, n = 1) %>%
   pull(gene) %>%
   unique()
 
-DotPlot(object = seurat_integrated, features = top2_genes, cols = c('white','firebrick')) + 
+DotPlot(object = seurat_integrated, features = top1_genes, cols = c('white','firebrick')) + 
   coord_flip() # 翻转坐标轴
 
-ggsave("4_Cell_Clusters/07_DotPlot_top2.pdf", height = 6, width = 8, dpi = 300, limitsize = FALSE)
-ggsave("4_Cell_Clusters/07_DotPlot_top2.png", height = 6, width = 8, dpi = 300, limitsize = FALSE)
+ggsave("4_Cell_Clusters/07_DotPlot_top1.pdf", height = 6, width = 8, dpi = 300, limitsize = FALSE)
+ggsave("4_Cell_Clusters/07_DotPlot_top1.png", height = 6, width = 8, dpi = 300, limitsize = FALSE)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/07_DotPlot_top2.png" width="400" />    
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/07_DotPlot_top1.png" width="400" />    
 
 6.4 jjDotPlot图 画marker基因散点图
 ```r
 # 6.4
 scRNAtoolVis::jjDotPlot(object = seurat_integrated, 
-                        gene = top2_genes,
+                        gene = top1_genes,
                         id = 'seurat_clusters',
                         xtree = F,
                         ytree = F,
@@ -386,10 +386,10 @@ scRNAtoolVis::jjDotPlot(object = seurat_integrated,
                         midpoint = 0) + 
   coord_flip() # 翻转坐标轴
 
-ggsave("4_Cell_Clusters/08_jjDotPlot_top2.pdf", height = 6, width = 7, dpi = 300, limitsize = FALSE)
-ggsave("4_Cell_Clusters/08_jjDotPlot_top2.png", height = 6, width = 7, dpi = 300, limitsize = FALSE)
+ggsave("4_Cell_Clusters/08_jjDotPlot_top1.pdf", height = 6, width = 7, dpi = 300, limitsize = FALSE)
+ggsave("4_Cell_Clusters/08_jjDotPlot_top1.png", height = 6, width = 7, dpi = 300, limitsize = FALSE)
 ```
-<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/08_jjDotPlot_top2.png" width="400" />    
+<img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/4_Cell_Clusters/08_jjDotPlot_top1.png" width="400" />    
 
 ### 7. Pearson相关性热图 使用每个细胞亚群的Top 5 marker基因
 ```r
@@ -478,10 +478,10 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 ├── 04_Cell_proportion_donut.png
 ├── 05_Cell_proportion_barplot.pdf
 ├── 05_Cell_proportion_barplot.png
-├── 07_DotPlot_top2.pdf
-├── 07_DotPlot_top2.png
-├── 08_jjDotPlot_top2.pdf
-├── 08_jjDotPlot_top2.png
+├── 07_DotPlot_top1.pdf
+├── 07_DotPlot_top1.png
+├── 08_jjDotPlot_top1.pdf
+├── 08_jjDotPlot_top1.png
 ├── 09_Pearson_Cluster_markers.pdf
 ├── 09_Pearson_Cluster_markers.png
 ├── Cellnum_clusters.txt
@@ -492,13 +492,14 @@ fs::dir_tree("4_Cell_Clusters", recurse = 2)
 ├── Cluster_markers.xlsx
 ├── Cluster_markers_top_10.txt
 ├── Cluster_markers_top_10.xlsx
-└── seurat_integrated.rds
+└── seurat_integrated_tmp.rds
 ```
 ### 联系方式    
 - 作者：JJYang
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-10
 - 修改日期：2025-11-29
+
 
 
 
