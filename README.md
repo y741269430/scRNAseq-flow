@@ -28,3 +28,8 @@
 ### V1.0 版本的 mysc_RNAseq 流程在以下路径（目前已不再维护）          
 - [myscRNAseq_V1](https://github.com/y741269430/scRNAseq-flow/blob/main/myscRNAseq_V1/myscRNAseq_V1.md)
 
+### 联系方式    
+- 作者：JJYang
+- 邮箱：y741269430@163.com
+- 创建日期：2025-12-01
+- 修改日期：2025-12-01
