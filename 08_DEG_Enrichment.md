@@ -124,7 +124,7 @@ save(KEGG_updown, KEGG_results_list, file = '8_DEG_Enrichment/KEGG.RData')
 ```
 
 ### 5 GO可视化    
-```r
+```r    
 # GO BP
 load('8_DEG_Enrichment/GO_BP.RData')
 
@@ -141,6 +141,7 @@ enrichment_df <- lapply(GO_BP_results_list, function(df) {
   return(df_processed)
 })
 ```
+
 ```r
 # 批量绘制dotplot
 plot <- list()
@@ -155,6 +156,7 @@ for (i in 1:length(enrichment_df)) {
 }
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/8_DEG_Enrichment/GO_Enrichment/01_GOBP_top10_dotplot_ab_T_cells.png" width="600" />   
+
 ```r
 # 批量绘制barplot
 plot <- list()
@@ -205,6 +207,7 @@ for (i in 1:length(enrichment_df)) {
 }
 ```
 <img src="https://github.com/y741269430/scRNAseq-flow/blob/main/img/8_DEG_Enrichment/KEGG_Enrichment/01_KEGG_top10_dotplot_ab_T_cells.png" width="600" />   
+
 ```r
 # 批量绘制barplot
 plot <- list()
@@ -266,4 +269,5 @@ fs::dir_tree("8_DEG_Enrichment", recurse = 2)
 - 邮箱：y741269430@163.com
 - 创建日期：2025-11-30
 - 修改日期：2025-12-01
+
 
