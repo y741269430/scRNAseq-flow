@@ -17,5 +17,5 @@
 待定    
 
 ### V1.0 版本的 mysc_RNAseq 流程在以下路径（目前已不再维护）          
-[myscRNAseq_V1](https://github.com/y741269430/scRNAseq-flow/blob/main/myscRNAseq_V1.md)
+[myscRNAseq_V1](https://github.com/y741269430/scRNAseq-flow/blob/main/myscRNAseq_V1/myscRNAseq_V1.md)
 
